@@ -5,7 +5,15 @@ import { GoogleGenAI } from "@google/genai";
 export const enhanceTextWithGemini = async (promptText: string, instruction: string): Promise<string> => {
   // FIX: The API key must be obtained exclusively from the environment variable `process.env.API_KEY`.
   // As per guidelines, assume the API key is pre-configured and accessible.
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = process.env.API_KEY;
+
+  // Validate API key is present
+  if (!apiKey) {
+    console.error("GEMINI_API_KEY environment variable is not set. Please add GEMINI_API_KEY to your .env file.");
+    return "Error: API key is not configured. Please set GEMINI_API_KEY in your .env file.";
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
 
   try {
     const response = await ai.models.generateContent({
