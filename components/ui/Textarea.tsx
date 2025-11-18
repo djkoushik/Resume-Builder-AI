@@ -14,7 +14,7 @@ const Textarea: React.FC<TextareaProps> = ({ label, id, onEnhance, isEnhancing, 
         <label htmlFor={id} className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           {label}
         </label>
-         {onEnhance && (
+         {/* {onEnhance && (
           <button
             type="button"
             onClick={onEnhance}
@@ -26,7 +26,7 @@ const Textarea: React.FC<TextareaProps> = ({ label, id, onEnhance, isEnhancing, 
             </svg>
             {isEnhancing ? 'Improving...' : 'Improve with AI'}
           </button>
-        )}
+        )} */}
       </div>
       <textarea
         id={id}
