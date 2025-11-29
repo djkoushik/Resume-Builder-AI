@@ -176,7 +176,7 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
   return (
     <div className="space-y-1">
       {/* Sender Information Section */}
-      <Accordion title="Your Information" isOpenDefault={true}>
+      <Accordion title="Your Information">
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -187,8 +187,8 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
               value={data.senderName}
               onChange={(e) => handleFieldChange('senderName', e.target.value)}
               className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white ${validationErrors.senderName
-                  ? 'border-red-300 dark:border-red-600'
-                  : 'border-gray-300 dark:border-gray-600'
+                ? 'border-red-300 dark:border-red-600'
+                : 'border-gray-300 dark:border-gray-600'
                 }`}
               placeholder="John Doe"
             />
@@ -205,8 +205,8 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
               value={data.senderEmail}
               onChange={(e) => handleFieldChange('senderEmail', e.target.value)}
               className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white ${validationErrors.senderEmail
-                  ? 'border-red-300 dark:border-red-600'
-                  : 'border-gray-300 dark:border-gray-600'
+                ? 'border-red-300 dark:border-red-600'
+                : 'border-gray-300 dark:border-gray-600'
                 }`}
               placeholder="john.doe@email.com"
             />
@@ -277,8 +277,8 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
               value={data.companyName}
               onChange={(e) => handleFieldChange('companyName', e.target.value)}
               className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white ${validationErrors.companyName
-                  ? 'border-red-300 dark:border-red-600'
-                  : 'border-gray-300 dark:border-gray-600'
+                ? 'border-red-300 dark:border-red-600'
+                : 'border-gray-300 dark:border-gray-600'
                 }`}
               placeholder="Company Inc."
               required
@@ -314,8 +314,8 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
               value={data.jobTitle}
               onChange={(e) => handleFieldChange('jobTitle', e.target.value)}
               className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white ${validationErrors.jobTitle
-                  ? 'border-red-300 dark:border-red-600'
-                  : 'border-gray-300 dark:border-gray-600'
+                ? 'border-red-300 dark:border-red-600'
+                : 'border-gray-300 dark:border-gray-600'
                 }`}
               placeholder="Software Developer"
               required
@@ -339,7 +339,7 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
       </Accordion>
 
       {/* Letter Content */}
-      <Accordion title="Letter Content">
+      <Accordion title="Letter Content" isOpenDefault={true}>
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
