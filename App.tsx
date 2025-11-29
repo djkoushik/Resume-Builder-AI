@@ -1,19 +1,47 @@
 
 import React, { useState, useCallback } from 'react';
-import { ResumeData, CustomizationSettings, initialResumeData, initialCustomizationSettings } from './types';
+import { ResumeData, CustomizationSettings, CoverLetterData, initialResumeData, initialCustomizationSettings, initialCoverLetterData, syncResumeToLetter } from './types';
 import EditorPanel from './components/editor/EditorPanel';
 import PreviewPanel from './components/preview/PreviewPanel';
 import CustomizationPanel from './components/customization/CustomizationPanel';
 import Header from './components/Header';
 import LandingPage from './components/LandingPage';
+import ArtifactSelector from './components/ArtifactSelector';
+import CoverLetterBuilder from './components/coverLetter/CoverLetterBuilder';
+
+type AppView = 'landing' | 'selector' | 'resume' | 'coverLetter';
 
 const App: React.FC = () => {
   const [resumeData, setResumeData] = useState<ResumeData>(initialResumeData);
+  const [coverLetterData, setCoverLetterData] = useState<CoverLetterData>(() => ({
+    ...initialCoverLetterData,
+    ...syncResumeToLetter(initialResumeData)
+  }));
   const [customization, setCustomization] = useState<CustomizationSettings>(initialCustomizationSettings);
-  const [showLandingPage, setShowLandingPage] = useState(true);
+  const [currentView, setCurrentView] = useState<AppView>('landing');
 
   const handleResumeChange = useCallback((newResumeData: ResumeData) => {
     setResumeData(newResumeData);
+    // Sync shared fields to cover letter
+    setCoverLetterData(prev => ({
+      ...prev,
+      ...syncResumeToLetter(newResumeData)
+    }));
+  }, []);
+
+  const handleCoverLetterChange = useCallback((newCoverLetterData: CoverLetterData) => {
+    setCoverLetterData(newCoverLetterData);
+    // Sync shared fields back to resume
+    setResumeData(prev => ({
+      ...prev,
+      basics: {
+        ...prev.basics,
+        name: newCoverLetterData.senderName,
+        location: newCoverLetterData.senderAddress,
+        phone: newCoverLetterData.senderPhone,
+        email: newCoverLetterData.senderEmail,
+      }
+    }));
   }, []);
 
   const handleCustomizationChange = useCallback((newCustomization: CustomizationSettings) => {
@@ -21,13 +49,42 @@ const App: React.FC = () => {
   }, []);
 
   const handleStartBuilding = () => {
-    setShowLandingPage(false);
+    setCurrentView('selector');
   };
 
-  if (showLandingPage) {
+  const handleSelectResume = () => {
+    setCurrentView('resume');
+  };
+
+  const handleSelectCoverLetter = () => {
+    setCurrentView('coverLetter');
+  };
+
+  const handleGoToResume = () => {
+    setCurrentView('resume');
+  };
+
+  if (currentView === 'landing') {
     return <LandingPage onStart={handleStartBuilding} />;
   }
 
+  if (currentView === 'selector') {
+    return <ArtifactSelector onSelectResume={handleSelectResume} onSelectCoverLetter={handleSelectCoverLetter} />;
+  }
+
+  if (currentView === 'coverLetter') {
+    return (
+      <CoverLetterBuilder 
+        coverLetterData={coverLetterData}
+        onUpdate={handleCoverLetterChange}
+        resumeData={resumeData}
+        onBack={() => setCurrentView('selector')}
+        onGoToResume={handleGoToResume}
+      />
+    );
+  }
+
+  // Resume builder view
   return (
     <div className="flex flex-col min-h-screen font-sans bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
       <Header resumeData={resumeData} customization={customization} onImport={handleResumeChange} />
