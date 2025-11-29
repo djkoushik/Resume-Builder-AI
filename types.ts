@@ -301,3 +301,186 @@ export const initialCustomizationSettings: CustomizationSettings = {
         }
     }
 }
+
+// --- Cover Letter Types ---
+
+export interface CoverLetterData {
+  // Synchronized fields from ResumeData
+  senderName: string;
+  senderAddress: string;
+  senderPhone: string;
+  senderEmail: string;
+  
+  // Cover letter specific fields
+  date: string; // ISO date format
+  recipientName: string;
+  recipientTitle: string;
+  companyName: string;
+  companyAddress: string;
+  jobTitle: string;
+  salutation: string;
+  bodyContent: string;
+  closing: string;
+  
+  // Template selection
+  templateId: string;
+}
+
+export interface CoverLetterTemplate {
+  id: string;
+  name: string;
+  description: string;
+  styles: {
+    fonts: {
+      heading: string;
+      body: string;
+    };
+    colors: {
+      primary: string;
+      text: string;
+      accent?: string;
+    };
+    layout: {
+      margins: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      };
+      spacing: {
+        paragraphSpacing: number;
+        sectionSpacing: number;
+      };
+    };
+  };
+}
+
+export const coverLetterTemplates: CoverLetterTemplate[] = [
+  {
+    id: 'professional',
+    name: 'Professional',
+    description: 'Clean, minimal business letter format with subtle header color',
+    styles: {
+      fonts: {
+        heading: 'Lato',
+        body: 'Roboto'
+      },
+      colors: {
+        primary: '#374151',
+        text: '#1f2937'
+      },
+      layout: {
+        margins: { top: 40, bottom: 40, left: 40, right: 40 },
+        spacing: { paragraphSpacing: 16, sectionSpacing: 24 }
+      }
+    }
+  },
+  {
+    id: 'modern',
+    name: 'Modern',
+    description: 'Bold typography with distinct section separation',
+    styles: {
+      fonts: {
+        heading: 'Montserrat',
+        body: 'Open Sans'
+      },
+      colors: {
+        primary: '#2563eb',
+        text: '#1f2937',
+        accent: '#3b82f6'
+      },
+      layout: {
+        margins: { top: 32, bottom: 32, left: 48, right: 48 },
+        spacing: { paragraphSpacing: 18, sectionSpacing: 28 }
+      }
+    }
+  },
+  {
+    id: 'creative',
+    name: 'Creative',
+    description: 'Unique color accents with asymmetric layout',
+    styles: {
+      fonts: {
+        heading: 'Poppins',
+        body: 'Inter'
+      },
+      colors: {
+        primary: '#7c3aed',
+        text: '#1f2937',
+        accent: '#a855f7'
+      },
+      layout: {
+        margins: { top: 48, bottom: 32, left: 56, right: 32 },
+        spacing: { paragraphSpacing: 20, sectionSpacing: 32 }
+      }
+    }
+  },
+  {
+    id: 'executive',
+    name: 'Executive',
+    description: 'Traditional serif font with formal structure',
+    styles: {
+      fonts: {
+        heading: 'Merriweather',
+        body: 'Merriweather'
+      },
+      colors: {
+        primary: '#1f2937',
+        text: '#374151'
+      },
+      layout: {
+        margins: { top: 56, bottom: 56, left: 56, right: 56 },
+        spacing: { paragraphSpacing: 14, sectionSpacing: 20 }
+      }
+    }
+  },
+  {
+    id: 'minimalist',
+    name: 'Minimalist',
+    description: 'Monochromatic with typography-based hierarchy',
+    styles: {
+      fonts: {
+        heading: 'Inter',
+        body: 'Inter'
+      },
+      colors: {
+        primary: '#000000',
+        text: '#374151'
+      },
+      layout: {
+        margins: { top: 40, bottom: 40, left: 40, right: 40 },
+        spacing: { paragraphSpacing: 12, sectionSpacing: 16 }
+      }
+    }
+  }
+];
+
+export const initialCoverLetterData: CoverLetterData = {
+  // Synchronized fields (will be populated from resume data)
+  senderName: '',
+  senderAddress: '',
+  senderPhone: '',
+  senderEmail: '',
+  
+  // Cover letter specific fields
+  date: new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
+  recipientName: '',
+  recipientTitle: '',
+  companyName: '',
+  companyAddress: '',
+  jobTitle: '',
+  salutation: 'Dear Hiring Manager,',
+  bodyContent: '',
+  closing: 'Sincerely,',
+  
+  // Default template
+  templateId: 'professional'
+};
+
+// Utility function to sync resume data to cover letter
+export const syncResumeToLetter = (resumeData: ResumeData): Partial<CoverLetterData> => ({
+  senderName: resumeData.basics.name,
+  senderAddress: resumeData.basics.location,
+  senderPhone: resumeData.basics.phone,
+  senderEmail: resumeData.basics.email,
+});
