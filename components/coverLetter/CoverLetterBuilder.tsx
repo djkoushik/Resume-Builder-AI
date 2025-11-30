@@ -1,8 +1,9 @@
-import React from 'react';
-import { CoverLetterData, ResumeData, initialCoverLetterData } from '../../types';
+import React, { useState } from 'react';
+import { CoverLetterData, ResumeData, initialCoverLetterData, CustomizationSettings, initialCustomizationSettings } from '../../types';
 import CoverLetterEditor from './CoverLetterEditor';
 import CoverLetterPreview from './CoverLetterPreview';
 import CoverLetterTemplatePanel from './CoverLetterTemplatePanel';
+import TypographyTab from '../customization/TypographyTab';
 
 interface CoverLetterBuilderProps {
   coverLetterData: CoverLetterData;
@@ -12,6 +13,8 @@ interface CoverLetterBuilderProps {
   onGoToResume: () => void;
 }
 
+type Tab = 'Templates' | 'Font-Resize';
+
 const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
   coverLetterData,
   onUpdate,
@@ -19,11 +22,18 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
   onBack,
   onGoToResume
 }) => {
+  const [customization, setCustomization] = useState<CustomizationSettings>(initialCustomizationSettings);
+  const [activeTab, setActiveTab] = useState<Tab>('Templates');
+
   const handleTemplateSelect = (templateId: string) => {
     onUpdate({
       ...coverLetterData,
       templateId
     });
+  };
+
+  const handleCustomizationUpdate = (newSettings: CustomizationSettings) => {
+    setCustomization(newSettings);
   };
 
   // Declare html2pdf for TypeScript since it's loaded from a script tag
@@ -173,30 +183,50 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
           {/* Center Panel: Preview */}
           <div className="lg:col-span-4 xl:col-span-2 flex items-start justify-center bg-gray-200 dark:bg-gray-700 rounded-lg shadow-inner">
             <div className="w-full p-4">
-              <h2
-                id="preview-heading"
-                className="text-lg font-semibold text-gray-800 dark:text-white mb-4 text-center"
-              >
-                Preview
-              </h2>
-
               <div
                 role="region"
-                aria-labelledby="preview-heading"
+                aria-label="Cover Letter Preview"
                 aria-live="polite"
                 className="overflow-auto"
               >
-                <CoverLetterPreview data={coverLetterData} />
+                <CoverLetterPreview data={coverLetterData} customization={customization} />
               </div>
             </div>
           </div>
 
-          {/* Right Panel: Templates */}
-          <div className="lg:col-span-3 xl:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-            <CoverLetterTemplatePanel
-              selectedTemplateId={coverLetterData.templateId}
-              onTemplateSelect={handleTemplateSelect}
-            />
+          {/* Right Panel: Templates & Customization */}
+          <div className="lg:col-span-3 xl:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col">
+            <div className="border-b border-gray-200 dark:border-gray-700">
+              <nav className="-mb-px flex space-x-4 px-4" aria-label="Tabs">
+                {(['Templates', 'Font-Resize'] as Tab[]).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`${activeTab === tab
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                      } whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm focus:outline-none`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </nav>
+            </div>
+
+            <div className="p-4">
+              {activeTab === 'Templates' && (
+                <CoverLetterTemplatePanel
+                  selectedTemplateId={coverLetterData.templateId}
+                  onTemplateSelect={handleTemplateSelect}
+                />
+              )}
+              {activeTab === 'Font-Resize' && (
+                <TypographyTab
+                  settings={customization}
+                  onUpdate={handleCustomizationUpdate}
+                />
+              )}
+            </div>
           </div>
         </div>
       </main>

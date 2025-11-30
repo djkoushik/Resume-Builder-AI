@@ -388,7 +388,6 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
                   </>
                 ) : (
                   <>
-                    <span>✨</span>
                     <span>Enhance with AI</span>
                   </>
                 )}
@@ -442,7 +441,6 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
 
       {/* Validation Messages */}
       <div className="text-sm text-gray-500 dark:text-gray-400 px-1">
-        <p>* Required fields</p>
         {Object.keys(validationErrors).length > 0 && (
           <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded">
             <p className="text-red-600 dark:text-red-400 font-medium">Please fix the following errors:</p>

@@ -6,13 +6,13 @@ interface CoverLetterTemplatePanelProps {
   onTemplateSelect: (templateId: string) => void;
 }
 
-const CoverLetterTemplatePanel: React.FC<CoverLetterTemplatePanelProps> = ({ 
-  selectedTemplateId, 
-  onTemplateSelect 
+const CoverLetterTemplatePanel: React.FC<CoverLetterTemplatePanelProps> = ({
+  selectedTemplateId,
+  onTemplateSelect
 }) => {
   const renderTemplatePreview = (template: CoverLetterTemplate) => {
     const baseStyles = "bg-white dark:bg-gray-700 h-24 w-full rounded flex overflow-hidden border dark:border-gray-600";
-    
+
     switch (template.id) {
       case 'professional':
         return (
@@ -124,44 +124,25 @@ const CoverLetterTemplatePanel: React.FC<CoverLetterTemplatePanelProps> = ({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="border-b border-gray-200 dark:border-gray-700 p-4">
-        <h3 className="font-semibold text-gray-800 dark:text-white">Templates</h3>
-      </div>
-      
       <div className="flex-1 p-4 overflow-y-auto">
-        <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
           {coverLetterTemplates.map(template => (
-            <div 
-              key={template.id} 
+            <div
+              key={template.id}
               onClick={() => onTemplateSelect(template.id)}
-              className={`border-2 rounded-lg p-3 cursor-pointer transition-all hover:shadow-md ${
-                selectedTemplateId === template.id 
-                  ? 'border-blue-500 shadow-lg bg-blue-50 dark:bg-blue-900/20' 
+              className={`border-2 rounded-lg p-2 cursor-pointer transition-all hover:shadow-md ${selectedTemplateId === template.id
+                  ? 'border-blue-500 shadow-lg bg-blue-50 dark:bg-blue-900/20'
                   : 'border-gray-300 dark:border-gray-600 hover:border-blue-400'
-              }`}
+                }`}
             >
               {renderTemplatePreview(template)}
-              <div className="mt-2">
-                <p className="text-sm font-medium text-gray-800 dark:text-white">
-                  {template.name}
-                </p>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                  {template.description}
-                </p>
-              </div>
-              
-              {selectedTemplateId === template.id && (
-                <div className="mt-2 flex items-center text-blue-600 dark:text-blue-400">
-                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-xs font-medium">Selected</span>
-                </div>
-              )}
+              <p className="text-center text-sm mt-2 text-gray-800 dark:text-white font-medium">
+                {template.name}
+              </p>
             </div>
           ))}
         </div>
-        
+
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-6 text-center">
           More templates coming soon!
         </p>
