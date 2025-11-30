@@ -32,7 +32,7 @@ export interface WorkExperience {
 }
 
 export interface Education {
-  id:string;
+  id: string;
   institution: string;
   degree: string;
   areaOfStudy: string;
@@ -48,9 +48,9 @@ export interface Skill {
 }
 
 export interface Language {
-    id: string;
-    language: string;
-    fluency: 'Native Speaker' | 'Fluent' | 'Professional' | 'Basic' | 'Intermediate';
+  id: string;
+  language: string;
+  fluency: 'Native Speaker' | 'Fluent' | 'Professional' | 'Basic' | 'Intermediate';
 }
 
 export interface Certification {
@@ -81,7 +81,7 @@ export interface User {
 }
 
 // Keys for sections that can be reordered
-export type ReorderableSectionKey = 
+export type ReorderableSectionKey =
   | 'summary'
   | 'profiles'
   | 'experience'
@@ -142,7 +142,7 @@ export const initialResumeData: ResumeData = {
       isCurrent: true,
       summary: '* Spearheaded the redesign of the main product website, resulting in a 40% increase in user engagement.\n* Developed and implemented a new responsive framework, improving cross-device compatibility.\n* Mentored a team of four junior developers, fostering a culture of technical excellence.',
     },
-     {
+    {
       id: '2',
       company: 'TechAdvancers',
       position: 'Web Developer',
@@ -233,73 +233,73 @@ export interface CustomizationSettings {
   typography: {
     lineHeight: number;
     headingFont: {
-        family: string;
-        weight: FontWeight;
-        style: FontStyle;
+      family: string;
+      weight: FontWeight;
+      style: FontStyle;
     },
     bodyFont: {
-        family: string;
-        weight: FontWeight;
-        style: FontStyle;
+      family: string;
+      weight: FontWeight;
+      style: FontStyle;
     },
     fontSizes: {
-        name: number;
-        headline: number;
-        sectionTitle: number;
-        subheading: number;
-        body: number;
-        meta: number;
+      name: number;
+      headline: number;
+      sectionTitle: number;
+      subheading: number;
+      body: number;
+      meta: number;
     }
   };
   layout: {
     pageFormat: 'A4' | 'Letter';
     margins: {
-        top: number;
-        bottom: number;
-        left: number;
-        right: number;
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
     }
   }
 }
 
 export const initialCustomizationSettings: CustomizationSettings = {
-    template: 'Professional', // Set Professional as the default
-    colors: {
-        primary: '#374151', // gray-700
-        background: '#ffffff',
-        text: '#1f2937', // gray-800
-        sidebarText: '#ffffff',
+  template: 'Professional', // Set Professional as the default
+  colors: {
+    primary: '#374151', // gray-700
+    background: '#ffffff',
+    text: '#1f2937', // gray-800
+    sidebarText: '#ffffff',
+  },
+  typography: {
+    lineHeight: 1.5,
+    headingFont: {
+      family: 'Lato',
+      weight: '700' as FontWeight,
+      style: 'normal' as FontStyle,
     },
-    typography: {
-        lineHeight: 1.5,
-        headingFont: {
-            family: 'Lato',
-            weight: '700' as FontWeight,
-            style: 'normal' as FontStyle,
-        },
-        bodyFont: {
-            family: 'Roboto',
-            weight: '400' as FontWeight,
-            style: 'normal' as FontStyle,
-        },
-        fontSizes: {
-            name: 32,
-            headline: 14,
-            sectionTitle: 11,
-            subheading: 11,
-            body: 10,
-            meta: 9,
-        }
+    bodyFont: {
+      family: 'Roboto',
+      weight: '400' as FontWeight,
+      style: 'normal' as FontStyle,
     },
-    layout: {
-        pageFormat: 'Letter',
-        margins: {
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-        }
+    fontSizes: {
+      name: 32,
+      headline: 14,
+      sectionTitle: 11,
+      subheading: 11,
+      body: 10,
+      meta: 9,
     }
+  },
+  layout: {
+    pageFormat: 'Letter',
+    margins: {
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+    }
+  }
 }
 
 // --- Cover Letter Types ---
@@ -310,7 +310,7 @@ export interface CoverLetterData {
   senderAddress: string;
   senderPhone: string;
   senderEmail: string;
-  
+
   // Cover letter specific fields
   date: string; // ISO date format
   recipientName: string;
@@ -321,7 +321,7 @@ export interface CoverLetterData {
   salutation: string;
   bodyContent: string;
   closing: string;
-  
+
   // Template selection
   templateId: string;
 }
@@ -435,21 +435,62 @@ export const coverLetterTemplates: CoverLetterTemplate[] = [
     }
   },
   {
-    id: 'minimalist',
-    name: 'Minimalist',
-    description: 'Monochromatic with typography-based hierarchy',
+    id: 'geometric',
+    name: 'Geometric',
+    description: 'Modern design with geometric header shapes',
     styles: {
       fonts: {
-        heading: 'Inter',
-        body: 'Inter'
+        heading: 'Playfair Display',
+        body: 'Lato'
       },
       colors: {
         primary: '#000000',
-        text: '#374151'
+        text: '#1f2937',
+        accent: '#e5d5c5' // Beige/Tan color from image
+      },
+      layout: {
+        margins: { top: 0, bottom: 40, left: 40, right: 40 }, // Top 0 because header is absolute/full width
+        spacing: { paragraphSpacing: 16, sectionSpacing: 24 }
+      }
+    }
+  },
+  {
+    id: 'navy',
+    name: 'Navy',
+    description: 'Professional design with bold header',
+    styles: {
+      fonts: {
+        heading: 'Roboto',
+        body: 'Open Sans'
+      },
+      colors: {
+        primary: '#1e3a8a', // Dark Blue
+        text: '#1f2937',
+        accent: '#dbeafe' // Light Blue
+      },
+      layout: {
+        margins: { top: 0, bottom: 40, left: 40, right: 40 },
+        spacing: { paragraphSpacing: 16, sectionSpacing: 24 }
+      }
+    }
+  },
+  {
+    id: 'square',
+    name: 'Square',
+    description: 'Distinctive square logo with initials',
+    styles: {
+      fonts: {
+        heading: 'Montserrat',
+        body: 'Open Sans'
+      },
+      colors: {
+        primary: '#1e3a8a', // Dark Blue
+        text: '#1f2937',
+        accent: '#ffffff' // White text in logo
       },
       layout: {
         margins: { top: 40, bottom: 40, left: 40, right: 40 },
-        spacing: { paragraphSpacing: 12, sectionSpacing: 16 }
+        spacing: { paragraphSpacing: 16, sectionSpacing: 24 }
       }
     }
   }
@@ -461,7 +502,7 @@ export const initialCoverLetterData: CoverLetterData = {
   senderAddress: '',
   senderPhone: '',
   senderEmail: '',
-  
+
   // Cover letter specific fields
   date: new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
   recipientName: '',
@@ -472,7 +513,7 @@ export const initialCoverLetterData: CoverLetterData = {
   salutation: 'Dear Hiring Manager,',
   bodyContent: '',
   closing: 'Sincerely,',
-  
+
   // Default template
   templateId: 'professional'
 };

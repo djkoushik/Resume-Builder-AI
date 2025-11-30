@@ -229,6 +229,217 @@ const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({ data, customiza
           </div>
         );
 
+      case 'geometric':
+        return (
+          <div style={{ ...styles.container, padding: 0, position: 'relative', overflow: 'hidden' }}>
+            {/* Header Shapes */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '250px',
+              backgroundColor: '#f3e9dc', // Beige background
+              zIndex: 0
+            }}></div>
+
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '40%',
+              height: '250px',
+              backgroundColor: '#e5e7eb', // Light gray
+              clipPath: 'polygon(0 0, 100% 0, 60% 100%, 0% 100%)',
+              zIndex: 1
+            }}></div>
+
+            <div style={{
+              position: 'absolute',
+              top: '150px',
+              left: 0,
+              right: 0,
+              height: '100px',
+              backgroundColor: '#ffffff',
+              clipPath: 'polygon(0 100%, 100% 0, 100% 100%)',
+              zIndex: 2
+            }}></div>
+
+            {/* Content Container */}
+            <div style={{ position: 'relative', zIndex: 10, paddingTop: '60px' }}>
+
+              {/* Header Content */}
+              <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+                <div style={{
+                  ...styles.heading,
+                  fontSize: customization?.typography.fontSizes.name ? `${customization.typography.fontSizes.name}pt` : '36px',
+                  fontFamily: 'Playfair Display, serif',
+                  marginBottom: '8px',
+                  color: '#000'
+                }}>
+                  {(data.senderName || 'Your Name').toUpperCase()}
+                </div>
+              </div>
+
+              {/* Main Body Layout */}
+              <div style={{ padding: `0 ${template.styles.layout.margins.left}px` }}>
+
+                {/* Contact Info */}
+                <div style={{
+                  marginBottom: '40px',
+                  fontSize: customization?.typography.fontSizes.meta ? `${customization.typography.fontSizes.meta}pt` : '12px',
+                  color: '#4b5563'
+                }}>
+                  <div>{data.senderAddress || 'Your Address*'}</div>
+                  <div>{data.senderAddress ? data.senderAddress.split(',').slice(1).join(',').trim() : 'Your City, State, Zip Code*'}</div>
+                  <div>{data.senderPhone || 'Your Phone Number*'}</div>
+                  <div>{data.senderEmail || 'Your Email Address*'}</div>
+                </div>
+
+                {renderDate()}
+                {renderRecipientInfo()}
+
+                <div style={{ marginTop: '20px' }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '20px', fontSize: customization?.typography.fontSizes.body ? `${customization.typography.fontSizes.body}pt` : '14px' }}>
+                    Subject: {data.senderName} Application for {data.jobTitle || 'Position*'}
+                  </div>
+
+                  {renderSalutation()}
+                  {renderBodyContent()}
+                  {renderClosing()}
+                </div>
+
+                {/* Footer Contact */}
+                <div style={{ marginTop: '40px', fontSize: customization?.typography.fontSizes.meta ? `${customization.typography.fontSizes.meta}pt` : '12px', color: '#4b5563' }}>
+                  <div>{data.senderEmail}</div>
+                  <div>{data.senderAddress ? data.senderAddress.split(',').slice(1).join(',').trim() : 'City, State'}</div>
+                  <div>linkedin.com/username</div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'navy':
+        return (
+          <div style={{ ...styles.container, padding: 0 }}>
+            {/* Header */}
+            <div style={{
+              backgroundColor: '#1e3a8a',
+              color: 'white',
+              padding: '40px 20px',
+              textAlign: 'center'
+            }}>
+              <div style={{
+                ...styles.heading,
+                color: 'white',
+                fontSize: customization?.typography.fontSizes.name ? `${customization.typography.fontSizes.name}pt` : '32px',
+                marginBottom: '8px',
+                textTransform: 'uppercase',
+                letterSpacing: '1px'
+              }}>
+                {data.senderName || 'Your Name'}
+              </div>
+            </div>
+
+            {/* Sub-header Contact Info */}
+            <div style={{
+              backgroundColor: '#dbeafe',
+              color: '#1e3a8a',
+              padding: '12px 20px',
+              textAlign: 'center',
+              fontSize: customization?.typography.fontSizes.meta ? `${customization.typography.fontSizes.meta}pt` : '12px',
+              fontWeight: '500',
+              marginBottom: '40px'
+            }}>
+              <span style={{ margin: '0 8px' }}>{data.senderAddress || 'Your Address'}</span>
+              •
+              <span style={{ margin: '0 8px' }}>{data.senderPhone || 'Phone'}</span>
+              •
+              <span style={{ margin: '0 8px' }}>{data.senderEmail || 'Email'}</span>
+            </div>
+
+            {/* Main Content */}
+            <div style={{ padding: `0 ${template.styles.layout.margins.left}px` }}>
+              {renderDate()}
+              {renderRecipientInfo()}
+
+              <div style={{ marginTop: '20px' }}>
+                {renderSalutation()}
+                {renderBodyContent()}
+                {renderClosing()}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'square':
+        const initials = (data.senderName || 'Your Name').split(' ').map(n => n[0]).join('/').toUpperCase().slice(0, 3);
+        const firstName = (data.senderName || 'Your Name').split(' ')[0];
+        const lastName = (data.senderName || 'Your Name').split(' ').slice(1).join(' ');
+
+        return (
+          <div style={{ ...styles.container, padding: '40px' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '40px' }}>
+              {/* Square Logo */}
+              <div style={{
+                width: '100px',
+                height: '100px',
+                backgroundColor: '#1e3a8a',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '36px',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: '300',
+                marginRight: '20px'
+              }}>
+                {initials}
+              </div>
+
+              {/* Name and Contact */}
+              <div>
+                <div style={{
+                  fontSize: customization?.typography.fontSizes.name ? `${customization.typography.fontSizes.name}pt` : '32px',
+                  fontFamily: 'Montserrat, sans-serif',
+                  fontWeight: '700',
+                  textTransform: 'uppercase',
+                  color: '#1f2937',
+                  lineHeight: '1.1'
+                }}>
+                  <div>{firstName}</div>
+                  <div>{lastName}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Info Line */}
+            <div style={{
+              fontSize: customization?.typography.fontSizes.meta ? `${customization.typography.fontSizes.meta}pt` : '12px',
+              color: '#4b5563',
+              marginBottom: '40px',
+              borderBottom: '1px solid #e5e7eb',
+              paddingBottom: '20px'
+            }}>
+              {data.senderAddress && <span>{data.senderAddress}</span>}
+              {data.senderPhone && <span style={{ margin: '0 8px' }}>• {data.senderPhone}</span>}
+              {data.senderEmail && <span style={{ margin: '0 8px' }}>• {data.senderEmail}</span>}
+            </div>
+
+            {/* Main Content */}
+            <div>
+              {renderDate()}
+              {renderRecipientInfo()}
+              {renderSalutation()}
+              {renderBodyContent()}
+              {renderClosing()}
+            </div>
+          </div>
+        );
+
       default: // professional
         return (
           <div style={styles.container}>

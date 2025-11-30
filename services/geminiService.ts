@@ -13,17 +13,17 @@ export const enhanceTextWithGemini = async (promptText: string, instruction: str
       model: 'gemini-2.5-flash',
       contents: promptText,
       config: {
-          systemInstruction: instruction,
-          temperature: 0.7,
-          topP: 1,
-          topK: 1
+        systemInstruction: instruction,
+        temperature: 0.7,
+        topP: 1,
+        topK: 1
       }
     });
     return response.text;
   } catch (error) {
     console.error("Error calling Gemini API:", error);
     if (error instanceof Error) {
-        return `Error: ${error.message}`;
+      return `Error: ${error.message}`;
     }
     return "An unknown error occurred with the AI service.";
   }

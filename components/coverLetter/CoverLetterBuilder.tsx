@@ -41,7 +41,7 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
 
   const getPdfOptions = () => {
     return {
-      margin: [10, 10, 10, 10], // 10mm margins
+      margin: 0, // No margins to allow full-bleed backgrounds and prevent overflow
       filename: `${coverLetterData.senderName || 'Cover_Letter'}_${coverLetterData.companyName || 'Application'}.pdf`.replace(/[^a-zA-Z0-9_-]/g, '_'),
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
@@ -68,7 +68,11 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
 
     // Set clone's dimensions to match paper size for 1:1 scaling
     elementToPrint.style.width = '8.5in';
+    elementToPrint.style.minHeight = '11in';
     elementToPrint.style.height = 'auto';
+    elementToPrint.style.maxHeight = 'none';
+    elementToPrint.style.overflow = 'visible';
+    elementToPrint.classList.remove('overflow-auto'); // Remove tailwind overflow class if present
 
     printContainer.appendChild(elementToPrint);
     document.body.appendChild(printContainer);
