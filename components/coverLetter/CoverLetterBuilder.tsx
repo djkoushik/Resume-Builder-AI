@@ -4,6 +4,7 @@ import CoverLetterEditor from './CoverLetterEditor';
 import CoverLetterPreview from './CoverLetterPreview';
 import CoverLetterTemplatePanel from './CoverLetterTemplatePanel';
 import TypographyTab from '../customization/TypographyTab';
+import ColorTab from '../customization/ColorTab';
 
 interface CoverLetterBuilderProps {
   coverLetterData: CoverLetterData;
@@ -13,7 +14,7 @@ interface CoverLetterBuilderProps {
   onGoToResume: () => void;
 }
 
-type Tab = 'Templates' | 'Font-Resize';
+type Tab = 'Templates' | 'Font-Resize' | 'Colors';
 
 const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
   coverLetterData,
@@ -202,7 +203,7 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
           <div className="lg:col-span-3 xl:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col">
             <div className="border-b border-gray-200 dark:border-gray-700">
               <nav className="-mb-px flex space-x-4 px-4" aria-label="Tabs">
-                {(['Templates', 'Font-Resize'] as Tab[]).map((tab) => (
+                {(['Templates', 'Font-Resize', 'Colors'] as Tab[]).map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -228,6 +229,14 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
                 <TypographyTab
                   settings={customization}
                   onUpdate={handleCustomizationUpdate}
+                  isCoverLetter={true}
+                />
+              )}
+              {activeTab === 'Colors' && (
+                <ColorTab
+                  settings={customization}
+                  onUpdate={handleCustomizationUpdate}
+                  isCoverLetter={true}
                 />
               )}
             </div>

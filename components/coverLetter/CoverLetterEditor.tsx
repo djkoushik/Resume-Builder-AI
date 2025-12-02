@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CoverLetterData, ResumeData } from '../../types';
 import { enhanceCoverLetterWithAI } from '../../services/geminiService';
 import Accordion from '../ui/Accordion';
+import Toast from '../ui/Toast';
 
 interface CoverLetterEditorProps {
     data: CoverLetterData;
@@ -16,7 +17,9 @@ interface ValidationErrors {
 const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, resumeData }) => {
     const [isEnhancing, setIsEnhancing] = useState(false);
     const [enhancementError, setEnhancementError] = useState<string | null>(null);
+    const [showToast, setShowToast] = useState(false);
     const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+
     const validateField = (field: keyof CoverLetterData, value: string): string | null => {
         switch (field) {
             case 'senderName':
@@ -88,38 +91,21 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
         });
     };
 
-    const validateAllFields = (): boolean => {
-        const errors: ValidationErrors = {};
-
-        // Validate all required and optional fields
-        const fieldsToValidate: (keyof CoverLetterData)[] = [
-            'senderName', 'senderEmail', 'senderPhone', 'recipientName',
-            'companyName', 'jobTitle', 'date', 'bodyContent'
-        ];
-
-        fieldsToValidate.forEach(field => {
-            const error = validateField(field, data[field]);
-            if (error) {
-                errors[field] = error;
-            }
-        });
-
-        setValidationErrors(errors);
-        return Object.keys(errors).length === 0;
-    };
-
     const handleAIEnhancement = async () => {
         // Clear previous enhancement error
         setEnhancementError(null);
+        setShowToast(false);
 
         // Validation
         if (!data.jobTitle.trim()) {
             setEnhancementError("Please enter a job title before using AI enhancement.");
+            setShowToast(true);
             return;
         }
 
         if (!data.companyName.trim()) {
             setEnhancementError("Please enter a company name before using AI enhancement.");
+            setShowToast(true);
             return;
         }
 
@@ -152,6 +138,7 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
             }
 
             setEnhancementError(errorMessage);
+            setShowToast(true);
         } finally {
             setIsEnhancing(false);
         }
@@ -347,8 +334,16 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
                         </label>
                         <div className="flex flex-col space-y-2">
                             <select
-                                value={data.salutation}
-                                onChange={(e) => handleFieldChange('salutation', e.target.value)}
+                                value={salutationOptions.includes(data.salutation) ? data.salutation : 'Add'}
+                                onChange={(e) => {
+                                    if (e.target.value === 'Add') {
+                                        if (salutationOptions.includes(data.salutation)) {
+                                            handleFieldChange('salutation', '');
+                                        }
+                                    } else {
+                                        handleFieldChange('salutation', e.target.value);
+                                    }
+                                }}
                                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             >
                                 {salutationOptions.map((option) => (
@@ -356,14 +351,18 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
                                         {option}
                                     </option>
                                 ))}
+                                <option value="Add">Add</option>
                             </select>
-                            <input
-                                type="text"
-                                value={data.salutation}
-                                onChange={(e) => handleFieldChange('salutation', e.target.value)}
-                                className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Custom salutation"
-                            />
+                            {(!salutationOptions.includes(data.salutation) || data.salutation === '') && (
+                                <input
+                                    type="text"
+                                    value={data.salutation}
+                                    onChange={(e) => handleFieldChange('salutation', e.target.value)}
+                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    placeholder="Custom salutation"
+                                    autoFocus
+                                />
+                            )}
                         </div>
                     </div>
 
@@ -397,18 +396,13 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
                             value={data.bodyContent}
                             onChange={(e) => handleFieldChange('bodyContent', e.target.value)}
                             rows={8}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white ${enhancementError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
                             placeholder="Write your cover letter content here, or use AI enhancement to generate professional content based on your resume and job details..."
                             aria-describedby="body-content-help"
                         />
                         <div id="body-content-help" className="sr-only">
                             Main content area for your cover letter. You can type directly or use the AI enhancement button to generate content.
                         </div>
-                        {enhancementError && (
-                            <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-600 dark:text-red-400">
-                                {enhancementError}
-                            </div>
-                        )}
                     </div>
 
                     <div>
@@ -417,8 +411,16 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
                         </label>
                         <div className="flex flex-col space-y-2">
                             <select
-                                value={data.closing}
-                                onChange={(e) => handleFieldChange('closing', e.target.value)}
+                                value={closingOptions.includes(data.closing) ? data.closing : 'Add'}
+                                onChange={(e) => {
+                                    if (e.target.value === 'Add') {
+                                        if (closingOptions.includes(data.closing)) {
+                                            handleFieldChange('closing', '');
+                                        }
+                                    } else {
+                                        handleFieldChange('closing', e.target.value);
+                                    }
+                                }}
                                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             >
                                 {closingOptions.map((option) => (
@@ -426,14 +428,18 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
                                         {option}
                                     </option>
                                 ))}
+                                <option value="Add">Add</option>
                             </select>
-                            <input
-                                type="text"
-                                value={data.closing}
-                                onChange={(e) => handleFieldChange('closing', e.target.value)}
-                                className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Custom closing"
-                            />
+                            {(!closingOptions.includes(data.closing) || data.closing === '') && (
+                                <input
+                                    type="text"
+                                    value={data.closing}
+                                    onChange={(e) => handleFieldChange('closing', e.target.value)}
+                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    placeholder="Custom closing"
+                                    autoFocus
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
@@ -452,6 +458,14 @@ const CoverLetterEditor: React.FC<CoverLetterEditorProps> = ({ data, onUpdate, r
                     </div>
                 )}
             </div>
+
+            {showToast && enhancementError && (
+                <Toast
+                    message={enhancementError}
+                    type="error"
+                    onClose={() => setShowToast(false)}
+                />
+            )}
         </div>
     );
 };

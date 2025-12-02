@@ -14,16 +14,18 @@ export const GeometricTemplate: React.FC<CoverLetterTemplateProps> = ({ data, cu
                 fontFamily: customization?.typography.bodyFont.family || template.styles.fonts.body,
                 fontWeight: customization?.typography.bodyFont.weight || '400',
                 fontStyle: customization?.typography.bodyFont.style || 'normal',
-                color: template.styles.colors.text,
+                color: customization?.colors.text || template.styles.colors.text,
                 padding: `${template.styles.layout.margins.top}px ${template.styles.layout.margins.right}px ${template.styles.layout.margins.bottom}px ${template.styles.layout.margins.left}px`,
                 lineHeight: customization?.typography.lineHeight || '1.5',
                 fontSize: customization?.typography.fontSizes.body ? `${customization.typography.fontSizes.body}pt` : '12pt',
+                backgroundColor: customization?.colors.background || '#ffffff',
+                minHeight: '11in',
             },
             heading: {
                 fontFamily: customization?.typography.headingFont.family || template.styles.fonts.heading,
                 fontWeight: customization?.typography.headingFont.weight || '700',
                 fontStyle: customization?.typography.headingFont.style || 'normal',
-                color: template.styles.colors.primary,
+                color: customization?.colors.primary || template.styles.colors.primary,
             },
             sectionSpacing: {
                 marginBottom: `${template.styles.layout.spacing.sectionSpacing}px`,
@@ -32,7 +34,7 @@ export const GeometricTemplate: React.FC<CoverLetterTemplateProps> = ({ data, cu
                 marginBottom: `${template.styles.layout.spacing.paragraphSpacing}px`,
             },
             accent: template.styles.colors.accent ? {
-                borderLeft: `3px solid ${template.styles.colors.accent}`,
+                borderLeft: `3px solid ${customization?.colors.primary || template.styles.colors.accent}`,
                 paddingLeft: '12px',
             } : {},
         };
@@ -115,7 +117,7 @@ export const GeometricTemplate: React.FC<CoverLetterTemplateProps> = ({ data, cu
         <div style={styles.sectionSpacing}>
             <div style={{
                 fontSize: customization?.typography.fontSizes.body ? `${customization.typography.fontSizes.body}pt` : '14px',
-                marginBottom: '40px'
+                marginBottom: '0px'
             }}>
                 {data.closing || 'Sincerely,'}
             </div>
@@ -133,7 +135,7 @@ export const GeometricTemplate: React.FC<CoverLetterTemplateProps> = ({ data, cu
                 top: 0,
                 left: 0,
                 right: 0,
-                height: '250px',
+                height: '140px',
                 backgroundColor: '#f3e9dc', // Beige background
                 zIndex: 0
             }}></div>
@@ -143,34 +145,22 @@ export const GeometricTemplate: React.FC<CoverLetterTemplateProps> = ({ data, cu
                 top: 0,
                 left: 0,
                 width: '40%',
-                height: '250px',
+                height: '140px',
                 backgroundColor: '#e5e7eb', // Light gray
-                clipPath: 'polygon(0 0, 100% 0, 60% 100%, 0% 100%)',
                 zIndex: 1
             }}></div>
 
-            <div style={{
-                position: 'absolute',
-                top: '150px',
-                left: 0,
-                right: 0,
-                height: '100px',
-                backgroundColor: '#ffffff',
-                clipPath: 'polygon(0 100%, 100% 0, 100% 100%)',
-                zIndex: 2
-            }}></div>
-
             {/* Content Container */}
-            <div style={{ position: 'relative', zIndex: 10, paddingTop: '60px' }}>
+            <div style={{ position: 'relative', zIndex: 10, paddingTop: '40px' }}>
 
                 {/* Header Content */}
-                <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                     <div style={{
                         ...styles.heading,
                         fontSize: customization?.typography.fontSizes.name ? `${customization.typography.fontSizes.name}pt` : '36px',
                         fontFamily: 'Playfair Display, serif',
                         marginBottom: '8px',
-                        color: '#000'
+                        color: customization?.colors.primary || '#000'
                     }}>
                         {(data.senderName || 'Your Name').toUpperCase()}
                     </div>
@@ -183,7 +173,7 @@ export const GeometricTemplate: React.FC<CoverLetterTemplateProps> = ({ data, cu
                     <div style={{
                         marginBottom: '40px',
                         fontSize: customization?.typography.fontSizes.meta ? `${customization.typography.fontSizes.meta}pt` : '12px',
-                        color: '#4b5563'
+                        color: customization?.colors.sidebarText || '#4b5563'
                     }}>
                         <div>{data.senderAddress || 'Your Address*'}</div>
                         <div>{data.senderAddress ? data.senderAddress.split(',').slice(1).join(',').trim() : 'Your City, State, Zip Code*'}</div>
@@ -204,12 +194,7 @@ export const GeometricTemplate: React.FC<CoverLetterTemplateProps> = ({ data, cu
                         {renderClosing()}
                     </div>
 
-                    {/* Footer Contact */}
-                    <div style={{ marginTop: '40px', fontSize: customization?.typography.fontSizes.meta ? `${customization.typography.fontSizes.meta}pt` : '12px', color: '#4b5563' }}>
-                        <div>{data.senderEmail}</div>
-                        <div>{data.senderAddress ? data.senderAddress.split(',').slice(1).join(',').trim() : 'City, State'}</div>
-                        <div>linkedin.com/username</div>
-                    </div>
+
 
                 </div>
             </div>
@@ -224,10 +209,8 @@ export const GeometricThumbnail: React.FC<{ template: CoverLetterTemplate }> = (
             <div className="w-full h-full relative overflow-hidden">
                 {/* Background */}
                 <div className="absolute top-0 left-0 right-0 h-1/2 bg-[#f3e9dc]"></div>
-                {/* Gray Triangle */}
-                <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-[#e5e7eb]" style={{ clipPath: 'polygon(0 0, 100% 0, 60% 100%, 0% 100%)' }}></div>
-                {/* White Cutout */}
-                <div className="absolute top-1/3 left-0 right-0 h-1/3 bg-white" style={{ clipPath: 'polygon(0 100%, 100% 0, 100% 100%)' }}></div>
+                {/* Gray Rectangle */}
+                <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-[#e5e7eb]"></div>
 
                 {/* Content */}
                 <div className="relative z-10 p-2 flex flex-col items-center pt-6">

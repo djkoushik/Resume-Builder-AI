@@ -14,16 +14,18 @@ export const ProfessionalTemplate: React.FC<CoverLetterTemplateProps> = ({ data,
                 fontFamily: customization?.typography.bodyFont.family || template.styles.fonts.body,
                 fontWeight: customization?.typography.bodyFont.weight || '400',
                 fontStyle: customization?.typography.bodyFont.style || 'normal',
-                color: template.styles.colors.text,
+                color: customization?.colors.text || template.styles.colors.text,
                 padding: `${template.styles.layout.margins.top}px ${template.styles.layout.margins.right}px ${template.styles.layout.margins.bottom}px ${template.styles.layout.margins.left}px`,
                 lineHeight: customization?.typography.lineHeight || '1.5',
                 fontSize: customization?.typography.fontSizes.body ? `${customization.typography.fontSizes.body}pt` : '12pt',
+                backgroundColor: customization?.colors.background || '#ffffff',
+                minHeight: '11in',
             },
             heading: {
                 fontFamily: customization?.typography.headingFont.family || template.styles.fonts.heading,
                 fontWeight: customization?.typography.headingFont.weight || '700',
                 fontStyle: customization?.typography.headingFont.style || 'normal',
-                color: template.styles.colors.primary,
+                color: customization?.colors.primary || template.styles.colors.primary,
             },
             sectionSpacing: {
                 marginBottom: `${template.styles.layout.spacing.sectionSpacing}px`,
@@ -32,7 +34,7 @@ export const ProfessionalTemplate: React.FC<CoverLetterTemplateProps> = ({ data,
                 marginBottom: `${template.styles.layout.spacing.paragraphSpacing}px`,
             },
             accent: template.styles.colors.accent ? {
-                borderLeft: `3px solid ${template.styles.colors.accent}`,
+                borderLeft: `3px solid ${customization?.colors.primary || template.styles.colors.accent}`,
                 paddingLeft: '12px',
             } : {},
         };
@@ -135,7 +137,7 @@ export const ProfessionalTemplate: React.FC<CoverLetterTemplateProps> = ({ data,
         <div style={styles.sectionSpacing}>
             <div style={{
                 fontSize: customization?.typography.fontSizes.body ? `${customization.typography.fontSizes.body}pt` : '14px',
-                marginBottom: '40px'
+                marginBottom: '0px'
             }}>
                 {data.closing || 'Sincerely,'}
             </div>
