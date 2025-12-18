@@ -7,6 +7,13 @@ interface ArtifactSelectorProps {
 }
 
 const ArtifactSelector: React.FC<ArtifactSelectorProps> = ({ onSelectResume, onSelectCoverLetter, onBack }) => {
+  const handleContactUs = () => {
+    const footer = document.querySelector('footer');
+    if (footer) {
+      footer.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 text-center p-4 relative">
       <button
@@ -17,6 +24,15 @@ const ArtifactSelector: React.FC<ArtifactSelectorProps> = ({ onSelectResume, onS
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
         Back to Home
+      </button>
+
+      {/* Contact Us Button - Top Right */}
+      <button
+        onClick={handleContactUs}
+        aria-label="Contact Us"
+        className="absolute top-4 right-4 px-8 py-3 bg-blue-600 text-white font-bold text-sm rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 transition-all duration-300 transform hover:scale-105"
+      >
+        Contact Us
       </button>
 
       <div className="max-w-4xl w-full">
@@ -99,9 +115,7 @@ const ArtifactSelector: React.FC<ArtifactSelectorProps> = ({ onSelectResume, onS
         </div>
       </div>
 
-      <footer className="absolute bottom-4 text-xs text-gray-400 dark:text-gray-500">
-        <p>add by DUAL-SYNC</p>
-      </footer>
+      
     </div>
   );
 };

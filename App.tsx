@@ -7,6 +7,7 @@ import Header from './components/Header';
 import LandingPage from './components/LandingPage';
 import ArtifactSelector from './components/ArtifactSelector';
 import CoverLetterBuilder from './components/coverLetter/CoverLetterBuilder';
+import Footer from './components/layout/Footer';
 
 type AppView = 'landing' | 'selector' | 'resume' | 'coverLetter';
 
@@ -68,22 +69,35 @@ const App: React.FC = () => {
   };
 
   if (currentView === 'landing') {
-    return <LandingPage onStart={handleStartBuilding} />;
+    return (
+      <div className="flex flex-col min-h-screen">
+        <LandingPage onStart={handleStartBuilding} />
+        <Footer />
+      </div>
+    );
   }
 
   if (currentView === 'selector') {
-    return <ArtifactSelector onSelectResume={handleSelectResume} onSelectCoverLetter={handleSelectCoverLetter} onBack={handleBackToLanding} />;
+    return (
+      <div className="flex flex-col min-h-screen">
+        <ArtifactSelector onSelectResume={handleSelectResume} onSelectCoverLetter={handleSelectCoverLetter} onBack={handleBackToLanding} />
+        <Footer />
+      </div>
+    );
   }
 
   if (currentView === 'coverLetter') {
     return (
-      <CoverLetterBuilder
-        coverLetterData={coverLetterData}
-        onUpdate={handleCoverLetterChange}
-        resumeData={resumeData}
-        onBack={() => setCurrentView('selector')}
-        onGoToResume={handleGoToResume}
-      />
+      <div className="flex flex-col min-h-screen">
+        <CoverLetterBuilder
+          coverLetterData={coverLetterData}
+          onUpdate={handleCoverLetterChange}
+          resumeData={resumeData}
+          onBack={() => setCurrentView('selector')}
+          onGoToResume={handleGoToResume}
+        />
+        <Footer />
+      </div>
     );
   }
 
@@ -124,6 +138,7 @@ const App: React.FC = () => {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };
