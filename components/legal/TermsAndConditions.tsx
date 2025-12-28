@@ -167,13 +167,6 @@ const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ onBack }) => {
                 </ul>
               </div>
             </div>
-
-            <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mt-4">
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed font-semibold">
-                TOTAL LIABILITY CAP: In no event shall our total liability exceed ₹100 (Rupees One Hundred), 
-                reflecting the free nature of this Service.
-              </p>
-            </div>
           </section>
 
           {/* Section 7: Indemnification */}
@@ -255,14 +248,6 @@ const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ onBack }) => {
               <li>Consumer Protection Act, 2019</li>
               <li>Indian Contract Act, 1872</li>
             </ul>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mt-3">
-              <strong>Dispute Resolution:</strong>
-            </p>
-            <ol className="list-decimal list-inside space-y-1 text-gray-700 dark:text-gray-300 ml-4">
-              <li>Informal Resolution: Contact us first at <a href="mailto:team.buildresumenow@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">team.buildresumenow@gmail.com</a></li>
-              <li>Jurisdiction: Any disputes shall be subject to the EXCLUSIVE jurisdiction of courts in Hyderabad, Telangana, India</li>
-              <li>Language: All legal proceedings shall be conducted in English</li>
-            </ol>
           </section>
 
           {/* Section 11: Contact Information */}
@@ -292,8 +277,6 @@ const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ onBack }) => {
             <li>• We own the website, you own your resume content</li>
             <li>• We're not responsible if you don't get hired</li>
             <li>• Don't abuse or hack our service</li>
-            <li>• Maximum liability: ₹100</li>
-            <li>• India law applies, Hyderabad courts have jurisdiction</li>
             <li>• Questions? Email us: <a href="mailto:team.buildresumenow@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">team.buildresumenow@gmail.com</a></li>
           </ul>
         </div>
