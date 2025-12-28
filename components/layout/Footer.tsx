@@ -67,6 +67,9 @@ const Footer: React.FC = () => {
               DUAL-SYNC presents BuildResumeNow - Create professional resumes and cover letters with our AI-powered builder. 
               Stand out from the crowd with customizable templates and intelligent suggestions.
             </p>
+            <p className="text-lg font-semibold text-gray-600 dark:text-gray-400 ">
+              Built for job seekers worldwide from job seekers
+            </p>
           </div>
         </div>
       </div>
@@ -74,13 +77,33 @@ const Footer: React.FC = () => {
       {/* Copyright Bar */}
       <div className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col items-center text-center space-y-2">
+          <div className="flex flex-col items-center text-center space-y-3">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {copyrightText}
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Built for job seekers worldwide from job seekers
-            </p>
+            {/* Legal Links */}
+            <div className="flex justify-center gap-4 pt-2 border-t border-gray-200 dark:border-gray-700 w-full">
+              <a
+                href="/privacy-policy"
+                className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+              >
+                Privacy Policy
+              </a>
+              <span className="text-xs text-gray-400 dark:text-gray-600">|</span>
+              <a
+                href="/terms-and-conditions"
+                className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+              >
+                Terms & Conditions
+              </a>
+              <span className="text-xs text-gray-400 dark:text-gray-600">|</span>
+              <a
+                href="/contact"
+                className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+              >
+                Contact Us
+              </a>
+            </div>
           </div>
         </div>
       </div>
