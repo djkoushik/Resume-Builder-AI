@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { ResumeData, CustomizationSettings, CoverLetterData, initialResumeData, initialCustomizationSettings, initialCoverLetterData, syncResumeToLetter } from './types';
 import EditorPanel from './components/editor/EditorPanel';
 import PreviewPanel from './components/preview/PreviewPanel';
@@ -8,8 +8,11 @@ import LandingPage from './components/LandingPage';
 import ArtifactSelector from './components/ArtifactSelector';
 import CoverLetterBuilder from './components/coverLetter/CoverLetterBuilder';
 import Footer from './components/layout/Footer';
+import PrivacyPolicy from './components/legal/PrivacyPolicy';
+import TermsAndConditions from './components/legal/TermsAndConditions';
+import ContactPage from './components/legal/ContactPage';
 
-type AppView = 'landing' | 'selector' | 'resume' | 'coverLetter';
+type AppView = 'landing' | 'selector' | 'resume' | 'coverLetter' | 'privacy' | 'terms' | 'contact';
 
 const App: React.FC = () => {
   const [resumeData, setResumeData] = useState<ResumeData>(initialResumeData);
@@ -19,6 +22,59 @@ const App: React.FC = () => {
   }));
   const [customization, setCustomization] = useState<CustomizationSettings>(initialCustomizationSettings);
   const [currentView, setCurrentView] = useState<AppView>('landing');
+
+  // Handle browser navigation and initial route
+  useEffect(() => {
+    const handleRouteChange = () => {
+      const path = window.location.pathname;
+      if (path === '/privacy-policy') {
+        setCurrentView('privacy');
+      } else if (path === '/terms-and-conditions') {
+        setCurrentView('terms');
+      } else if (path === '/contact') {
+        setCurrentView('contact');
+      } else {
+        setCurrentView('landing');
+      }
+    };
+
+    // Check initial route
+    handleRouteChange();
+
+    // Listen for popstate (back/forward buttons)
+    window.addEventListener('popstate', handleRouteChange);
+    return () => window.removeEventListener('popstate', handleRouteChange);
+  }, []);
+
+  // Handle link clicks
+  useEffect(() => {
+    const handleLinkClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+      
+      if (link && link.href) {
+        const url = new URL(link.href);
+        if (url.origin === window.location.origin) {
+          e.preventDefault();
+          window.history.pushState({}, '', url.pathname);
+          
+          if (url.pathname === '/privacy-policy') {
+            setCurrentView('privacy');
+          } else if (url.pathname === '/terms-and-conditions') {
+            setCurrentView('terms');
+          } else if (url.pathname === '/contact') {
+            setCurrentView('contact');
+          } else {
+            setCurrentView('landing');
+          }
+          window.scrollTo(0, 0);
+        }
+      }
+    };
+
+    document.addEventListener('click', handleLinkClick);
+    return () => document.removeEventListener('click', handleLinkClick);
+  }, []);
 
   const handleResumeChange = useCallback((newResumeData: ResumeData) => {
     setResumeData(newResumeData);
@@ -65,8 +121,37 @@ const App: React.FC = () => {
   };
 
   const handleBackToLanding = () => {
+    window.history.pushState({}, '', '/');
     setCurrentView('landing');
   };
+
+  // Legal pages navigation
+  if (currentView === 'privacy') {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <PrivacyPolicy onBack={handleBackToLanding} />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (currentView === 'terms') {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <TermsAndConditions onBack={handleBackToLanding} />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (currentView === 'contact') {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <ContactPage onBack={handleBackToLanding} />
+        <Footer />
+      </div>
+    );
+  }
 
   if (currentView === 'landing') {
     return (
