@@ -54,7 +54,7 @@ We strictly use the colors defined in your document to convey meaning instantly.
 
 #### **Panel C: Gap Analysis (Action Items)**
 
-This section is split into two columns or stacked lists using **Pill Badges**.
+This section is split into two columns or stacked lists using **Pill Badges**. This panel uses conditional logic to hide empty sections.
 
 * **List 1: Critical Gaps (MUST FIX)**  
   * **Header:** "⚠️ CRITICAL GAPS (Fix to pass filter)".  
@@ -63,6 +63,7 @@ This section is split into two columns or stacked lists using **Pill Badges**.
   * **Icon:** A small "X" inside the badge.  
   * **Behavior:** Hovering triggers a tooltip: *"This skill is required in the JD"*.  
 * **List 2: Suggestions (Boosters)**  
+  * **Condition:** Only displayed if `bonus_missing` items exist.  
   * **Header:** "💡 SUGGESTIONS (To reach 100%)".  
   * **Component:** **Dashed Pill Badge**.  
   * **Styling:** Light Grey/Blue background, **Dashed Border**, Slate text.  

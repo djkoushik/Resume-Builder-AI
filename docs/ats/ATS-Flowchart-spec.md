@@ -132,35 +132,45 @@ graph TD
 
 ### **Phase 3: The Semantic Mapper (The "Brain")**
 
-**Objective:** Resolve vocabulary mismatches between the Candidate and JD using a reference dictionary.
+**Objective:** Resolve vocabulary mismatches between the Candidate and JD using a reference dictionary and fuzzy matching.
 
 **Detailed Steps:**
 
-1. **Load Map:** Access the Canonical Hash Map (e.g., {"reactjs": "react", "aws": "cloud\_platforms"}).  
-2. **Iteration:** Loop through every item in the standardized Candidate Skills and JD Skills sets.  
-3. **Lookup & Replace:**  
-   * Check if the skill exists as a **Key** in the map.  
-   * **True:** Replace the term with the **Value** (Canonical ID).  
-   * **False:** Retain the original string.
+1. **Load Map & Index:** Access the Canonical Hash Map and the Fuse.js index (standardSkills).
+2. **Iteration:** Loop through every item in the standardized Candidate Skills and JD Skills sets.
+3. **Lookup & Replace (Hybrid Strategy):**
+   * **Tier 1 (Exact):** Check if skill exists in `standardSkills`. If true, keep.
+   * **Tier 2 (Alias):** Check if skill exists as a **Key** in `canonicalMap`. If true, replace with Value.
+   * **Tier 3 (Fuzzy):** If no exact/alias match, run `Fuse.js` search.
+     * **Condition:** Score < 0.3 (Strict match).
+     * **Action:** Replace with the matched standard term.
+   * **Fallback:** Retain original string (niche skill).
 
 #### **📉 Phase 3 Flowchart**
 
-Code snippet
+```mermaid
+graph TD
+    A[Input: Standardized Skills Lists] --> B[Load Canonical Map & Fuse Index];
+    B --> C[Start Loop: For Each Skill Item];
+    C --> D{Is Skill in Standard List?};
+    D -- Yes --> G[Add to Canonical List];
+    D -- No --> E{Is Skill Alias in Map?};
+    E -- Yes --> F[Replace with Canonical ID];
+    F --> G;
+    E -- No --> H{Fuzzy Match < 0.3?};
+    H -- Yes --> I[Use Fuzzy Match Result];
+    I --> G;
+    H -- No --> J[Keep Original String];
+    J --> G;
+    G --> K{More Items?};
+    K -- Yes --> C;
+    K -- No --> L[Output: Semantic/Canonical Data IDs];
 
-graph TD  
-    A\[Input: Standardized Skills Lists\] \--\> B\[Load Canonical Hash Map\];  
-    B \--\> C\[Start Loop: For Each Skill Item\];  
-    C \--\> D{Is Skill an Alias in Map?};  
-    D \-- Yes \--\> E\[Replace with Canonical ID\];  
-    D \-- No \--\> F\[Keep Original String\];  
-    E \--\> G\[Add to Canonical List\];  
-    F \--\> G;  
-    G \--\> H{More Items?};  
-    H \-- Yes \--\> C;  
-    H \-- No \--\> I\[Output: Semantic/Canonical Data IDs\];
+    style A fill:#E8F8F5,stroke:#1ABC9C,stroke-width:2px
+    style L fill:#E8F8F5,stroke:#1ABC9C,stroke-width:2px
+```
 
-    style A fill:\#E8F8F5,stroke:\#1ABC9C,stroke-width:2px  
-    style I fill:\#E8F8F5,stroke:\#1ABC9C,stroke-width:2px
+---
 
 ---
 
