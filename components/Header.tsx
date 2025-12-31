@@ -190,18 +190,21 @@ const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBu
                 <div className="p-1" role="none">
                   <button
                     onClick={() => {
-                      handlePrintPdf();
+                      setIsATSOpen(true);
                       setIsDropdownOpen(false);
                     }}
-                    className="group flex w-full items-center p-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-700/50 rounded-lg transition-colors duration-150"
+                    className="group flex w-full items-center p-3 text-sm text-gray-700 dark:text-gray-200 rounded-lg transition-colors duration-150 recommendation-border"
                     role="menuitem"
                   >
-                    <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
-                      <Download className="h-5 w-5" />
+                    <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-lg bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/50 group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors z-10 relative">
+                      <FileText className="h-5 w-5" />
                     </div>
-                    <div className="ml-3 text-left">
-                      <p className="font-medium text-gray-900 dark:text-white group-hover:text-gray-900 dark:group-hover:text-white">Download PDF</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300">Save your resume as a PDF file</p>
+                    <div className="ml-3 text-left z-10 relative flex-grow">
+                      <div className="flex justify-between items-center w-full">
+                        <p className="font-medium text-gray-900 dark:text-white group-hover:text-gray-900 dark:group-hover:text-white">Resume Score</p>
+                        <span className="recommended-badge">Recommended</span>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300">Check compatibility with ATS</p>
                     </div>
                   </button>
 
@@ -224,21 +227,18 @@ const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBu
 
                   <button
                     onClick={() => {
-                      setIsATSOpen(true);
+                      handlePrintPdf();
                       setIsDropdownOpen(false);
                     }}
-                    className="group flex w-full items-center p-3 text-sm text-gray-700 dark:text-gray-200 rounded-lg transition-colors duration-150 mt-1 recommendation-border"
+                    className="group flex w-full items-center p-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-700/50 rounded-lg transition-colors duration-150 mt-1"
                     role="menuitem"
                   >
-                    <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-lg bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/50 group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors z-10 relative">
-                      <FileText className="h-5 w-5" />
+                    <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
+                      <Download className="h-5 w-5" />
                     </div>
-                    <div className="ml-3 text-left z-10 relative flex-grow">
-                      <div className="flex justify-between items-center w-full">
-                        <p className="font-medium text-gray-900 dark:text-white group-hover:text-gray-900 dark:group-hover:text-white">Resume Score</p>
-                        <span className="recommended-badge">Recommended</span>
-                      </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300">Check compatibility with ATS</p>
+                    <div className="ml-3 text-left">
+                      <p className="font-medium text-gray-900 dark:text-white group-hover:text-gray-900 dark:group-hover:text-white">Download PDF</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300">Save your resume as a PDF file</p>
                     </div>
                   </button>
                 </div>

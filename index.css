@@ -46,7 +46,7 @@
   background-repeat: no-repeat;
   background-size: 50% 50%, 50% 50%;
   background-position: 0 0, 100% 0, 100% 100%, 0 100%;
-  background-image: conic-gradient(transparent, #ff00ea, #0080ff, #ea00ff, transparent);
+  background-image: conic-gradient(transparent, #0080ff, #00ff00, transparent);
   animation: borderRotate 4s linear infinite;
 }
 
@@ -96,8 +96,8 @@
 }
 
 .recommended-badge {
-  font-size: 0.65rem;
-  background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+  font-size: 0.45rem;
+  background: linear-gradient(90deg, #ff0000);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
