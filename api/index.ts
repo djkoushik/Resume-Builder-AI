@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { OpenRouter } from '@openrouter/sdk';
 import { GoogleGenAI } from '@google/genai';
-import { calculateATSScore } from '../services/atsService';
+import { calculateATSScore } from '../services/atsService.js';
 
 import fs from 'fs';
 import path from 'path';

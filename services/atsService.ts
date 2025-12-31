@@ -1,5 +1,5 @@
-import { ResumeData } from '../types';
-import { canonicalMap, stopWords, standardSkills } from '../utils/ats/canonicalMap';
+import type { ResumeData } from '../types.js';
+import { canonicalMap, stopWords, standardSkills } from '../utils/ats/canonicalMap.js';
 import Fuse from 'fuse.js';
 
 // --- Types ---
