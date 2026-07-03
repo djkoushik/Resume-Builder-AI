@@ -5,7 +5,7 @@ import CoverLetterPreview from './CoverLetterPreview';
 import CoverLetterTemplatePanel from './CoverLetterTemplatePanel';
 import TypographyTab from '../customization/TypographyTab';
 import ColorTab from '../customization/ColorTab';
-import AuthButton from '../AuthButton';
+// import AuthButton from '../AuthButton';
 import { ChevronDown, Download, Eye } from 'lucide-react';
 
 // Declare html2pdf for TypeScript since it's loaded from a script tag
@@ -216,7 +216,7 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
                 )}
               </div>
 
-              <AuthButton />
+              {/* <AuthButton /> */}
             </div>
           </nav>
         </div>

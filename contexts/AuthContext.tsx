@@ -29,30 +29,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Make checkUserLimit available globally
     useEffect(() => {
         (window as any).checkUserLimit = () => {
-            const userData = localStorage.getItem('loggedInUser');
-
-            if (!userData) {
-                alert('Please sign in with Google to continue.');
-                login();
-                return false;
-            }
-
-            const currentUser = JSON.parse(userData);
-            const key = `usage_${currentUser.googleId}`;
-            const today = new Date().toDateString();
-            let usage = JSON.parse(localStorage.getItem(key) || 'null') || { count: 0, date: today };
-
-            if (usage.date !== today) {
-                usage = { count: 0, date: today };
-            }
-
-            if (usage.count >= 5) {
-                alert('You have reached your daily limit of 5 resumes. Please try again tomorrow.');
-                return false;
-            }
-
-            usage.count++;
-            localStorage.setItem(key, JSON.stringify(usage));
             return true;
         };
     }, []);

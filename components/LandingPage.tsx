@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import AuthButton from './AuthButton';
+// import AuthButton from './AuthButton';
 
 interface LandingPageProps {
   onSelectResume: () => void;
@@ -43,7 +43,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectResume, onSelectCover
         >
           Contact Us
         </button>
-        <AuthButton />
+        {/* <AuthButton /> */}
       </div>
 
       {/* Hero Section - Centered */}

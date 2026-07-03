@@ -1,6 +1,6 @@
 import React from 'react';
 import { ResumeData, CustomizationSettings } from '../types';
-import AuthButton from './AuthButton';
+// import AuthButton from './AuthButton';
 
 interface HeaderProps {
   resumeData: ResumeData;
@@ -253,7 +253,7 @@ const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBu
             )}
           </div>
 
-          <AuthButton />
+          {/* <AuthButton /> */}
         </div>
       </header>
       <ATSModal

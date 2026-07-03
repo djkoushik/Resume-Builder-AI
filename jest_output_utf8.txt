@@ -1,0 +1,1559 @@
+﻿node.exe : ts-jest[config] 
+(WARN) 
+[94mmessage[0m[90m 
+TS151001: [0mIf you have 
+issues related to imports, 
+you should consider 
+setting `esModuleInterop` 
+to `true` in your 
+TypeScript configuration 
+file (usually 
+`tsconfig.json`). See https
+://blogs.msdn.microsoft.com
+/typescript/2018/01/31/anno
+uncing-typescript-2-7/#easi
+er-ecmascript-module-intero
+perability for more 
+information.
+At C:\Program 
+Files\nodejs\npx.ps1:29 
+char:3
++   & $NODE_EXE 
+$NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~
+    + CategoryInfo         
+     : NotSpecified: (ts-  
+  jest[config]...re info   
+ rmation.:String) [], R    
+emoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+  console.log
+    Test started
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:222:13)
+
+  console.log
+    App rendered
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:224:13)
+
+  console.log
+    Waiting for Start Building button
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:227:13)
+
+  console.log
+    Found Start Building button, clicking
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:229:13)
+
+  console.log
+    Waiting for Build Cover Letter button
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:232:13)
+
+  console.log
+    Found Build Cover Letter button, clicking
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:234:13)
+
+  console.log
+    Waiting for Start Writing button
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:237:13)
+
+  console.log
+    Found Start Writing button, clicking
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:239:13)
+
+  console.log
+    Waiting for Enhance with AI button
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:244:13)
+
+  console.log
+    Found Enhance with AI button, clicking
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:246:13)
+
+  console.log
+    Waiting for job title validation toast
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:250:13)
+
+  console.log
+    Found job title validation toast
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:252:13)
+
+  console.log
+    Closing first toast
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:256:13)
+
+  console.log
+    First toast closed
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:263:15)
+
+  console.log
+    Opening Job Application Details accordion
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:267:13)
+
+  console.log
+    Entering job title
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:270:13)
+
+  console.log
+    Ensuring Letter Content accordion is open
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:275:13)
+
+  console.log
+    Waiting for Enhance with AI button (second time)
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:281:13)
+
+  console.log
+    Clicking Enhance with AI button (second time)
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:283:13)
+
+  console.log
+    Waiting for company validation toast
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:287:13)
+
+  console.log
+    CRITICAL: Company validation toast NOT found. Current DOM snapshot:
+
+      at Object.<anonymous> (__tests__/integration/CoverLetterWorkflow.test.tsx:292:15)
+
+  console.log
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-col min-h-screen"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-col min-h-screen font-sans bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200"[39m
+          [36m>[39m
+            [36m<header[39m
+              [33mclass[39m=[32m"bg-white dark:bg-gray-800 shadow-md p-4 z-10"[39m
+              [33mrole[39m=[32m"banner"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex items-center space-x-4"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Back"[39m
+                    [33mclass[39m=[32m"p-2 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33mclass[39m=[32m"w-5 h-5"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M10 19l-7-7m0 0l7-7m-7 7h18"[39m
+                        [33mstroke-linecap[39m=[32m"round"[39m
+                        [33mstroke-linejoin[39m=[32m"round"[39m
+                        [33mstroke-width[39m=[32m"2"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                  [36m<h1[39m
+                    [33mclass[39m=[32m"text-lg sm:text-xl font-bold text-gray-800 dark:text-white"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"text-green-500"[39m
+                    [36m>[39m
+                      [0mAI[0m
+                    [36m</span>[39m
+                    [0m Cover Letter Builder[0m
+                  [36m</h1>[39m
+                [36m</div>[39m
+                [36m<nav[39m
+                  [33maria-label[39m=[32m"Cover letter actions"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33maria-label[39m=[32m"Switch to resume builder"[39m
+                      [33mclass[39m=[32m"px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md shadow-sm hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-900 dark:text-blue-300 dark:border-blue-700 dark:hover:bg-blue-800 transition-colors"[39m
+                    [36m>[39m
+                      [0mBuild Resume now[0m
+                    [36m</button>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"relative inline-block text-left"[39m
+                    [36m>[39m
+                      [36m<div>[39m
+                        [36m<button[39m
+                          [33maria-expanded[39m=[32m"true"[39m
+                          [33maria-haspopup[39m=[32m"true"[39m
+                          [33mclass[39m=[32m"inline-flex justify-center w-full px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center transition-colors"[39m
+                          [33mid[39m=[32m"options-menu"[39m
+                          [33mtype[39m=[32m"button"[39m
+                        [36m>[39m
+                          [0mDownload PDF[0m
+                          [36m<svg[39m
+                            [33maria-hidden[39m=[32m"true"[39m
+                            [33mclass[39m=[32m"lucide lucide-chevron-down -mr-1 ml-1 sm:ml-2 h-4 w-4 sm:h-5 w-5"[39m
+                            [33mfill[39m=[32m"none"[39m
+                            [33mheight[39m=[32m"24"[39m
+                            [33mstroke[39m=[32m"currentColor"[39m
+                            [33mstroke-linecap[39m=[32m"round"[39m
+                            [33mstroke-linejoin[39m=[32m"round"[39m
+                            [33mstroke-width[39m=[32m"2"[39m
+                            [33mviewBox[39m=[32m"0 0 24 24"[39m
+                            [33mwidth[39m=[32m"24"[39m
+                            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                          [36m>[39m
+                            [36m<path[39m
+                              [33md[39m=[32m"m6 9 6 6 6-6"[39m
+                            [36m/>[39m
+                          [36m</svg>[39m
+                        [36m</button>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex items-center min-h-[40px] justify-end"[39m
+                    [36m>[39m
+                      [36m<button[39m
+                        [33mclass[39m=[32m"px-6 py-2.5 bg-blue-600 text-white font-bold text-sm rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105"[39m
+                      [36m>[39m
+                        [0mSign In[0m
+                      [36m</button>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</nav>[39m
+              [36m</div>[39m
+            [36m</header>[39m
+            [36m<main[39m
+              [33mclass[39m=[32m"flex-grow flex"[39m
+              [33mrole[39m=[32m"main"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"w-full grid grid-cols-1 lg:grid-cols-10 xl:grid-cols-4 gap-4 p-4 items-start"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"lg:col-span-3 xl:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-md p-1"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-4"[39m
+                  [36m>[39m
+                    [36m<h2[39m
+                      [33mclass[39m=[32m"text-lg font-semibold text-gray-800 dark:text-white mb-4"[39m
+                      [33mid[39m=[32m"editor-heading"[39m
+                    [36m>[39m
+                      [0mCover Letter Details[0m
+                    [36m</h2>[39m
+                    [36m<div[39m
+                      [33maria-labelledby[39m=[32m"editor-heading"[39m
+                      [33mrole[39m=[32m"form"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"space-y-1"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"[39m
+                        [36m>[39m
+                          [36m<h2>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [36m<div[39m
+                                [33mclass[39m=[32m"flex items-center"[39m
+                              [36m>[39m
+                                [36m<span[39m
+                                  [33mclass[39m=[32m""[39m
+                                [36m>[39m
+                                  [0mYour Information[0m
+                                [36m</span>[39m
+                              [36m</div>[39m
+                              [36m<svg[39m
+                                [33mclass[39m=[32m"w-5 h-5 transform transition-transform "[39m
+                                [33mfill[39m=[32m"currentColor"[39m
+                                [33mviewBox[39m=[32m"0 0 20 20"[39m
+                                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                              [36m>[39m
+                                [36m<path[39m
+                                  [33mclip-rule[39m=[32m"evenodd"[39m
+                                  [33md[39m=[32m"M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"[39m
+                                  [33mfill-rule[39m=[32m"evenodd"[39m
+                                [36m/>[39m
+                              [36m</svg>[39m
+                            [36m</button>[39m
+                          [36m</h2>[39m
+                        [36m</div>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"[39m
+                        [36m>[39m
+                          [36m<h2>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [36m<div[39m
+                                [33mclass[39m=[32m"flex items-center"[39m
+                              [36m>[39m
+                                [36m<span[39m
+                                  [33mclass[39m=[32m""[39m
+                                [36m>[39m
+                                  [0mRecipient Information[0m
+                                [36m</span>[39m
+                              [36m</div>[39m
+                              [36m<svg[39m
+                                [33mclass[39m=[32m"w-5 h-5 transform transition-transform "[39m
+                                [33mfill[39m=[32m"currentColor"[39m
+                                [33mviewBox[39m=[32m"0 0 20 20"[39m
+                                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                              [36m>[39m
+                                [36m<path[39m
+                                  [33mclip-rule[39m=[32m"evenodd"[39m
+                                  [33md[39m=[32m"M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"[39m
+                                  [33mfill-rule[39m=[32m"evenodd"[39m
+                                [36m/>[39m
+                              [36m</svg>[39m
+                            [36m</button>[39m
+                          [36m</h2>[39m
+                        [36m</div>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"[39m
+                        [36m>[39m
+                          [36m<h2>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [36m<div[39m
+                                [33mclass[39m=[32m"flex items-center"[39m
+                              [36m>[39m
+                                [36m<span[39m
+                                  [33mclass[39m=[32m""[39m
+                                [36m>[39m
+                                  [0mJob Application Details[0m
+                                [36m</span>[39m
+                              [36m</div>[39m
+                              [36m<svg[39m
+                                [33mclass[39m=[32m"w-5 h-5 transform transition-transform rotate-180"[39m
+                                [33mfill[39m=[32m"currentColor"[39m
+                                [33mviewBox[39m=[32m"0 0 20 20"[39m
+                                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                              [36m>[39m
+                                [36m<path[39m
+                                  [33mclip-rule[39m=[32m"evenodd"[39m
+                                  [33md[39m=[32m"M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"[39m
+                                  [33mfill-rule[39m=[32m"evenodd"[39m
+                                [36m/>[39m
+                              [36m</svg>[39m
+                            [36m</button>[39m
+                          [36m</h2>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"p-4 bg-gray-50 dark:bg-gray-800"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mclass[39m=[32m"grid grid-cols-1 gap-4"[39m
+                            [36m>[39m
+                              [36m<div>[39m
+                                [36m<label[39m
+                                  [33mclass[39m=[32m"block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"[39m
+                                [36m>[39m
+                                  [0mJob Title *[0m
+                                [36m</label>[39m
+                                [36m<input[39m
+                                  [33mclass[39m=[32m"w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600"[39m
+                                  [33mplaceholder[39m=[32m"Software Developer"[39m
+                                  [33mrequired[39m=[32m""[39m
+                                  [33mtype[39m=[32m"text"[39m
+                                  [33mvalue[39m=[32m"Developer"[39m
+                                [36m/>[39m
+                              [36m</div>[39m
+                              [36m<div>[39m
+                                [36m<label[39m
+                                  [33mclass[39m=[32m"block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"[39m
+                                [36m>[39m
+                                  [0mDate[0m
+                                [36m</label>[39m
+                                [36m<input[39m
+                                  [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"[39m
+                                  [33mtype[39m=[32m"date"[39m
+                                  [33mvalue[39m=[32m"2026-07-03"[39m
+                                [36m/>[39m
+                              [36m</div>[39m
+                            [36m</div>[39m
+                          [36m</div>[39m
+                        [36m</div>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"[39m
+                        [36m>[39m
+                          [36m<h2>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [36m<div[39m
+                                [33mclass[39m=[32m"flex items-center"[39m
+                              [36m>[39m
+                                [36m<span[39m
+                                  [33mclass[39m=[32m""[39m
+                                [36m>[39m
+                                  [0mLetter Content[0m
+                                [36m</span>[39m
+                              [36m</div>[39m
+                              [36m<svg[39m
+                                [33mclass[39m=[32m"w-5 h-5 transform transition-transform "[39m
+                                [33mfill[39m=[32m"currentColor"[39m
+                                [33mviewBox[39m=[32m"0 0 20 20"[39m
+                                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                              [36m>[39m
+                                [36m<path[39m
+                                  [33mclip-rule[39m=[32m"evenodd"[39m
+                                  [33md[39m=[32m"M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"[39m
+                                  [33mfill-rule[39m=[32m"evenodd"[39m
+                                [36m/>[39m
+                              [36m</svg>[39m
+                            [36m</button>[39m
+                          [36m</h2>[39m
+                        [36m</div>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"text-sm text-gray-500 dark:text-gray-400 px-1"[39m
+                        [36m/>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"lg:col-span-4 xl:col-span-2 flex items-start justify-center bg-gray-200 dark:bg-gray-700 rounded-lg shadow-inner"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"w-full p-4"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33maria-label[39m=[32m"Cover Letter Preview"[39m
+                      [33maria-live[39m=[32m"polite"[39m
+                      [33mclass[39m=[32m"overflow-auto"[39m
+                      [33mrole[39m=[32m"region"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33maria-label[39m=[32m"Cover letter preview"[39m
+                        [33mclass[39m=[32m"bg-white rounded-lg shadow-sm min-h-96 overflow-auto mx-auto"[39m
+                        [33mid[39m=[32m"cover-letter-preview"[39m
+                        [33mrole[39m=[32m"document"[39m
+                        [33mstyle[39m=[32m"width: 100%; max-width: 8.5in; min-height: 11in; max-height: 600px; font-size: 10pt;"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mstyle[39m=[32m"font-family: Roboto; font-weight: 400; font-style: normal; color: rgb(31, 41, 55); padding: 40px 40px 40px 40px; line-height: 1.5; font-size: 10pt; background-color: rgb(255, 255, 255); min-height: 11in;"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mstyle[39m=[32m"margin-bottom: 24px;"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mstyle[39m=[32m"font-family: Lato; font-weight: 700; font-style: normal; color: rgb(55, 65, 81); font-size: 32pt; margin-bottom: 8px;"[39m
+                            [36m>[39m
+                              [0mJohn Doe[0m
+                            [36m</div>[39m
+                            [36m<div[39m
+                              [33mstyle[39m=[32m"font-size: 9pt; line-height: 1.4;"[39m
+                            [36m>[39m
+                              [36m<div>[39m
+                                [0mPleasantville, CA 94588[0m
+                              [36m</div>[39m
+                              [36m<div>[39m
+                                [0m(555) 123-4567[0m
+                              [36m</div>[39m
+                              [36m<div>[39m
+                                [0mjohn.doe@gmail.com[0m
+                              [36m</div>[39m
+                            [36m</div>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mstyle[39m=[32m"margin-bottom: 24px; text-align: right;"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mstyle[39m=[32m"font-size: 9pt;"[39m
+                            [36m>[39m
+                              [0mJuly 3, 2026[0m
+                            [36m</div>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mstyle[39m=[32m"margin-bottom: 24px;"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mstyle[39m=[32m"font-size: 10pt; line-height: 1.4;"[39m
+                            [36m/>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mstyle[39m=[32m"margin-bottom: 16px;"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mstyle[39m=[32m"font-size: 10pt;"[39m
+                            [36m>[39m
+                              [0mDear Hiring Manager,[0m
+                            [36m</div>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mstyle[39m=[32m"margin-bottom: 24px;"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mstyle[39m=[32m"margin-bottom: 16px; font-size: 10pt; text-align: justify;"[39m
+                            [36m>[39m
+                              [0mYour cover letter content will appear here. Use the editor on the left to add your content or click "Enhance with AI" to generate professional content based on your resume and job details.[0m
+                            [36m</div>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mstyle[39m=[32m"margin-bottom: 24px;"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mstyle[39m=[32m"font-size: 10pt; margin-bottom: 0px;"[39m
+                            [36m>[39m
+                              [0mSincerely,[0m
+                            [36m</div>[39m
+                            [36m<div[39m
+                              [33mstyle[39m=[32m"font-family: Lato; font-weight: 700; font-style: normal; color: rgb(55, 65, 81); font-size: 11pt;"[39m
+                            [36m>[39m
+                              [0mJohn Doe[0m
+                            [36m</div>[39m
+                          [36m</div>[39m
+                        [36m</div>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"lg:col-span-3 xl:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"border-b border-gray-200 dark:border-gray-700"[39m
+                  [36m>[39m
+                    [36m<nav[39m
+                      [33maria-label[39m=[32m"Tabs"[39m
+                      [33mclass[39m=[32m"-mb-px flex space-x-4 px-4"[39m
+                    [36m>[39m
+                      [36m<button[39m
+                        [33mclass[39m=[32m"border-blue-500 text-blue-600 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm focus:outline-none"[39m
+                      [36m>[39m
+                        [0mTemplates[0m
+                      [36m</button>[39m
+                      [36m<button[39m
+                        [33mclass[39m=[32m"border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm focus:outline-none"[39m
+                      [36m>[39m
+                        [0mFont-Resize[0m
+                      [36m</button>[39m
+                      [36m<button[39m
+                        [33mclass[39m=[32m"border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm focus:outline-none"[39m
+                      [36m>[39m
+                        [0mColors[0m
+                      [36m</button>[39m
+                    [36m</nav>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"p-4"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex flex-col h-full"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex-1 p-4 overflow-y-auto"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"grid grid-cols-2 gap-4"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"border-2 rounded-lg p-2 cursor-pointer transition-all hover:shadow-md border-blue-500 shadow-lg bg-blue-50 dark:bg-blue-900/20"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mclass[39m=[32m"bg-white dark:bg-gray-700 h-24 w-full rounded flex overflow-hidden border dark:border-gray-600"[39m
+                            [36m>[39m
+                              [36m<div[39m
+                                [33mclass[39m=[32m"p-2 w-full flex flex-col"[39m
+                              [36m>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"flex items-start mb-2"[39m
+                                [36m>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"flex-grow"[39m
+                                  [36m>[39m
+                                    [36m<div[39m
+                                      [33mclass[39m=[32m"h-3 w-2/3 rounded-sm mb-1"[39m
+                                      [33mstyle[39m=[32m"background-color: rgb(55, 65, 81);"[39m
+                                    [36m/>[39m
+                                    [0m [0m
+                                    [36m<div[39m
+                                      [33mclass[39m=[32m"h-1.5 w-1/2 bg-gray-500 dark:bg-gray-400 rounded-sm mb-1"[39m
+                                    [36m/>[39m
+                                    [0m [0m
+                                    [36m<div[39m
+                                      [33mclass[39m=[32m"h-1.5 w-1/3 bg-gray-500 dark:bg-gray-400 rounded-sm"[39m
+                                    [36m/>[39m
+                                    [0m [0m
+                                  [36m</div>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1.5 w-1/4 bg-gray-400 dark:bg-gray-500 rounded-sm"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                [36m</div>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"h-1.5 w-1/2 bg-gray-600 dark:bg-gray-400 rounded-sm mb-1"[39m
+                                [36m/>[39m
+                                [0m [0m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"h-1.5 w-1/3 bg-gray-500 dark:bg-gray-400 rounded-sm mb-2"[39m
+                                [36m/>[39m
+                                [0m [0m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"h-1 w-full bg-gray-400 dark:bg-gray-500 rounded-sm mb-0.5"[39m
+                                [36m/>[39m
+                                [0m [0m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"h-1 w-5/6 bg-gray-400 dark:bg-gray-500 rounded-sm"[39m
+                                [36m/>[39m
+                              [36m</div>[39m
+                            [36m</div>[39m
+                            [36m<p[39m
+                              [33mclass[39m=[32m"text-center text-sm mt-2 text-gray-800 dark:text-white font-medium"[39m
+                            [36m>[39m
+                              [0mProfessional[0m
+                            [36m</p>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"border-2 rounded-lg p-2 cursor-pointer transition-all hover:shadow-md border-gray-300 dark:border-gray-600 hover:border-blue-400"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mclass[39m=[32m"bg-white dark:bg-gray-700 h-24 w-full rounded flex overflow-hidden border dark:border-gray-600"[39m
+                            [36m>[39m
+                              [36m<div[39m
+                                [33mclass[39m=[32m"p-2 w-full flex flex-col"[39m
+                              [36m>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"border-b-2 pb-1 mb-2"[39m
+                                  [33mstyle[39m=[32m"border-color: rgb(59, 130, 246);"[39m
+                                [36m>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-3 w-2/3 rounded-sm mb-1"[39m
+                                    [33mstyle[39m=[32m"background-color: rgb(37, 99, 235);"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1.5 w-1/2 bg-gray-500 dark:bg-gray-400 rounded-sm"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                [36m</div>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"flex justify-between mb-1"[39m
+                                [36m>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1.5 w-1/3 bg-gray-600 dark:bg-gray-400 rounded-sm"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1.5 w-1/4 bg-gray-400 dark:bg-gray-500 rounded-sm"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                [36m</div>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"h-1 w-full bg-gray-400 dark:bg-gray-500 rounded-sm mb-0.5"[39m
+                                [36m/>[39m
+                                [0m [0m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"h-1 w-4/5 bg-gray-400 dark:bg-gray-500 rounded-sm"[39m
+                                [36m/>[39m
+                              [36m</div>[39m
+                            [36m</div>[39m
+                            [36m<p[39m
+                              [33mclass[39m=[32m"text-center text-sm mt-2 text-gray-800 dark:text-white font-medium"[39m
+                            [36m>[39m
+                              [0mModern[0m
+                            [36m</p>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"border-2 rounded-lg p-2 cursor-pointer transition-all hover:shadow-md border-gray-300 dark:border-gray-600 hover:border-blue-400"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mclass[39m=[32m"bg-white dark:bg-gray-700 h-24 w-full rounded flex overflow-hidden border dark:border-gray-600"[39m
+                            [36m>[39m
+                              [36m<div[39m
+                                [33mclass[39m=[32m"p-2 w-full flex"[39m
+                              [36m>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"w-2/3 flex flex-col"[39m
+                                [36m>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-3 w-3/4 rounded-sm mb-1"[39m
+                                    [33mstyle[39m=[32m"background-color: rgb(124, 58, 237);"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1.5 w-1/2 bg-gray-500 dark:bg-gray-400 rounded-sm mb-2"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"border-l-2 pl-1"[39m
+                                    [33mstyle[39m=[32m"border-color: rgb(168, 85, 247);"[39m
+                                  [36m>[39m
+                                    [36m<div[39m
+                                      [33mclass[39m=[32m"h-1 w-full bg-gray-400 dark:bg-gray-500 rounded-sm mb-0.5"[39m
+                                    [36m/>[39m
+                                    [0m [0m
+                                    [36m<div[39m
+                                      [33mclass[39m=[32m"h-1 w-5/6 bg-gray-400 dark:bg-gray-500 rounded-sm"[39m
+                                    [36m/>[39m
+                                  [36m</div>[39m
+                                [36m</div>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"w-1/3 pl-2"[39m
+                                [36m>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1.5 w-full bg-gray-400 dark:bg-gray-500 rounded-sm mb-1"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1.5 w-3/4 bg-gray-600 dark:bg-gray-400 rounded-sm"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                [36m</div>[39m
+                              [36m</div>[39m
+                            [36m</div>[39m
+                            [36m<p[39m
+                              [33mclass[39m=[32m"text-center text-sm mt-2 text-gray-800 dark:text-white font-medium"[39m
+                            [36m>[39m
+                              [0mCreative[0m
+                            [36m</p>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"border-2 rounded-lg p-2 cursor-pointer transition-all hover:shadow-md border-gray-300 dark:border-gray-600 hover:border-blue-400"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mclass[39m=[32m"bg-white dark:bg-gray-700 h-24 w-full rounded flex overflow-hidden border dark:border-gray-600"[39m
+                            [36m>[39m
+                              [36m<div[39m
+                                [33mclass[39m=[32m"p-2 w-full flex flex-col items-center"[39m
+                              [36m>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"text-center mb-2 w-full"[39m
+                                [36m>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-3 w-1/2 rounded-sm mx-auto mb-1"[39m
+                                    [33mstyle[39m=[32m"background-color: rgb(31, 41, 55);"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1 w-3/4 bg-gray-500 dark:bg-gray-400 rounded-sm mx-auto"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                [36m</div>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"w-full"[39m
+                                [36m>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1.5 w-1/4 bg-gray-400 dark:bg-gray-500 rounded-sm mb-1 ml-auto"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1.5 w-1/2 bg-gray-600 dark:bg-gray-400 rounded-sm mb-1"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1 w-full bg-gray-400 dark:bg-gray-500 rounded-sm mb-0.5"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1 w-4/5 bg-gray-400 dark:bg-gray-500 rounded-sm"[39m
+                                  [36m/>[39m
+                                [36m</div>[39m
+                              [36m</div>[39m
+                            [36m</div>[39m
+                            [36m<p[39m
+                              [33mclass[39m=[32m"text-center text-sm mt-2 text-gray-800 dark:text-white font-medium"[39m
+                            [36m>[39m
+                              [0mExecutive[0m
+                            [36m</p>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"border-2 rounded-lg p-2 cursor-pointer transition-all hover:shadow-md border-gray-300 dark:border-gray-600 hover:border-blue-400"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mclass[39m=[32m"bg-white dark:bg-gray-700 h-24 w-full rounded flex overflow-hidden border dark:border-gray-600"[39m
+                            [36m>[39m
+                              [36m<div[39m
+                                [33mclass[39m=[32m"w-full h-full relative overflow-hidden"[39m
+                              [36m>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"absolute top-0 left-0 right-0 h-1/2 bg-[#f3e9dc]"[39m
+                                [36m/>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"absolute top-0 left-0 w-1/2 h-1/2 bg-[#e5e7eb]"[39m
+                                [36m/>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"relative z-10 p-2 flex flex-col items-center pt-6"[39m
+                                [36m>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-2 w-2/3 bg-black rounded-sm mb-1"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1 w-1/2 bg-gray-500 rounded-sm mb-2"[39m
+                                  [36m/>[39m
+                                  [0m [0m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"w-full px-2"[39m
+                                  [36m>[39m
+                                    [36m<div[39m
+                                      [33mclass[39m=[32m"h-1 w-full bg-gray-400 rounded-sm mb-0.5"[39m
+                                    [36m/>[39m
+                                    [36m<div[39m
+                                      [33mclass[39m=[32m"h-1 w-5/6 bg-gray-400 rounded-sm"[39m
+                                    [36m/>[39m
+                                  [36m</div>[39m
+                                [36m</div>[39m
+                              [36m</div>[39m
+                            [36m</div>[39m
+                            [36m<p[39m
+                              [33mclass[39m=[32m"text-center text-sm mt-2 text-gray-800 dark:text-white font-medium"[39m
+                            [36m>[39m
+                              [0mGeometric[0m
+                            [36m</p>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"border-2 rounded-lg p-2 cursor-pointer transition-all hover:shadow-md border-gray-300 dark:border-gray-600 hover:border-blue-400"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mclass[39m=[32m"bg-white dark:bg-gray-700 h-24 w-full rounded flex overflow-hidden border dark:border-gray-600"[39m
+                            [36m>[39m
+                              [36m<div[39m
+                                [33mclass[39m=[32m"w-full h-full flex flex-col"[39m
+                              [36m>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"h-1/3 bg-[#1e3a8a] flex flex-col items-center justify-center p-1"[39m
+                                [36m>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-2 w-2/3 bg-white rounded-sm mb-1"[39m
+                                  [36m/>[39m
+                                [36m</div>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"h-1/6 bg-[#dbeafe] flex items-center justify-center mb-2"[39m
+                                [36m>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1 w-1/2 bg-[#1e3a8a] rounded-sm"[39m
+                                  [36m/>[39m
+                                [36m</div>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"px-2 flex-grow"[39m
+                                [36m>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1 w-1/4 bg-gray-400 rounded-sm mb-1 ml-auto"[39m
+                                  [36m/>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1 w-1/3 bg-gray-600 rounded-sm mb-1"[39m
+                                  [36m/>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1 w-full bg-gray-400 rounded-sm mb-0.5"[39m
+                                  [36m/>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1 w-5/6 bg-gray-400 rounded-sm"[39m
+                                  [36m/>[39m
+                                [36m</div>[39m
+                              [36m</div>[39m
+                            [36m</div>[39m
+                            [36m<p[39m
+                              [33mclass[39m=[32m"text-center text-sm mt-2 text-gray-800 dark:text-white font-medium"[39m
+                            [36m>[39m
+                              [0mNavy[0m
+                            [36m</p>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"border-2 rounded-lg p-2 cursor-pointer transition-all hover:shadow-md border-gray-300 dark:border-gray-600 hover:border-blue-400"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mclass[39m=[32m"bg-white dark:bg-gray-700 h-24 w-full rounded flex overflow-hidden border dark:border-gray-600"[39m
+                            [36m>[39m
+                              [36m<div[39m
+                                [33mclass[39m=[32m"p-2 w-full flex flex-col"[39m
+                              [36m>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"flex items-center mb-2"[39m
+                                [36m>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-8 w-8 bg-[#1e3a8a] flex items-center justify-center mr-2"[39m
+                                  [36m>[39m
+                                    [36m<div[39m
+                                      [33mclass[39m=[32m"text-[8px] text-white font-light"[39m
+                                    [36m>[39m
+                                      [0mS/W[0m
+                                    [36m</div>[39m
+                                  [36m</div>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"flex flex-col"[39m
+                                  [36m>[39m
+                                    [36m<div[39m
+                                      [33mclass[39m=[32m"h-1.5 w-16 bg-[#1f2937] rounded-sm mb-0.5"[39m
+                                    [36m/>[39m
+                                    [36m<div[39m
+                                      [33mclass[39m=[32m"h-1.5 w-12 bg-[#1f2937] rounded-sm"[39m
+                                    [36m/>[39m
+                                  [36m</div>[39m
+                                [36m</div>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"w-full h-px bg-gray-200 mb-2"[39m
+                                [36m/>[39m
+                                [36m<div[39m
+                                  [33mclass[39m=[32m"flex-grow"[39m
+                                [36m>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1 w-1/4 bg-gray-400 rounded-sm mb-1 ml-auto"[39m
+                                  [36m/>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1 w-1/3 bg-gray-600 rounded-sm mb-1"[39m
+                                  [36m/>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1 w-full bg-gray-400 rounded-sm mb-0.5"[39m
+                                  [36m/>[39m
+                                  [36m<div[39m
+                                    [33mclass[39m=[32m"h-1 w-5/6 bg-gray-400 rounded-sm"[39m
+                                  [36m/>[39m
+                                [36m</div>[39m
+                              [36m</div>[39m
+                            [36m</div>[39m
+                            [36m<p[39m
+                              [33mclass[39m=[32m"text-center text-sm mt-2 text-gray-800 dark:text-white font-medium"[39m
+                            [36m>[39m
+                              [0mSquare[0m
+                            [36m</p>[39m
+                          [36m</div>[39m
+                        [36m</div>[39m
+                        [36m<p[39m
+                          [33mclass[39m=[32m"text-sm text-gray-500 dark:text-gray-400 mt-6 text-center"[39m
+                        [36m>[39m
+                          [0mMore templates coming soon![0m
+                        [36m</p>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</main>[39m
+          [36m</div>[39m
+          [36m<footer[39m
+            [33mclass[39m=[32m"bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"col-span-1 md:col-span-2 lg:col-span-2"[39m
+                [36m>[39m
+                  [36m<h3[39m
+                    [33mclass[39m=[32m"text-lg font-semibold text-gray-900 dark:text-white mb-4"[39m
+                  [36m>[39m
+                    [0mContact Us[0m
+                  [36m</h3>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"space-y-3"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex items-center space-x-3"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"flex-shrink-0"[39m
+                      [36m>[39m
+                        [36m<svg[39m
+                          [33mclass[39m=[32m"w-5 h-5 text-gray-500 dark:text-gray-400"[39m
+                          [33mfill[39m=[32m"none"[39m
+                          [33mstroke[39m=[32m"currentColor"[39m
+                          [33mviewBox[39m=[32m"0 0 24 24"[39m
+                        [36m>[39m
+                          [36m<path[39m
+                            [33md[39m=[32m"M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"[39m
+                            [33mstroke-linecap[39m=[32m"round"[39m
+                            [33mstroke-linejoin[39m=[32m"round"[39m
+                            [33mstroke-width[39m=[32m"2"[39m
+                          [36m/>[39m
+                        [36m</svg>[39m
+                      [36m</div>[39m
+                      [36m<div>[39m
+                        [36m<p[39m
+                          [33mclass[39m=[32m"text-sm font-medium text-gray-900 dark:text-white"[39m
+                        [36m>[39m
+                          [0mSupport[0m
+                        [36m</p>[39m
+                        [36m<a[39m
+                          [33mclass[39m=[32m"text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200"[39m
+                          [33mhref[39m=[32m"mailto:team.buildresumenow@gmail.com"[39m
+                        [36m>[39m
+                          [0mteam.buildresumenow@gmail.com[0m
+                        [36m</a>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"col-span-1 md:col-span-2 lg:col-span-2"[39m
+                [36m>[39m
+                  [36m<h3[39m
+                    [33mclass[39m=[32m"text-lg font-semibold text-gray-900 dark:text-white mb-4"[39m
+                  [36m>[39m
+                    [0mAbout DUAL-SYNC[0m
+                  [36m</h3>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-sm text-gray-600 dark:text-gray-300 leading-relaxed"[39m
+                  [36m>[39m
+                    [0mDUAL-SYNC presents BuildResumeNow - Create professional resumes and cover letters with our AI-powered builder. Stand out from the crowd with customizable templates and intelligent suggestions.[0m
+                  [36m</p>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-lg font-semibold text-gray-600 dark:text-gray-400 "[39m
+                  [36m>[39m
+                    [0mBuilt for job seekers worldwide from job seekers[0m
+                  [36m</p>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex flex-col items-center text-center space-y-3"[39m
+                [36m>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-sm text-gray-600 dark:text-gray-400"[39m
+                  [36m>[39m
+                    [0m┬⌐ 2023 - 2026 DUAL-SYNC | BuildResumeNow[0m
+                  [36m</p>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex justify-center gap-4 pt-2 border-t border-gray-200 dark:border-gray-700 w-full"[39m
+                  [36m>[39m
+                    [36m<a[39m
+                      [33mclass[39m=[32m"text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"[39m
+                      [33mhref[39m=[32m"/privacy-policy"[39m
+                    [36m>[39m
+                      [0mPrivacy Policy[0m
+                    [36m</a>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"text-xs text-gray-400 dark:text-gray-600"[39m
+                    [36m>[39m
+                      [0m|[0m
+                    [36m</span>[39m
+                    [36m<a[39m
+                      [33mclass[39m=[32m"text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"[39m
+                      [33mhref[39m=[32m"/terms-and-conditions"[39m
+                    [36m>[39m
+                      [0mTerms & Conditions[0m
+                    [36m</a>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"text-xs text-gray-400 dark:text-gray-600"[39m
+                    [36m>[39m
+                      [0m|[0m
+                    [36m</span>[39m
+                    [36m<a[39m
+                      [33mclass[39m=[32m"text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"[39m
+                      [33mhref[39m=[32m"/contact"[39m
+                    [36m>[39m
+                      [0mContact Us[0m
+                    [36m</a>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</footer>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+      at logDOM (node_modules/@testing-library/dom/dist/pretty-dom.js:93:13)
+
+FAIL __tests__/integration/
+CoverLetterWorkflow.test.ts
+x (14.727 s)
+  Cover Letter Workflow 
+Integration
+    ΓêÜ complete user 
+workflow from landing to 
+cover letter creation (703 
+ms)
+    ΓêÜ data 
+synchronization between 
+resume and cover letter 
+(431 ms)
+    ΓêÜ AI enhancement 
+workflow (203 ms)
+    ΓêÜ template selection 
+updates preview (128 ms)
+    ΓêÜ PDF generation 
+workflow (204 ms)
+    ├ù form validation 
+prevents invalid 
+submissions (10486 ms)
+    ΓêÜ responsive design 
+works on mobile viewport 
+(242 ms)
+    ΓêÜ accessibility 
+features work correctly 
+(394 ms)
+
+  ΓùÅ Cover Letter 
+Workflow Integration ΓÇ║ 
+form validation prevents 
+invalid submissions
+
+    Unable to find an 
+element with the text: 
+/Please enter a company 
+name/i. This could be 
+because the text is broken 
+up by multiple elements. 
+In this case, you can 
+provide a function for 
+your text matcher to make 
+your matcher more flexible.
+
+    Ignored nodes: 
+comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          
+[33mclass[39m=[32m"flex 
+flex-col min-h-screen"[39m
+        [36m>[39m
+          [36m<div[39m
+            
+[33mclass[39m=[32m"flex 
+flex-col min-h-screen 
+font-sans bg-gray-100 
+dark:bg-gray-900 
+text-gray-800 
+dark:text-gray-200"[39m
+          [36m>[39m
+            
+[36m<header[39m
+              [33mclass[3
+9m=[32m"bg-white 
+dark:bg-gray-800 shadow-md 
+p-4 z-10"[39m
+              [33mrole[39
+m=[32m"banner"[39m
+            [36m>[39m
+              
+[36m<div[39m
+                
+[33mclass[39m=[32m"flex 
+flex-col sm:flex-row 
+justify-between 
+items-start 
+sm:items-center gap-4"[39m
+              [36m>[39m
+                
+[36m<div[39m
+                  
+[33mclass[39m=[32m"flex 
+items-center 
+space-x-4"[39m
+                [36m>[39m
+                  
+[36m<button[39m
+                    [33mar
+ia-label[39m=[32m"Back"[
+39m
+                    
+[33mclass[39m=[32m"p-2 
+text-gray-600 
+hover:text-gray-800 
+dark:text-gray-300 
+dark:hover:text-white 
+rounded-full 
+hover:bg-gray-100 
+dark:hover:bg-gray-700 
+transition-colors"[39m
+                  
+[36m>[39m
+                    
+[36m<svg[39m
+                      
+[33mclass[39m=[32m"w-5 
+h-5"[39m
+                      [33m
+fill[39m=[32m"none"[39m
+                      [33m
+stroke[39m=[32m"currentCo
+lor"[39m
+                      
+[33mviewBox[39m=[32m"0 
+0 24 24"[39m
+                    
+[36m>[39m
+                      
+[36m<path[39m
+                        
+[33md[39m=[32m"M10 
+19l-7-7m0 0l7-7m-7 
+7h18"[39m
+                        [3
+3mstroke-linecap[39m=[32m
+"round"[39m
+                        [3
+3mstroke-linejoin[39m=[32
+m"round"[39m
+                        [3
+3mstroke-width[39m=[32m"2
+"[39m
+                      
+[36m/>[39m
+                    
+[36m</svg>[39m
+                  
+[36m</button>[39m
+                  
+[36m<h1[39m
+                    [33mcl
+ass[39m=[32m"text-lg 
+sm:text-xl font-bold 
+text-gray-800 
+dark:text-white"[39m
+                  
+[36m>[39m
+                    
+[36m<span[39m
+                      [33m
+class[39m=[32m"text-green
+-500"[39m
+                    
+[36m>[39m
+                      
+[0mAI[0m
+                    
+[36m</span>[39m
+                    [0m 
+Cover Letter Builder[0m
+                  
+[36m</h1>[39m
+                
+[36m</div>[39m
+                
+[36m<nav[39m
+                  [33maria
+-label[39m=[32m"Cover 
+letter actions"[39m
+                [36m>[39m
+                  
+[36m<div[39m
+                    
+[33mclass[39m=[32m"flex 
+flex-wrap items-center 
+gap-2"[39m
+                  
+[36m>[39m
+                    
+[36m<button[39m
+                      [33m
+aria-label[39m=[32m"Switc
+h to resume builder"[39m
+                      
+[33mclass[39m=[32m"px-2 
+sm:px-3 py-2 text-xs 
+sm:text-sm font-medium 
+text-blue-700 bg-blue-50 
+border border-blue-200 
+rounded-md shadow-sm 
+hover:bg-blue-100 
+focus:outline-none 
+focus:ring-2 
+focus:ring-offset-2 
+focus:ring-blue-500 
+dark:bg-blue-900 
+dark:text-blue-300 
+dark:border-blue-700 
+dark:hover:bg-blue-800 
+transition-colors"[39m
+                    
+[36m>[39m
+                      
+[0mBuild Resume now[0m
+                    
+[36m</button>[39m
+                    
+[36m<div[39m
+                      [33m
+class[39m=[32m"relative 
+inline-block 
+text-left"[39m
+                    
+[36m>[39m
+                      
+[36m<div>[39m
+                        
+[36m<button[39m
+                          
+[33maria-expanded[39m=[32
+m"true"[39m
+                          
+[33maria-haspopup[39m=[32
+m"true"[39m
+                          
+[33mclass[39m=[32m"inline
+-flex justify-center 
+w-full px-2 sm:px-4 py-2 
+text-xs sm:text-sm 
+font-medium text-white 
+bg-green-600 border 
+border-transparent 
+rounded-md shadow-sm 
+hover:bg-green-700 
+focus:outline-none 
+focus:ring-2 
+focus:ring-offset-2 
+focus:ring-green-500 
+items-center 
+transition-colors"[39m
+                          
+[33mid[39m=[32m"options-m
+enu"[39m
+                          
+[33mtype[39m=[32m"button"
+[39m
+                        
+[36m>[39m
+                          
+[0mDownload PDF[0m
+                          
+[36m<svg[39m
+                           
+ [33maria-hidden[39m=[32
+m"true"[39m
+                           
+ [33mclass[39m=[32m"luci
+de lucide-chevron-down 
+-mr-1 ml-1 sm:ml-2 h-4 w-4 
+sm:h-5 w-5"[39m
+                           
+ [33mfill[39m=[32m"none"
+[39m
+                           
+ [33mheight[39m=[32m"24"
+[39m
+                           
+ [33mstroke[39m=[32m"cur
+rentColor"[39m
+                           
+ [33mstroke-linecap[39m=
+[32m"round"[39m
+                           
+ [33mstroke-linejoin[39m=
+[32m"round"[39m
+                           
+ [33mstroke-width[39m=[3
+2m"2"[39m
+                           
+ [33mviewBox[39m=[32m"0 
+0 24 24"[39m
+                           
+ [33mwidth[39m=[32m"24"
+[39m
+                           
+ [33mxmlns[39m=[32m"http
+://www.w3.org/2000/svg"[39
+m
+                          
+[36m>[39m
+                           
+ [36m<path[39m
+                           
+   [33md[39m=[32m"m6 9 
+6 6 6-6"[39m
+                           
+ [36m/>[39m
+                          
+[36m</svg>[39m
+                        
+[36m</button>[39m
+                      
+[36m</div>[39m
+                    
+[36m</div>[39m
+                    
+[36m<div[39m
+                      
+[33mclass[39m=[32m"flex 
+items-center min-h-[40px] 
+justify-end"[39m
+                    
+[36m>[39m
+                      
+[36m<button[39m
+                        
+[33mclass[39m=[32m"px-6 
+py-2.5 bg-blue-600 
+text-white font-bold 
+text-sm rounded-lg 
+shadow-md 
+hover:bg-blue-700 
+focus:outline-none 
+focus:ring-2 
+focus:ring-blue-500 
+transition-all 
+duration-300 transform 
+hover:scale-105"[39m
+                      
+[36m>[39m
+                        
+[0mSign In[0m
+                      
+[36m</button>[39m
+                    
+[36m</div>[39m
+                  
+[36m</div>[39m
+                
+[36m</nav>[39m
+              
+[36m</div>[39m
+            
+[36m</header>[39m
+            [36m<main[39m
+              [33mclass[3
+9m=[32m"flex-grow 
+flex"[39m
+              [33mrole[39
+m=[32m"main"[39m
+            [36m>[39m
+              
+[36m<div[39m
+                [33mclass
+[39m=[32m"w-full grid 
+grid-cols-1 
+lg:grid-cols-10 
+xl:grid-cols-4 gap-4 p-4 
+items-start"[39m
+              [36m>[39m
+                
+[36m<div[39m
+                  [33mclas
+s[39m=[32m"lg:col-span-3 
+xl:col-span-1 bg-white 
+dark:bg-gray-800 
+rounded-lg shadow-md 
+p-1"[39m
+                [36m>[39m
+                  
+[36m<div[39m
+                    [33mcl
+ass[39m=[32m"p-4"[39m
+                  
+[36m>[39m
+                    
+[36m<h2[39m
+                      [33m
+class[39m=[32m"text-lg 
+font-semibold 
+text-gray-800 
+dark:text-white mb-4"[39m
+                      [33m
+id[39m=[32m"editor-headin
+g"[39m
+                    
+[36m>[39m
+                      
+[0mCover Letter 
+Details[0m
+                    
+[36m</h2>[39m
+                    
+[36m<div[39m
+                      [33m
+aria-labelledby[39m=[32m"
+editor-heading"[39m
+                      [33m
+role[39m=[32m"form"[39m
+                    
+[36m>[39m
+                      
+[36m<div[39m
+                        [3
+3mclass[39m=[32m"space-y-
+1"[39m
+                      
+[36m>[39m
+                        
+[36m<div[39m
+                          
+[33mclass[39m=[32m"border
+-b border-gray-200 
+dark:border-gray-700 
+bg-white 
+dark:bg-gray-800"[39m
+                    ...
+
+    [0m [90m 287 |[39m  
+   console[33m.[39mlog([
+32m'Waiting for company 
+validation 
+toast'[39m)[33m;[39m
+     [90m 288 |[39m     
+[36mtry[39m {
+    
+[31m[1m>[22m[39m[90m 
+289 |[39m       toast 
+[33m=[39m 
+[36mawait[39m screen[33m
+.[39mfindByText([35m/Plea
+se enter a company 
+name/i[39m[33m,[39m 
+{}[33m,[39m { 
+timeout[33m:[39m 
+[35m10000[39m 
+})[33m;[39m
+     [90m     |[39m      
+                      
+[31m[1m^[22m[39m
+     [90m 290 |[39m      
+ console[33m.[39mlog([32
+m'Found company validation 
+toast'[39m)[33m;[39m
+     [90m 291 |[39m     
+} [36mcatch[39m (e) {
+     [90m 292 |[39m      
+ console[33m.[39mlog([32
+m'CRITICAL: Company 
+validation toast NOT 
+found. Current DOM snapshot
+:'[39m)[33m;[39m[0m
+
+      at waitForWrapper (no
+de_modules/@testing-library
+/dom/dist/wait-for.js:163:2
+7)
+      at node_modules/@test
+ing-library/dom/dist/query-
+helpers.js:86:33
+      at 
+Object.<anonymous> (__tests
+__/integration/CoverLetterW
+orkflow.test.tsx:289:28)
+
+Test Suites: 1 failed, 1 
+total
+Tests:       1 failed, 7 
+passed, 8 total
+Snapshots:   0 total
+Time:        17.549 s, 
+estimated 20 s
+Ran all test suites 
+matching __tests__/integrat
+ion/CoverLetterWorkflow.tes
+t.tsx.
