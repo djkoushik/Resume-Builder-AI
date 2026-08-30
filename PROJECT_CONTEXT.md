@@ -484,10 +484,10 @@ Recorded, **not to be refactored on sight**. Fix only when a feature genuinely r
 10. ~~**Cover-letter customisation is local state.**~~ **Fixed** — lifted to
     `App.tsx` (`coverLetterCustomization`) during the mobile redesign, so it now
     survives navigation and a viewport-driven shell remount.
-11. **No lockfile is committed.** There is no `package-lock.json` in the repo, and every
-    dependency uses a caret range. Vercel resolves fresh versions on each build, so a
-    transitive release can change or break production without a single code change.
-    Committing a lockfile is the cheapest reliability win available.
+11. ~~**No lockfile is committed.**~~ **Fixed** — `package-lock.json` is committed
+    (since `c9172fa`) and matches `package.json`. Dependencies still use caret ranges,
+    so use `npm ci` (not `npm install`) for reproducible installs, and ensure Vercel's
+    install step respects the lockfile.
 12. **Committed build residue:** `build_log.txt`, `diff.txt`, `jest_output.txt`,
     `jest_output_utf8.txt`.
 13. **`README.md` is the unedited AI-Studio template** and describes nothing about this app.
