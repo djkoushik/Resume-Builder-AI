@@ -9,6 +9,7 @@ import BuilderShell from '../builder/BuilderShell';
 import Footer from '../layout/Footer';
 import { useViewport } from '../../hooks/useViewport';
 import { usePdfExport } from '../../hooks/usePdfExport';
+import { useResumeImport } from '../../hooks/useResumeImport';
 // import AuthButton from '../AuthButton';
 import { ChevronDown, Download, Eye } from 'lucide-react';
 
@@ -19,6 +20,7 @@ interface CoverLetterBuilderProps {
   coverLetterData: CoverLetterData;
   onUpdate: (data: CoverLetterData) => void;
   resumeData: ResumeData;
+  onResumeChange: (data: ResumeData) => void;
   customization: CustomizationSettings;
   onCustomizationChange: (settings: CustomizationSettings) => void;
   onBack: () => void;
@@ -31,6 +33,7 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
   coverLetterData,
   onUpdate,
   resumeData,
+  onResumeChange,
   customization,
   onCustomizationChange,
   onBack,
@@ -39,6 +42,7 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
   const [activeTab, setActiveTab] = useState<Tab>('Templates');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const viewport = useViewport();
+  const { modal: importModal, openImport } = useResumeImport(resumeData, onResumeChange);
 
   const { downloadPdf: shellDownloadPdf } = usePdfExport({
     elementId: 'cover-letter-preview',
@@ -341,11 +345,15 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
   if (viewport === 'desktop') return desktop;
 
   return (
+    <>
     <BuilderShell
       title="Cover letter"
       accent="green"
       onBack={onBack}
-      menuActions={[{ label: 'Build Resume', onClick: onGoToResume }]}
+      menuActions={[
+        { label: 'Upload Resume', onClick: openImport },
+        { label: 'Build Resume', onClick: onGoToResume },
+      ]}
       sheetWidth={816}
       onDownloadPdf={shellDownloadPdf}
       editor={
@@ -358,6 +366,8 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
       preview={<CoverLetterPreview data={coverLetterData} customization={customization} variant="bare" />}
       design={mobileDesign}
     />
+    {importModal}
+    </>
   );
 };
 

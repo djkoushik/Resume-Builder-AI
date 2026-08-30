@@ -8,6 +8,7 @@ import BuilderShell from './builder/BuilderShell';
 import Footer from './layout/Footer';
 import { useViewport } from '../hooks/useViewport';
 import { usePdfExport } from '../hooks/usePdfExport';
+import { useResumeImport } from '../hooks/useResumeImport';
 import { resumePdfOptions, resumePrintWidth } from '../utils/pdfOptions';
 
 interface ResumeBuilderProps {
@@ -36,6 +37,8 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
     getOptions: () => resumePdfOptions(resumeData, customization),
     printWidth: resumePrintWidth(customization),
   });
+
+  const { modal: importModal, openImport } = useResumeImport(resumeData, onResumeChange);
 
   // ---- Desktop: the original three-panel layout, untouched ----
   const desktop = (
@@ -83,11 +86,15 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
 
   // ---- Mobile / tablet: mode-switched shell ----
   return (
+    <>
     <BuilderShell
       title="Resume"
       accent="blue"
       onBack={onBack}
-      menuActions={[{ label: 'Build Cover Letter', onClick: onBuildCoverLetter }]}
+      menuActions={[
+        { label: 'Upload Resume', onClick: openImport },
+        { label: 'Build Cover Letter', onClick: onBuildCoverLetter },
+      ]}
       sheetWidth={customization.layout.pageFormat === 'Letter' ? 816 : 794}
       onDownloadPdf={downloadPdf}
       sections={getResumeSections(resumeData)}
@@ -115,6 +122,8 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
         )
       }
     />
+    {importModal}
+    </>
   );
 };
 

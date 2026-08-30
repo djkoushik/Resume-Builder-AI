@@ -308,6 +308,7 @@ const App: React.FC = () => {
         coverLetterData={coverLetterData}
         onUpdate={handleCoverLetterChange}
         resumeData={resumeData}
+        onResumeChange={handleResumeChange}
         customization={coverLetterCustomization}
         onCustomizationChange={setCoverLetterCustomization}
         onBack={() => {
