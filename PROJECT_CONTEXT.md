@@ -225,9 +225,17 @@ Header ▾ → "Resume Score" → ATSModal → ATSDashboard
   - `PORT` — local API server only.
 - **Local dev:** `npm run dev` runs `concurrently` → `tsx local-server.ts` (:3001) + Vite
   (:3000) with a `/api` proxy. `api/index.ts` also loads `.env` and `.env.local`.
+- **Production URL:** `https://buildresumenow.in/`. Auto-deploys on push to `origin/main`
+  (`djkoushik/Resume-Builder-AI`).
 - **Verified live:** `GET /api/health` → `{"status":"ok","openRouterConfigured":true,"geminiConfigured":true}`.
 - **Build status:** `npm run build` succeeds. `npx tsc --noEmit` reports **0 errors in
   application code** (all remaining errors are missing `@types/jest`, see §11).
+- **Last deploy verified — 2026-08-31** (commit `2d7a0ae`): `GET /` 200
+  (`x-vercel-cache: HIT`, region `bom1`); `/api/health` ok; landing → resume-builder
+  picker → Simple mode boots the mobile shell (top bar Download + More ▾, section
+  chips, Edit/Preview switch); the `68a4a11` `Header.handleAddSkill` fix confirmed in
+  the served bundle (`id:\`skill-${Date.now()}\`` at both call sites, no `level:""`).
+  Only console noise is Google One Tap / GSI FedCM (expected — see §12 `AuthProvider`).
 
 ---
 
