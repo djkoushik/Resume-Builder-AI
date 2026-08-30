@@ -38,7 +38,7 @@ const DownloadButton: React.FC<{ onClick: () => void; accent: 'blue' | 'green' }
   <button
     type="button"
     onClick={onClick}
-    className={`inline-flex items-center gap-1.5 px-3 min-h-[40px] rounded-md text-sm font-medium text-white transition-colors ${
+    className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 min-h-[40px] rounded-md text-sm font-medium text-white transition-colors ${
       accent === 'green' ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
     }`}
   >
@@ -160,14 +160,17 @@ const BuilderShell: React.FC<BuilderShellProps> = ({
   }
 
   // mobile
-  const mobileMenuActions = [
-    { label: 'Download PDF', onClick: onDownloadPdf },
-    ...menuActions,
-  ];
-
   return (
     <div className="flex flex-col h-screen [height:100dvh] bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden">
-      <MobileTopBar title={title} onBack={onBack} menuActions={mobileMenuActions} />
+      <MobileTopBar
+        title={title}
+        onBack={onBack}
+        menuActions={menuActions}
+        /* Download lives in the bottom bar in Preview mode; show it up top elsewhere. */
+        trailing={
+          activeMode === 'preview' ? undefined : <DownloadButton onClick={onDownloadPdf} accent={accent} />
+        }
+      />
 
       {activeMode === 'edit' && sections && activeSection && onSectionChange && (
         <SectionNav sections={sections} active={activeSection} onChange={onSectionChange} accent={accent} />

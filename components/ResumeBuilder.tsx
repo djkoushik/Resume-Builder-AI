@@ -5,6 +5,7 @@ import EditorPanel, { getResumeSections } from './editor/EditorPanel';
 import PreviewPanel from './preview/PreviewPanel';
 import CustomizationPanel from './customization/CustomizationPanel';
 import BuilderShell from './builder/BuilderShell';
+import { ScoreIcon, UploadIcon, MailIcon } from './builder/menuIcons';
 import Footer from './layout/Footer';
 import { useViewport } from '../hooks/useViewport';
 import { usePdfExport } from '../hooks/usePdfExport';
@@ -94,9 +95,9 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
       accent="blue"
       onBack={onBack}
       menuActions={[
-        { label: 'Resume Score', onClick: openAts },
-        { label: 'Upload Resume', onClick: openImport },
-        { label: 'Build Cover Letter', onClick: onBuildCoverLetter },
+        { label: 'Resume Score', onClick: openAts, icon: ScoreIcon },
+        { label: 'Upload Resume', onClick: openImport, icon: UploadIcon },
+        { label: 'Build Cover Letter', onClick: onBuildCoverLetter, icon: MailIcon },
       ]}
       sheetWidth={customization.layout.pageFormat === 'Letter' ? 816 : 794}
       onDownloadPdf={downloadPdf}

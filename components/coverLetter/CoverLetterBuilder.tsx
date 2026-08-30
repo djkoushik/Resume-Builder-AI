@@ -6,6 +6,7 @@ import CoverLetterTemplatePanel from './CoverLetterTemplatePanel';
 import TypographyTab from '../customization/TypographyTab';
 import ColorTab from '../customization/ColorTab';
 import BuilderShell from '../builder/BuilderShell';
+import { UploadIcon, DocIcon } from '../builder/menuIcons';
 import Footer from '../layout/Footer';
 import { useViewport } from '../../hooks/useViewport';
 import { usePdfExport } from '../../hooks/usePdfExport';
@@ -351,8 +352,8 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
       accent="green"
       onBack={onBack}
       menuActions={[
-        { label: 'Upload Resume', onClick: openImport },
-        { label: 'Build Resume', onClick: onGoToResume },
+        { label: 'Upload Resume', onClick: openImport, icon: UploadIcon },
+        { label: 'Build Resume', onClick: onGoToResume, icon: DocIcon },
       ]}
       sheetWidth={816}
       onDownloadPdf={shellDownloadPdf}
