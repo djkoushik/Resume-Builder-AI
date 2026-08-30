@@ -30,6 +30,30 @@ export interface ATSScoreResult {
     };
 }
 
+// --- Text matching helpers ---
+
+const escapeRegExp = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * True when `needle` appears in `haystack` as a standalone token, not glued to
+ * more letters/digits or to `+ # .` (so "r" is not found inside "years", "js"
+ * not inside "adjust", "c" not inside "c#" or "c++", ".net" not inside
+ * "asp.net"). Case-insensitive; caller need not lowercase.
+ *
+ * Fixes the substring match (`text.includes(skill)`) that flagged one- and
+ * two-letter skills ("r", "go", "c#", "js") as present in almost any JD.
+ */
+const mentions = (haystack: string, needle: string): boolean => {
+    const trimmed = needle.trim();
+    if (!trimmed) return false;
+    try {
+        return new RegExp(`(?<![a-z0-9+#.])${escapeRegExp(trimmed)}(?![a-z0-9+#.])`, 'i').test(haystack);
+    } catch {
+        // Malformed needle can't be a real skill; treat as absent.
+        return false;
+    }
+};
+
 // --- Phase 0: JD Parsing & Dismantling ---
 
 const extractExperienceFromText = (text: string): { min: number, max: number } | null => {
@@ -131,11 +155,11 @@ export const calculateATSScore = (
     if (jdText) {
         // Check for standard skills in text
         standardSkills.forEach(skill => {
-            if (jdText.includes(skill)) extractedKeywords.add(skill);
+            if (mentions(jdText, skill)) extractedKeywords.add(skill);
         });
         // Also check aliases
         Object.keys(canonicalMap).forEach(key => {
-            if (jdText.includes(key)) extractedKeywords.add(canonicalMap[key]);
+            if (mentions(jdText, key)) extractedKeywords.add(canonicalMap[key]);
         });
     }
 
@@ -158,17 +182,11 @@ export const calculateATSScore = (
         // Simple heuristic: if it appears near "bonus", "plus", "preferred" -> Bonus
         // otherwise default to Critical
         extractedKeywords.forEach(kw => {
-            const regex = new RegExp(`(bonus|plus|preferred|nice to have|desirable).{0,50}${kw}`, 'i');
-            const regexReverse = new RegExp(`${kw}.{0,50}(bonus|plus|preferred|nice to have|desirable)`, 'i');
-
-            const isBonus = regex.test(jdText) || regexReverse.test(jdText);
-
-            // Log to file since we can't see server console
-            try {
-                const fs = require('fs');
-                const logMsg = `[ATS] KW: '${kw}' | JD Snippet: '${jdText.substring(0, 50)}...' | Bonus? ${isBonus}\n`;
-                fs.appendFileSync('debug_ats.log', logMsg);
-            } catch (e) { }
+            const escaped = escapeRegExp(kw);
+            const cue = '(bonus|plus|preferred|nice to have|desirable)';
+            const isBonus =
+                new RegExp(`${cue}.{0,50}${escaped}`, 'i').test(jdText) ||
+                new RegExp(`${escaped}.{0,50}${cue}`, 'i').test(jdText);
 
             if (isBonus) {
                 jdBonusRaw.push(kw);
@@ -192,11 +210,12 @@ export const calculateATSScore = (
     if (candidateSkillsRaw.length === 0) {
         // Fallback regex on history
         candidate.experience.forEach(exp => {
+            const summary = exp.summary || '';
             standardSkills.forEach(skill => {
-                if (exp.summary.toLowerCase().includes(skill)) candidateSkillsRaw.push(skill);
+                if (mentions(summary, skill)) candidateSkillsRaw.push(skill);
             });
             Object.keys(canonicalMap).forEach(key => {
-                if (exp.summary.toLowerCase().includes(key)) candidateSkillsRaw.push(key);
+                if (mentions(summary, key)) candidateSkillsRaw.push(key);
             });
         });
     }
@@ -311,7 +330,7 @@ export const calculateATSScore = (
 
         const candidateString = JSON.stringify(candidate).toLowerCase();
         uniqueTokens.forEach(token => {
-            if (candidateString.includes(token)) semanticMatches++;
+            if (mentions(candidateString, token)) semanticMatches++;
         });
     }
 

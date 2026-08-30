@@ -1,6 +1,7 @@
 import React from 'react';
 import { Project } from '../../types';
 import Input from '../ui/Input';
+import RemoveButton from '../ui/RemoveButton';
 import Textarea from '../ui/Textarea';
 
 interface ProjectsSectionProps {
@@ -25,7 +26,7 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onUpdate })
     <div>
       {projects.map(project => (
         <div key={project.id} className="p-4 mb-2 border rounded-md relative bg-gray-50 dark:bg-gray-700">
-          <button onClick={() => handleRemoveItem(project.id)} className="absolute top-2 right-2 text-red-500 hover:text-red-700">&#x2715;</button>
+          <RemoveButton onClick={() => handleRemoveItem(project.id)} />
           <Input label="Project Name" value={project.name} onChange={e => handleChange(project.id, 'name', e.target.value)} />
           <Input label="Your Role" value={project.role} onChange={e => handleChange(project.id, 'role', e.target.value)} />
           <Input label="Project URL (Optional)" value={project.url} onChange={e => handleChange(project.id, 'url', e.target.value)} />

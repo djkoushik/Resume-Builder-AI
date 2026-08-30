@@ -2,6 +2,7 @@
 import React from 'react';
 import { Profile } from '../../types';
 import Input from '../ui/Input';
+import RemoveButton from '../ui/RemoveButton';
 import Select from '../ui/Select';
 import { SOCIAL_NETWORKS } from '../../constants';
 
@@ -27,13 +28,8 @@ const ProfilesSection: React.FC<ProfilesSectionProps> = ({ profiles, onUpdate })
     <div>
       {profiles.map((profile, index) => (
         <div key={profile.id} className="p-4 mb-2 border rounded-md relative bg-gray-50 dark:bg-gray-700">
-          <button
-            onClick={() => handleRemoveProfile(profile.id)}
-            className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-          >
-            &#x2715;
-          </button>
-          <div className="grid grid-cols-2 gap-4">
+          <RemoveButton onClick={() => handleRemoveProfile(profile.id)} />
+          <div className="grid grid-cols-2 gap-4 pr-9">
             <Select
               label="Network"
               id={`profile-network-${index}`}

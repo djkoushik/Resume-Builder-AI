@@ -5,19 +5,24 @@ import CoverLetterTemplateRenderer from './CoverLetterTemplateRenderer';
 interface CoverLetterPreviewProps {
   data: CoverLetterData;
   customization?: CustomizationSettings;
+  /** `panel` = desktop scroll box. `bare` = full sheet for the mobile PreviewViewport. */
+  variant?: 'panel' | 'bare';
 }
 
-const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({ data, customization }) => {
+const CoverLetterPreview: React.FC<CoverLetterPreviewProps> = ({ data, customization, variant = 'panel' }) => {
+  const bodyFont = customization?.typography.fontSizes.body;
+  const isBare = variant === 'bare';
+
   return (
     <div
       id="cover-letter-preview"
-      className="bg-white rounded-lg shadow-sm min-h-96 overflow-auto mx-auto"
+      className={isBare ? 'bg-white shadow-lg mx-auto' : 'bg-white rounded-lg shadow-sm min-h-96 overflow-auto mx-auto'}
       style={{
-        width: '100%',
+        width: isBare ? '8.5in' : '100%',
         maxWidth: '8.5in',
         minHeight: '11in',
-        maxHeight: '600px',
-        fontSize: customization?.typography.fontSizes.body ? `${customization.typography.fontSizes.body}pt` : '14px'
+        maxHeight: isBare ? 'none' : '600px',
+        fontSize: bodyFont ? `${bodyFont}pt` : '14px',
       }}
       role="document"
       aria-label="Cover letter preview"

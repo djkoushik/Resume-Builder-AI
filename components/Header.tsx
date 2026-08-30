@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { ResumeData, CustomizationSettings } from '../types';
 // import AuthButton from './AuthButton';
 
@@ -13,6 +13,11 @@ interface HeaderProps {
 import ATSModal from './ats/ATSModal';
 import { useState } from 'react';
 
+// Same lazy chunk as the ResumeBuilderPage entry point — importing it here does
+// not pull the parser into the main bundle.
+const ImportResumeModal = lazy(() => import('./import/ImportResumeModal'));
+const prefetchImportModal = () => { void import('./import/ImportResumeModal'); };
+
 // Declare html2pdf for TypeScript since it's loaded from a script tag
 declare var html2pdf: any;
 
@@ -21,6 +26,7 @@ import { ChevronDown, Download, Eye, FileText, CheckCircle } from 'lucide-react'
 const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBuildCoverLetter, onImport }) => {
   const [isATSOpen, setIsATSOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
 
 
   const getPdfOptions = () => {
@@ -149,7 +155,8 @@ const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBu
 
   return (
     <>
-      <header className="bg-white dark:bg-gray-800 shadow-md p-4 flex justify-between items-center z-10 relative">
+      <header className="bg-white dark:bg-gray-800 shadow-md p-4 z-10 relative" role="banner">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center space-x-4">
           <button
             onClick={onBack}
@@ -160,14 +167,23 @@ const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBu
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </button>
-          <h1 className="text-xl font-bold text-gray-800 dark:text-white">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
             <span className="text-blue-500">AI</span> Resume Builder
           </h1>
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setIsImportOpen(true)}
+            onMouseEnter={prefetchImportModal}
+            onFocus={prefetchImportModal}
+            className="px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-teal-700 bg-teal-50 border border-teal-200 rounded-md shadow-sm hover:bg-teal-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-teal-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors"
+          >
+            Upload Resume
+          </button>
+
           <button
             onClick={onBuildCoverLetter}
-            className="px-3 py-2 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-md shadow-sm hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:bg-gray-700 dark:text-green-300 dark:border-gray-600 dark:hover:bg-gray-600"
+            className="px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-md shadow-sm hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:bg-gray-700 dark:text-green-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors"
           >
             Build Cover Letter
           </button>
@@ -177,13 +193,13 @@ const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBu
               <button
                 type="button"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 items-center"
+                className="inline-flex justify-center w-full px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 items-center transition-colors"
                 id="options-menu"
                 aria-expanded="true"
                 aria-haspopup="true"
               >
                 Download PDF
-                <ChevronDown className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
+                <ChevronDown className="-mr-1 ml-1 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
               </button>
             </div>
 
@@ -255,6 +271,7 @@ const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBu
 
           {/* <AuthButton /> */}
         </div>
+        </div>
       </header>
       <ATSModal
         isOpen={isATSOpen}
@@ -262,6 +279,19 @@ const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBu
         resumeData={resumeData}
         onAddSkill={handleAddSkill}
       />
+      {isImportOpen && (
+        <Suspense fallback={null}>
+          <ImportResumeModal
+            isOpen
+            onClose={() => setIsImportOpen(false)}
+            currentResume={resumeData}
+            onImport={data => {
+              setIsImportOpen(false);
+              onImport(data);
+            }}
+          />
+        </Suspense>
+      )}
     </>
   );
 };

@@ -1,10 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { ResumeData, CustomizationSettings, CoverLetterData, initialResumeData, initialCustomizationSettings, initialCoverLetterData, syncResumeToLetter } from './types';
 import { updateMetaTags, SEO_CONFIGS } from './utils/seoUtils';
-import EditorPanel from './components/editor/EditorPanel';
-import PreviewPanel from './components/preview/PreviewPanel';
-import CustomizationPanel from './components/customization/CustomizationPanel';
-import Header from './components/Header';
+import ResumeBuilder from './components/ResumeBuilder';
 import LandingPage from './components/LandingPage';
 import ArtifactSelector from './components/ArtifactSelector';
 import CoverLetterBuilder from './components/coverLetter/CoverLetterBuilder';
@@ -24,6 +21,10 @@ const App: React.FC = () => {
     ...syncResumeToLetter(initialResumeData)
   }));
   const [customization, setCustomization] = useState<CustomizationSettings>(initialCustomizationSettings);
+  // Cover-letter typography/colour choices. Lifted here (rather than kept local
+  // to CoverLetterBuilder) so they survive a viewport-driven remount of the
+  // builder shell and a round-trip to the resume builder.
+  const [coverLetterCustomization, setCoverLetterCustomization] = useState<CustomizationSettings>(initialCustomizationSettings);
   const [currentView, setCurrentView] = useState<AppView>('landing');
 
   // Handle browser navigation and initial route
@@ -163,6 +164,17 @@ const App: React.FC = () => {
     setCustomization(newCustomization);
   }, []);
 
+  // Imported resume data, from ImportResumeModal on the resume-builder page.
+  // Order matters: the data is set BEFORE navigating. The route handlers use
+  // functional updates (prev => ...), so they compose correctly on top of this
+  // in the same batch; doing it the other way round would clobber resumeMode.
+  const handleImportResume = useCallback((importedData: ResumeData) => {
+    handleResumeChange({ ...importedData, resumeMode: 'simple' });
+    setCustomization(prev => ({ ...prev, template: 'Professional' }));
+    window.history.pushState({}, '', '/build-resume');
+    setCurrentView('resumeBuilderTool');
+  }, [handleResumeChange]);
+
   const handleStartBuilding = () => {
     setCurrentView('selector');
   };
@@ -234,6 +246,8 @@ const App: React.FC = () => {
     return (
       <div className="flex flex-col min-h-screen">
         <ResumeBuilderPage
+          currentResume={resumeData}
+          onImportResume={handleImportResume}
           onBuildSimple={() => {
             setResumeData(prev => ({ ...prev, resumeMode: 'simple' }));
             setCustomization(prev => ({ ...prev, template: 'Professional' }));
@@ -270,76 +284,41 @@ const App: React.FC = () => {
   // Resume builder tool view
   if (currentView === 'resumeBuilderTool') {
     return (
-      <div className="flex flex-col min-h-screen font-sans bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-        <Header
-          resumeData={resumeData}
-          customization={customization}
-          onImport={handleResumeChange}
-          onBack={() => {
-            window.history.pushState({}, '', '/resume-builder');
-            setCurrentView('resumeBuilderPage');
-          }}
-          onBuildCoverLetter={() => {
-            window.history.pushState({}, '', '/cover-letter-builder/build');
-            setCurrentView('coverLetterBuilderTool');
-          }}
-        />
-        <main className="flex-grow flex">
-          <div className="w-full grid grid-cols-1 lg:grid-cols-10 xl:grid-cols-4 gap-4 p-4 items-start">
-            {/* Left Panel: Editor */}
-            <div className="lg:col-span-3 xl:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-md p-1">
-              <EditorPanel
-                resumeData={resumeData}
-                onUpdate={handleResumeChange}
-                template={customization.template}
-              />
-            </div>
-
-            {/* Center Panel: Preview */}
-            <div className={`${resumeData.resumeMode === 'simple'
-                ? 'lg:col-span-7 xl:col-span-3'
-                : 'lg:col-span-4 xl:col-span-2'
-              } flex items-start justify-center bg-gray-200 dark:bg-gray-700 rounded-lg shadow-inner`}>
-              <PreviewPanel resumeData={resumeData} customization={customization} />
-            </div>
-
-            {/* Right Panel: Customization */}
-            {resumeData.resumeMode !== 'simple' && (
-              <div className="lg:col-span-3 xl:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-md p-1">
-                <CustomizationPanel
-                  settings={customization}
-                  onUpdate={handleCustomizationChange}
-                  resumeData={resumeData}
-                  onImport={handleResumeChange}
-                />
-              </div>
-            )}
-          </div>
-        </main>
-        <Footer />
-      </div>
+      <ResumeBuilder
+        resumeData={resumeData}
+        customization={customization}
+        onResumeChange={handleResumeChange}
+        onCustomizationChange={handleCustomizationChange}
+        onBack={() => {
+          window.history.pushState({}, '', '/resume-builder');
+          setCurrentView('resumeBuilderPage');
+        }}
+        onBuildCoverLetter={() => {
+          window.history.pushState({}, '', '/cover-letter-builder/build');
+          setCurrentView('coverLetterBuilderTool');
+        }}
+      />
     );
   }
 
   // Cover letter builder tool view
   if (currentView === 'coverLetterBuilderTool') {
     return (
-      <div className="flex flex-col min-h-screen">
-        <CoverLetterBuilder
-          coverLetterData={coverLetterData}
-          onUpdate={handleCoverLetterChange}
-          resumeData={resumeData}
-          onBack={() => {
-            window.history.pushState({}, '', '/cover-letter-builder');
-            setCurrentView('coverLetterBuilderPage');
-          }}
-          onGoToResume={() => {
-            window.history.pushState({}, '', '/resume-builder/build');
-            setCurrentView('resumeBuilderTool');
-          }}
-        />
-        <Footer />
-      </div>
+      <CoverLetterBuilder
+        coverLetterData={coverLetterData}
+        onUpdate={handleCoverLetterChange}
+        resumeData={resumeData}
+        customization={coverLetterCustomization}
+        onCustomizationChange={setCoverLetterCustomization}
+        onBack={() => {
+          window.history.pushState({}, '', '/cover-letter-builder');
+          setCurrentView('coverLetterBuilderPage');
+        }}
+        onGoToResume={() => {
+          window.history.pushState({}, '', '/resume-builder/build');
+          setCurrentView('resumeBuilderTool');
+        }}
+      />
     );
   }
 };

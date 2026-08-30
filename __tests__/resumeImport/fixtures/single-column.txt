@@ -1,0 +1,26 @@
+PRIYA SHARMA
+Senior Backend Engineer
+Bengaluru, India | +91 98765 43210 | priya.sharma@gmail.com | linkedin.com/in/priyasharma
+
+SUMMARY
+Backend engineer with 8 years building payment infrastructure at scale.
+
+WORK EXPERIENCE
+
+Razorpay - Senior Backend Engineer
+Bengaluru, India | March 2021 - Present
+- Led migration of the settlements pipeline to event-driven architecture.
+- Cut p99 latency on the payouts API from 1.2s to 240ms.
+
+Flipkart - Backend Engineer
+Bengaluru, India | June 2018 - February 2021
+- Built inventory reconciliation service handling 4M events per day.
+
+EDUCATION
+National Institute of Technology, Warangal
+B.Tech in Computer Science, 2014 - 2018
+
+SKILLS
+Languages: Go, Python, Java
+Infrastructure: Kubernetes, Docker, Terraform, AWS
+Databases: PostgreSQL, Redis, Kafka

@@ -1,0 +1,19 @@
+MARCUS OKONKWO
+marcus.okonkwo@protonmail.com | (415) 555-0142 | San Francisco, CA
+github.com/mokonkwo
+
+PROFESSIONAL EXPERIENCE
+
+Staff Software Engineer | Datadog Inc. | New York, NY | Jan 2020 – Present
+• Designed the multi-region ingestion pipeline handling 30M spans per second.
+• Mentored eight engineers across three teams.
+
+Senior Software Engineer | Twilio Inc. | San Francisco, CA | 06/2016 - 12/2019
+• Rebuilt the messaging retry subsystem, cutting failed deliveries by 62%.
+
+EDUCATION
+Master of Science in Computer Science
+Stanford University | 2014 - 2016
+
+TECHNICAL SKILLS
+Go, Rust, Kubernetes, gRPC, PostgreSQL, Kafka

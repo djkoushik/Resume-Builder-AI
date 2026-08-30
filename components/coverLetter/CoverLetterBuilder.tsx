@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { CoverLetterData, ResumeData, initialCoverLetterData, CustomizationSettings, initialCustomizationSettings } from '../../types';
+import { CoverLetterData, ResumeData, CustomizationSettings } from '../../types';
 import CoverLetterEditor from './CoverLetterEditor';
 import CoverLetterPreview from './CoverLetterPreview';
 import CoverLetterTemplatePanel from './CoverLetterTemplatePanel';
 import TypographyTab from '../customization/TypographyTab';
 import ColorTab from '../customization/ColorTab';
+import BuilderShell from '../builder/BuilderShell';
+import Footer from '../layout/Footer';
+import { useViewport } from '../../hooks/useViewport';
+import { usePdfExport } from '../../hooks/usePdfExport';
 // import AuthButton from '../AuthButton';
 import { ChevronDown, Download, Eye } from 'lucide-react';
 
@@ -15,6 +19,8 @@ interface CoverLetterBuilderProps {
   coverLetterData: CoverLetterData;
   onUpdate: (data: CoverLetterData) => void;
   resumeData: ResumeData;
+  customization: CustomizationSettings;
+  onCustomizationChange: (settings: CustomizationSettings) => void;
   onBack: () => void;
   onGoToResume: () => void;
 }
@@ -25,12 +31,21 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
   coverLetterData,
   onUpdate,
   resumeData,
+  customization,
+  onCustomizationChange,
   onBack,
   onGoToResume
 }) => {
-  const [customization, setCustomization] = useState<CustomizationSettings>(initialCustomizationSettings);
   const [activeTab, setActiveTab] = useState<Tab>('Templates');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const viewport = useViewport();
+
+  const { downloadPdf: shellDownloadPdf } = usePdfExport({
+    elementId: 'cover-letter-preview',
+    getOptions: () => getPdfOptions(),
+    printWidth: '8.5in',
+    printMinHeight: '11in',
+  });
 
   const handleTemplateSelect = (templateId: string) => {
     onUpdate({
@@ -40,7 +55,7 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
   };
 
   const handleCustomizationUpdate = (newSettings: CustomizationSettings) => {
-    setCustomization(newSettings);
+    onCustomizationChange(newSettings);
   };
 
   const getPdfOptions = () => {
@@ -119,8 +134,24 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
     performPdfAction('preview');
   };
 
+  const mobileDesign = (
+    <div className="p-4 space-y-8">
+      <section>
+        <h3 className="text-sm font-semibold text-gray-800 dark:text-white mb-3">Template</h3>
+        <CoverLetterTemplatePanel selectedTemplateId={coverLetterData.templateId} onTemplateSelect={handleTemplateSelect} />
+      </section>
+      <section>
+        <h3 className="text-sm font-semibold text-gray-800 dark:text-white mb-3">Text</h3>
+        <TypographyTab settings={customization} onUpdate={handleCustomizationUpdate} isCoverLetter />
+      </section>
+      <section>
+        <h3 className="text-sm font-semibold text-gray-800 dark:text-white mb-3">Colours</h3>
+        <ColorTab settings={customization} onUpdate={handleCustomizationUpdate} isCoverLetter />
+      </section>
+    </div>
+  );
 
-  return (
+  const desktop = (
     <div className="flex flex-col min-h-screen font-sans bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
       {/* Header */}
       <header
@@ -303,7 +334,30 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
           </div>
         </div>
       </main>
+      <Footer />
     </div>
+  );
+
+  if (viewport === 'desktop') return desktop;
+
+  return (
+    <BuilderShell
+      title="Cover letter"
+      accent="green"
+      onBack={onBack}
+      menuActions={[{ label: 'Switch to the résumé builder', onClick: onGoToResume }]}
+      sheetWidth={816}
+      onDownloadPdf={shellDownloadPdf}
+      editor={
+        <div className="p-4">
+          <div role="form" aria-label="Cover letter details">
+            <CoverLetterEditor data={coverLetterData} onUpdate={onUpdate} resumeData={resumeData} />
+          </div>
+        </div>
+      }
+      preview={<CoverLetterPreview data={coverLetterData} customization={customization} variant="bare" />}
+      design={mobileDesign}
+    />
   );
 };
 

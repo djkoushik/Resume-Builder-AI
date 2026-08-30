@@ -1,0 +1,23 @@
+Diego Fernández
+diego.fernandez@fastmail.com | +34 612 345 678 | Madrid, Spain
+
+EXPERIENCE
+
+Google
+Software Engineer
+Madrid, Spain
+2021 - Present
+- Worked on Search infrastructure serving billions of queries daily.
+
+Stripe
+Backend Engineer
+2019 - 2021
+- Built ledger reconciliation tooling for the payments platform.
+
+EDUCATION
+Universidad Politécnica de Madrid
+BSc Computer Engineering
+2015 - 2019
+
+SKILLS
+Python, Java, Bigtable, Spanner

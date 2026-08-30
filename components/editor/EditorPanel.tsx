@@ -17,7 +17,32 @@ interface EditorPanelProps {
   resumeData: ResumeData;
   onUpdate: (data: ResumeData) => void;
   template: string;
+  /** Controlled active section. When omitted the panel manages its own. */
+  activeSection?: string | null;
+  onSectionChange?: (key: string) => void;
+  /** `accordion` = the desktop list; `single` = one section, no accordion chrome. */
+  display?: 'accordion' | 'single';
 }
+
+const SECTION_TITLES: Record<'basics' | ReorderableSectionKey, string> = {
+  basics: 'Basics',
+  summary: 'Summary',
+  profiles: 'Social Profiles',
+  experience: 'Work Experience',
+  projects: 'Projects',
+  education: 'Education',
+  certifications: 'Certifications',
+  skills: 'Skills',
+  languages: 'Languages',
+  interests: 'Interests',
+  references: 'References',
+};
+
+/** Ordered [basics, ...sectionOrder] with display titles — drives the mobile section nav. */
+export const getResumeSections = (resumeData: ResumeData): { key: string; label: string }[] => [
+  { key: 'basics', label: SECTION_TITLES.basics },
+  ...resumeData.sectionOrder.map(key => ({ key, label: SECTION_TITLES[key] })),
+];
 
 const DragHandle: React.FC = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-400 cursor-grab group-hover:text-gray-600">
@@ -30,12 +55,26 @@ const DragHandle: React.FC = () => (
   </svg>
 );
 
-const EditorPanel: React.FC<EditorPanelProps> = ({ resumeData, onUpdate, template }) => {
+const EditorPanel: React.FC<EditorPanelProps> = ({
+  resumeData,
+  onUpdate,
+  template,
+  activeSection: controlledSection,
+  onSectionChange,
+  display = 'accordion',
+}) => {
   const [draggedItem, setDraggedItem] = useState<{ key: ReorderableSectionKey, column: number } | null>(null);
-  const [activeSection, setActiveSection] = useState<string | null>('basics');
+  const [internalSection, setInternalSection] = useState<string | null>('basics');
+
+  const isControlled = controlledSection !== undefined;
+  const activeSection = isControlled ? controlledSection : internalSection;
 
   const handleAccordionToggle = (sectionName: string) => {
-    setActiveSection(prev => prev === sectionName ? null : sectionName);
+    if (isControlled) {
+      onSectionChange?.(activeSection === sectionName ? '' : sectionName);
+    } else {
+      setInternalSection(prev => prev === sectionName ? null : sectionName);
+    }
   };
 
   const sectionConfig: Record<ReorderableSectionKey, { title: string; component: React.ReactNode }> = {
@@ -49,6 +88,50 @@ const EditorPanel: React.FC<EditorPanelProps> = ({ resumeData, onUpdate, templat
     languages: { title: 'Languages', component: <LanguagesSection languages={resumeData.languages} onUpdate={languages => onUpdate({ ...resumeData, languages })} /> },
     interests: { title: 'Interests', component: <InterestsSection interests={resumeData.interests} onUpdate={interests => onUpdate({ ...resumeData, interests })} /> },
     references: { title: 'References', component: <ReferencesSection references={resumeData.references} onUpdate={references => onUpdate({ ...resumeData, references })} /> },
+  };
+
+  /**
+   * Mobile up/down reorder. For a multi-column template the preview reads from
+   * `layout[template]`, not `sectionOrder`, so the swap has to happen inside the
+   * section's own column there; `sectionOrder` is then rebuilt to match.
+   */
+  const moveSection = (key: ReorderableSectionKey, dir: -1 | 1) => {
+    const templateLayout = resumeData.layout[template];
+
+    if (templateLayout) {
+      const cols: ('column1' | 'column2')[] = ['column1', 'column2'];
+      const colKey = cols.find(c => templateLayout[c].includes(key));
+      if (!colKey) return;
+      const col = [...templateLayout[colKey]];
+      const i = col.indexOf(key);
+      const j = i + dir;
+      if (j < 0 || j >= col.length) return;
+      [col[i], col[j]] = [col[j], col[i]];
+      const newTemplateLayout = { ...templateLayout, [colKey]: col };
+      onUpdate({
+        ...resumeData,
+        layout: { ...resumeData.layout, [template]: newTemplateLayout },
+        sectionOrder: [...newTemplateLayout.column1, ...newTemplateLayout.column2],
+      });
+      return;
+    }
+
+    const order = [...resumeData.sectionOrder];
+    const i = order.indexOf(key);
+    const j = i + dir;
+    if (i === -1 || j < 0 || j >= order.length) return;
+    [order[i], order[j]] = [order[j], order[i]];
+    onUpdate({ ...resumeData, sectionOrder: order });
+  };
+
+  /** Bounds for the mobile up/down buttons in the section's effective column. */
+  const reorderBounds = (key: ReorderableSectionKey): { index: number; length: number } => {
+    const templateLayout = resumeData.layout[template];
+    if (templateLayout) {
+      const col = templateLayout.column1.includes(key) ? templateLayout.column1 : templateLayout.column2;
+      return { index: col.indexOf(key), length: col.length };
+    }
+    return { index: resumeData.sectionOrder.indexOf(key), length: resumeData.sectionOrder.length };
   };
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, key: ReorderableSectionKey, column: number) => {
@@ -94,7 +177,6 @@ const EditorPanel: React.FC<EditorPanelProps> = ({ resumeData, onUpdate, templat
 
     const { key: draggedKey, column: sourceColumn } = draggedItem;
 
-    // Only handle if dropping into a different, empty column
     const templateLayout = resumeData.layout[template];
     if (!templateLayout || sourceColumn === targetColumn || templateLayout[`column${targetColumn}` as const].length > 0) return;
 
@@ -154,7 +236,61 @@ const EditorPanel: React.FC<EditorPanelProps> = ({ resumeData, onUpdate, templat
   }
   const columnTitles = getColumnTitles();
 
+  // ---- Single-section (mobile) ----
+  if (display === 'single') {
+    const key = (activeSection || 'basics') as string;
+    const isReorderable = key !== 'basics';
 
+    // Guard against an unrecognised section key (e.g. a hand-edited JSON import).
+    if (key !== 'basics' && !sectionConfig[key as ReorderableSectionKey]) {
+      return (
+        <div className="p-4 text-sm text-gray-500 dark:text-gray-400">
+          This section could not be loaded. Pick another from the list above.
+        </div>
+      );
+    }
+
+    const { index: reIndex, length: reLength } = isReorderable
+      ? reorderBounds(key as ReorderableSectionKey)
+      : { index: -1, length: 0 };
+
+    return (
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {SECTION_TITLES[key as 'basics' | ReorderableSectionKey]}
+          </h2>
+          {isReorderable && (
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => moveSection(key as ReorderableSectionKey, -1)}
+                disabled={reIndex <= 0}
+                aria-label="Move section up"
+                className="flex items-center justify-center w-11 h-11 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>
+              </button>
+              <button
+                type="button"
+                onClick={() => moveSection(key as ReorderableSectionKey, 1)}
+                disabled={reIndex === -1 || reIndex >= reLength - 1}
+                aria-label="Move section down"
+                className="flex items-center justify-center w-11 h-11 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+              </button>
+            </div>
+          )}
+        </div>
+        {key === 'basics'
+          ? <BasicsSection basics={resumeData.basics} onUpdate={basics => onUpdate({ ...resumeData, basics })} />
+          : sectionConfig[key as ReorderableSectionKey].component}
+      </div>
+    );
+  }
+
+  // ---- Accordion list (desktop) ----
   return (
     <div className="space-y-1">
       <Accordion
@@ -170,7 +306,7 @@ const EditorPanel: React.FC<EditorPanelProps> = ({ resumeData, onUpdate, templat
           <div>
             <h4 className="p-3 font-semibold text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50">{columnTitles.col1}</h4>
             <div
-              className="min-h-[4rem]" // min height to act as a drop zone
+              className="min-h-[4rem]"
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => handleDropInColumn(e, 1)}
             >

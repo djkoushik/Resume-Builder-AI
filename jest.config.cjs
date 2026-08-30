@@ -4,11 +4,17 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    // atsService.ts uses NodeNext-style `.js` extensions on its relative imports;
+    // strip them so Jest resolves to the actual `.ts` source.
+    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   transform: {
     '^.+\\.(ts|tsx)$': [
       'ts-jest',
       {
+        // Vite/esbuild handle default-import interop for the app build; ts-jest
+        // needs this told explicitly (e.g. `import Fuse from 'fuse.js'`).
+        tsconfig: { esModuleInterop: true },
         diagnostics: {
           ignoreCodes: [1343]
         },

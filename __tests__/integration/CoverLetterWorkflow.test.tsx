@@ -40,6 +40,8 @@ describe('Cover Letter Workflow Integration', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     window.history.pushState({}, '', '/');
+    // Default to a desktop viewport so the builders render their full layout.
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1280 });
   });
 
   test('complete user workflow from landing to cover letter creation', async () => {
@@ -296,8 +298,7 @@ describe('Cover Letter Workflow Integration', () => {
     expect(toast).toBeInTheDocument();
   }, 30000);
 
-  test('responsive design works on mobile viewport', () => {
-    // Mock mobile viewport
+  test('renders the purpose-built mobile shell on a phone viewport', () => {
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
@@ -312,14 +313,17 @@ describe('Cover Letter Workflow Integration', () => {
     fireEvent.click(screen.getAllByText('Build Cover Letter')[0]);
     fireEvent.click(screen.getByText((content, element) => content === 'Start Writing Your Cover Letter'));
 
-    // Should render mobile-friendly layout
-    expect(screen.getByRole('heading', { name: /AI Cover Letter Builder/i })).toBeInTheDocument();
-    expect(screen.getByText('Cover Letter Details')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Download PDF/i })).toBeInTheDocument();
+    // The mobile shell: compact bar + a bottom Edit/Preview/Design switch,
+    // one surface at a time (not the three-panel desktop layout).
+    expect(screen.getByRole('heading', { name: /Cover letter/i })).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: /Builder view/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Edit$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Preview$/i })).toBeInTheDocument();
+    expect(screen.getByRole('banner')).toBeInTheDocument();
+    expect(screen.getByLabelText('Back')).toBeInTheDocument();
 
-    // Header should stack on mobile
-    const header = screen.getByRole('banner');
-    expect(header).toBeInTheDocument();
+    // The desktop-only three-panel chrome must NOT be present.
+    expect(screen.queryByText('Cover Letter Details')).not.toBeInTheDocument();
   });
 
   test('accessibility features work correctly', () => {

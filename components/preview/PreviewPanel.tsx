@@ -5,20 +5,28 @@ import ResumeTemplate from './ResumeTemplate';
 interface PreviewPanelProps {
   resumeData: ResumeData;
   customization: CustomizationSettings;
+  /** `panel` = the desktop centre column (padded, gutter). `bare` = the sheet
+   *  only, for the mobile PreviewViewport which owns sizing. */
+  variant?: 'panel' | 'bare';
 }
 
-const PreviewPanel: React.FC<PreviewPanelProps> = ({ resumeData, customization }) => {
-  // By removing the fixed aspect ratio, the container's height will be determined by its content.
-  // This ensures that the generated PDF does not include extra blank space at the bottom
-  // when the resume content is shorter than a full page.
-  
+const PreviewPanel: React.FC<PreviewPanelProps> = ({ resumeData, customization, variant = 'panel' }) => {
+  const sheet = (
+    <div id="resume-preview" className="bg-white shadow-lg w-full transform origin-top-left">
+      <ResumeTemplate data={resumeData} settings={customization} />
+    </div>
+  );
+
+  if (variant === 'bare') {
+    // PreviewViewport sets the width and scale on an ancestor; render the sheet flush.
+    return <div id="resume-preview-container" className="w-full">{sheet}</div>;
+  }
+
   return (
     <div className="w-full p-8 flex items-start justify-center">
-        <div id="resume-preview-container" className="w-full max-w-4xl">
-            <div id="resume-preview" className="bg-white shadow-lg w-full transform origin-top-left">
-                <ResumeTemplate data={resumeData} settings={customization} />
-            </div>
-        </div>
+      <div id="resume-preview-container" className="w-full max-w-4xl">
+        {sheet}
+      </div>
     </div>
   );
 };

@@ -1,0 +1,25 @@
+NINA PATEL
+Data Scientist
+
+CONTACT
+nina.patel@gmail.com
++1 206 555 0188
+Seattle, WA
+
+SKILLS
+Machine learning: PyTorch, scikit-learn
+Data: SQL, Spark, dbt
+
+EXPERIENCE
+Zillow Group - Senior Data Scientist
+Seattle, WA | April 2020 - Present
+- Built the home valuation model used across the marketplace.
+
+Expedia - Data Scientist
+Seattle, WA | 2017 - 2020
+- Developed demand forecasting for hotel inventory.
+
+EDUCATION
+University of Washington
+MS in Statistics
+2015 - 2017

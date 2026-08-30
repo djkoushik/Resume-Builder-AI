@@ -1,7 +1,8 @@
 
 
 import React, { useState, useRef } from 'react';
-import { CustomizationSettings, ResumeData, initialResumeData } from '../../types';
+import { CustomizationSettings, ResumeData } from '../../types';
+import { mergeResumeData } from '../../utils/resumeData';
 import TemplateTab from './TemplateTab';
 import ColorTab from './ColorTab';
 import TypographyTab from './TypographyTab';
@@ -48,22 +49,10 @@ const CustomizationPanel: React.FC<CustomizationPanelProps> = ({ settings, onUpd
         if (typeof text === 'string') {
           const importedData = JSON.parse(text);
 
-          // Deep merge with defaults to prevent crashes on malformed/partial data
-          const mergedData: ResumeData = {
-            ...initialResumeData,
-            ...importedData,
-            basics: { ...initialResumeData.basics, ...(importedData.basics || {}) },
-            layout: { ...initialResumeData.layout, ...(importedData.layout || {}) },
-            // Ensure array fields exist, falling back to initial data if null/undefined in import
-            profiles: importedData.profiles ?? initialResumeData.profiles,
-            experience: importedData.experience ?? initialResumeData.experience,
-            education: importedData.education ?? initialResumeData.education,
-            skills: importedData.skills ?? initialResumeData.skills,
-            languages: importedData.languages ?? initialResumeData.languages,
-            certifications: importedData.certifications ?? initialResumeData.certifications,
-            projects: importedData.projects ?? initialResumeData.projects,
-            sectionOrder: importedData.sectionOrder ?? initialResumeData.sectionOrder,
-          };
+          // Deep merge with defaults to prevent crashes on malformed/partial data.
+          // Shared with the PDF/DOCX importer; 'json' keeps this path's original
+          // fallback-to-defaults behaviour unchanged.
+          const mergedData: ResumeData = mergeResumeData(importedData, { source: 'json' });
 
           onImport(mergedData);
           alert('Resume data imported successfully!');

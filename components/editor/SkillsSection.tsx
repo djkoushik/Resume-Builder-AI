@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Skill } from '../../types';
 import Input from '../ui/Input';
+import RemoveButton from '../ui/RemoveButton';
 
 interface SkillsSectionProps {
   skills: Skill[];
@@ -62,7 +63,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({ skills, onUpdate }) => {
     <div>
       {skills.map(skill => (
         <div key={skill.id} className="p-4 mb-2 border rounded-md relative bg-gray-50 dark:bg-gray-700">
-          <button onClick={() => handleRemoveItem(skill.id)} className="absolute top-2 right-2 text-red-500 hover:text-red-700">&#x2715;</button>
+          <RemoveButton onClick={() => handleRemoveItem(skill.id)} />
           <Input label="Category Name" placeholder="e.g. Web Technologies" value={skill.name} onChange={e => handleChange(skill.id, 'name', e.target.value)} />
           <KeywordsInput 
             initialKeywords={skill.keywords} 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Certification } from '../../types';
 import Input from '../ui/Input';
+import RemoveButton from '../ui/RemoveButton';
 
 interface CertificationsSectionProps {
   certifications: Certification[];
@@ -24,7 +25,7 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({ certifica
     <div>
       {certifications.map(cert => (
         <div key={cert.id} className="p-4 mb-2 border rounded-md relative bg-gray-50 dark:bg-gray-700">
-          <button onClick={() => handleRemoveItem(cert.id)} className="absolute top-2 right-2 text-red-500 hover:text-red-700">&#x2715;</button>
+          <RemoveButton onClick={() => handleRemoveItem(cert.id)} />
           <Input label="Certification Name" value={cert.name} onChange={e => handleChange(cert.id, 'name', e.target.value)} />
           <Input label="Issuer" value={cert.issuer} onChange={e => handleChange(cert.id, 'issuer', e.target.value)} />
           <Input label="Date" placeholder="e.g. 2020" value={cert.date} onChange={e => handleChange(cert.id, 'date', e.target.value)} />

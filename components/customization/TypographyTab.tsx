@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CustomizationSettings } from '../../types';
+import { CustomizationSettings, initialCustomizationSettings } from '../../types';
 import { GOOGLE_FONTS, FONT_WEIGHTS, FONT_STYLES } from '../../constants';
 import Select from '../ui/Select';
 
@@ -10,21 +10,47 @@ interface TypographyTabProps {
     isCoverLetter?: boolean;
 }
 
+const StepButton: React.FC<{ onClick: () => void; label: string; children: React.ReactNode }> = ({ onClick, label, children }) => (
+    <button
+        type="button"
+        onClick={onClick}
+        aria-label={label}
+        className="flex items-center justify-center w-9 h-9 flex-shrink-0 rounded-md border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+    >
+        {children}
+    </button>
+);
+
 const FontSizeInput: React.FC<{
     label: string,
     value: number,
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    onChange: (value: number) => void
 }> = ({ label, value, onChange }) => (
     <div>
         <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
-        <input
-            type="number"
-            value={value}
-            onChange={onChange}
-            className="w-full px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm"
-        />
+        <div className="flex items-center gap-1">
+            <StepButton label={`Decrease ${label}`} onClick={() => onChange(Math.max(4, value - 1))}>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" d="M5 12h14" /></svg>
+            </StepButton>
+            <input
+                type="number"
+                inputMode="numeric"
+                value={value}
+                onChange={e => { const n = parseInt(e.target.value, 10); if (!isNaN(n)) onChange(n); }}
+                className="w-full min-w-0 text-center px-1 h-9 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm tabular-nums"
+            />
+            <StepButton label={`Increase ${label}`} onClick={() => onChange(value + 1)}>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" d="M12 5v14M5 12h14" /></svg>
+            </StepButton>
+        </div>
     </div>
 );
+
+const SCALE_PRESETS: { label: string; factor: number }[] = [
+    { label: 'Compact', factor: 0.9 },
+    { label: 'Standard', factor: 1 },
+    { label: 'Large', factor: 1.15 },
+];
 
 
 const TypographyTab: React.FC<TypographyTabProps> = ({ settings, onUpdate, isCoverLetter }) => {
@@ -43,11 +69,8 @@ const TypographyTab: React.FC<TypographyTabProps> = ({ settings, onUpdate, isCov
 
     const handleFontSizeChange = (
         field: keyof CustomizationSettings['typography']['fontSizes'],
-        value: string
+        newSize: number
     ) => {
-        const newSize = parseInt(value, 10);
-        if (isNaN(newSize)) return;
-
         onUpdate({
             ...settings,
             typography: {
@@ -57,6 +80,17 @@ const TypographyTab: React.FC<TypographyTabProps> = ({ settings, onUpdate, isCov
                     [field]: newSize,
                 }
             }
+        });
+    };
+
+    const applyScale = (factor: number) => {
+        const base = initialCustomizationSettings.typography.fontSizes;
+        const scaled = Object.fromEntries(
+            Object.entries(base).map(([k, v]) => [k, Math.round(v * factor)])
+        ) as CustomizationSettings['typography']['fontSizes'];
+        onUpdate({
+            ...settings,
+            typography: { ...settings.typography, fontSizes: scaled },
         });
     };
 
@@ -79,33 +113,50 @@ const TypographyTab: React.FC<TypographyTabProps> = ({ settings, onUpdate, isCov
 
     return (
         <div className="space-y-4">
-            <h3 className="font-semibold">Global Styles</h3>
+            <div>
+                <h3 className="font-semibold mb-2">Text size</h3>
+                <div className="grid grid-cols-3 gap-2">
+                    {SCALE_PRESETS.map(p => (
+                        <button
+                            key={p.label}
+                            type="button"
+                            onClick={() => applyScale(p.factor)}
+                            className="min-h-[44px] px-2 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            {p.label}
+                        </button>
+                    ))}
+                </div>
+                <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">Sets every size at once. Fine-tune individual sizes below.</p>
+            </div>
+
             <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Line Height</label>
                 <input
                     type="number"
                     step="0.1"
+                    inputMode="decimal"
                     value={settings.typography.lineHeight}
                     onChange={e => handleLineHeightChange(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm"
+                    className="w-full min-h-[44px] px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm sm:min-h-0"
                 />
             </div>
 
-            <div className="p-3 border rounded-md dark:border-gray-600 space-y-2">
-                <h4 className="text-sm font-semibold mb-2">Font Sizes (pt)</h4>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                    <FontSizeInput label="Name" value={settings.typography.fontSizes.name} onChange={e => handleFontSizeChange('name', e.target.value)} />
+            <details className="p-3 border rounded-md dark:border-gray-600">
+                <summary className="text-sm font-semibold cursor-pointer select-none">Fine-tune sizes (pt)</summary>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-3 mt-3">
+                    <FontSizeInput label="Name" value={settings.typography.fontSizes.name} onChange={v => handleFontSizeChange('name', v)} />
                     {!isCoverLetter && (
                         <>
-                            <FontSizeInput label="Headline" value={settings.typography.fontSizes.headline} onChange={e => handleFontSizeChange('headline', e.target.value)} />
-                            <FontSizeInput label="Section Title" value={settings.typography.fontSizes.sectionTitle} onChange={e => handleFontSizeChange('sectionTitle', e.target.value)} />
+                            <FontSizeInput label="Headline" value={settings.typography.fontSizes.headline} onChange={v => handleFontSizeChange('headline', v)} />
+                            <FontSizeInput label="Section Title" value={settings.typography.fontSizes.sectionTitle} onChange={v => handleFontSizeChange('sectionTitle', v)} />
                         </>
                     )}
-                    <FontSizeInput label="Subheading" value={settings.typography.fontSizes.subheading} onChange={e => handleFontSizeChange('subheading', e.target.value)} />
-                    <FontSizeInput label="Body" value={settings.typography.fontSizes.body} onChange={e => handleFontSizeChange('body', e.target.value)} />
-                    <FontSizeInput label="Meta (Date/Contact)" value={settings.typography.fontSizes.meta} onChange={e => handleFontSizeChange('meta', e.target.value)} />
+                    <FontSizeInput label="Subheading" value={settings.typography.fontSizes.subheading} onChange={v => handleFontSizeChange('subheading', v)} />
+                    <FontSizeInput label="Body" value={settings.typography.fontSizes.body} onChange={v => handleFontSizeChange('body', v)} />
+                    <FontSizeInput label="Meta (Date/Contact)" value={settings.typography.fontSizes.meta} onChange={v => handleFontSizeChange('meta', v)} />
                 </div>
-            </div>
+            </details>
 
             <div className="p-3 border rounded-md dark:border-gray-600">
                 <h4 className="text-sm font-semibold mb-2">Heading Font</h4>

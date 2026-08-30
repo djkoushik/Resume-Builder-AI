@@ -1,6 +1,7 @@
 import React from 'react';
 import { Education } from '../../types';
 import Input from '../ui/Input';
+import RemoveButton from '../ui/RemoveButton';
 import Textarea from '../ui/Textarea';
 
 interface EducationSectionProps {
@@ -25,7 +26,7 @@ const EducationSection: React.FC<EducationSectionProps> = ({ education, onUpdate
     <div>
       {education.map(edu => (
         <div key={edu.id} className="p-4 mb-2 border rounded-md relative bg-gray-50 dark:bg-gray-700">
-          <button onClick={() => handleRemoveItem(edu.id)} className="absolute top-2 right-2 text-red-500 hover:text-red-700">&#x2715;</button>
+          <RemoveButton onClick={() => handleRemoveItem(edu.id)} />
           <Input label="Institution" value={edu.institution} onChange={e => handleChange(edu.id, 'institution', e.target.value)} />
           <Input label="Degree" value={edu.degree} onChange={e => handleChange(edu.id, 'degree', e.target.value)} />
           <Input label="Area of Study / Location" placeholder="e.g. Computer Science or Berkeley, CA" value={edu.areaOfStudy} onChange={e => handleChange(edu.id, 'areaOfStudy', e.target.value)} />

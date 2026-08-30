@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { WorkExperience } from '../../types';
 import Input from '../ui/Input';
+import RemoveButton from '../ui/RemoveButton';
 import Textarea from '../ui/Textarea';
 import { enhanceTextWithGemini } from '../../services/geminiService';
 
@@ -47,7 +48,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ experience, onUpd
     <div>
       {experience.map(exp => (
         <div key={exp.id} className="p-4 mb-2 border rounded-md relative bg-gray-50 dark:bg-gray-700">
-          <button onClick={() => handleRemoveItem(exp.id)} className="absolute top-2 right-2 text-red-500 hover:text-red-700">&#x2715;</button>
+          <RemoveButton onClick={() => handleRemoveItem(exp.id)} />
           <Input label="Company" value={exp.company} onChange={e => handleChange(exp.id, 'company', e.target.value)} />
           <Input label="Project (Optional)" value={exp.project || ''} onChange={e => handleChange(exp.id, 'project', e.target.value)} />
           <Input label="Position" value={exp.position} onChange={e => handleChange(exp.id, 'position', e.target.value)} />

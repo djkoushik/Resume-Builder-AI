@@ -21,7 +21,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBack }) => {
           Privacy Policy
         </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
-          Last Updated: December 28, 2025
+          Last Updated: August 30, 2026
         </p>
 
         {/* Simple Version Callout */}
@@ -160,6 +160,21 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBack }) => {
               <li>Google's Privacy Policy: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">https://policies.google.com/privacy</a></li>
               <li><strong>CDN Services:</strong> For faster content delivery (no personal data shared)</li>
             </ul>
+
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+              AI Processing (Google Gemini and OpenRouter)
+            </h3>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+              Some optional features send text to third-party AI providers - Google (Gemini) and OpenRouter - to generate or interpret content. These providers process the text on their own servers, which may be outside India, under their own privacy policies. We do not keep a copy.
+            </p>
+            <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 ml-4">
+              <li><strong>AI writing assistance:</strong> When you ask us to improve a summary, bullet point or cover letter, the text you are working on is sent to an AI provider and the result is returned to your browser. This only happens when you press an AI button.</li>
+              <li><strong>Resume import:</strong> Your uploaded PDF or Word file is read entirely inside your browser and is never uploaded to us. If a job or education heading is too ambiguous for us to split reliably, only that single line of text is sent to an AI provider so it can be separated into employer, job title and location. <strong>Your name, email address, phone number and postal address are never sent</strong> - those are worked out on your device. If nothing is ambiguous, no text is sent at all.</li>
+              <li><strong>You can turn AI import off:</strong> the upload screen has a checkbox to disable AI assistance. With it unchecked, your resume is processed entirely on your device and nothing is sent to any AI provider. Your choice is remembered in your browser.</li>
+              <li>Google's Privacy Policy: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">https://policies.google.com/privacy</a></li>
+              <li>OpenRouter's Privacy Policy: <a href="https://openrouter.ai/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">https://openrouter.ai/privacy</a></li>
+            </ul>
+
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed mt-3">
               By using our service, you consent to this limited third-party data processing.
             </p>
