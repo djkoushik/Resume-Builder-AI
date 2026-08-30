@@ -47,22 +47,6 @@ const DownloadButton: React.FC<{ onClick: () => void; accent: 'blue' | 'green' }
   </button>
 );
 
-/** Full-width primary action shown above the mode switch on the Preview surface. */
-const DownloadBar: React.FC<{ onClick: () => void; accent: 'blue' | 'green' }> = ({ onClick, accent }) => (
-  <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5">
-    <button
-      type="button"
-      onClick={onClick}
-      className={`w-full inline-flex items-center justify-center gap-2 min-h-[46px] rounded-lg text-sm font-semibold text-white transition-colors ${
-        accent === 'green' ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
-      }`}
-    >
-      {DownloadIcon}
-      Download PDF
-    </button>
-  </div>
-);
-
 const BuilderShell: React.FC<BuilderShellProps> = ({
   title,
   accent,
@@ -166,10 +150,7 @@ const BuilderShell: React.FC<BuilderShellProps> = ({
         title={title}
         onBack={onBack}
         menuActions={menuActions}
-        /* Download lives in the bottom bar in Preview mode; show it up top elsewhere. */
-        trailing={
-          activeMode === 'preview' ? undefined : <DownloadButton onClick={onDownloadPdf} accent={accent} />
-        }
+        trailing={<DownloadButton onClick={onDownloadPdf} accent={accent} />}
       />
 
       {activeMode === 'edit' && sections && activeSection && onSectionChange && (
@@ -189,8 +170,6 @@ const BuilderShell: React.FC<BuilderShellProps> = ({
           </div>
         )}
       </main>
-
-      {activeMode === 'preview' && <DownloadBar onClick={onDownloadPdf} accent={accent} />}
 
       <ModeSwitch mode={activeMode} onChange={setMode} accent={accent} showDesign={!!design} />
     </div>
