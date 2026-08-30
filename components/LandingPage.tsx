@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useViewport } from '../hooks/useViewport';
 // import AuthButton from './AuthButton';
 
 interface LandingPageProps {
@@ -6,8 +7,20 @@ interface LandingPageProps {
   onSelectCoverLetter: () => void;
 }
 
+const ResumeIcon = (
+  <svg className="w-full h-full" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+  </svg>
+);
+const LetterIcon = (
+  <svg className="w-full h-full" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+  </svg>
+);
+
 const LandingPage: React.FC<LandingPageProps> = ({ onSelectResume, onSelectCoverLetter }) => {
   const chooseRef = useRef<HTMLDivElement>(null);
+  const viewport = useViewport();
 
   const handleContactUs = () => {
     const footer = document.querySelector('footer');
@@ -68,16 +81,46 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectResume, onSelectCover
       </div>
 
       {/* Choose What to Build Section */}
-      <div ref={chooseRef} className="w-full py-20">
+      <div ref={chooseRef} className="w-full py-10 md:py-20">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4">
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-800 dark:text-white mb-3 md:mb-4">
             Choose What to <span className="text-blue-500">Build</span>
           </h2>
 
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-12">
+          <p className="text-base md:text-xl text-gray-600 dark:text-gray-300 mb-6 md:mb-12">
             Select the type of document you'd like to create with AI assistance.
           </p>
 
+          {viewport === 'mobile' ? (
+            <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden divide-y divide-gray-200 dark:divide-gray-700 text-left">
+              <button
+                onClick={handleSelectResumeWithScroll}
+                className="w-full flex items-center gap-3 p-3.5 bg-white dark:bg-gray-800 active:bg-gray-50 dark:active:bg-gray-700/50 transition-colors text-left"
+              >
+                <span className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
+                  <span className="w-5 h-5 text-blue-600 dark:text-blue-400">{ResumeIcon}</span>
+                </span>
+                <span className="flex-1 min-w-0">
+                  <span className="block text-[15px] font-semibold text-gray-900 dark:text-white">Build Resume</span>
+                  <span className="block text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">Simple or custom, ATS-ready</span>
+                </span>
+                <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+              </button>
+              <button
+                onClick={handleSelectCoverLetterWithScroll}
+                className="w-full flex items-center gap-3 p-3.5 bg-white dark:bg-gray-800 active:bg-gray-50 dark:active:bg-gray-700/50 transition-colors text-left"
+              >
+                <span className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
+                  <span className="w-5 h-5 text-green-600 dark:text-green-400">{LetterIcon}</span>
+                </span>
+                <span className="flex-1 min-w-0">
+                  <span className="block text-[15px] font-semibold text-gray-900 dark:text-white">Build Cover Letter</span>
+                  <span className="block text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">Syncs with your resume data</span>
+                </span>
+                <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Resume Builder Card */}
             <div
@@ -139,8 +182,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectResume, onSelectCover
               </div>
             </div>
           </div>
+          )}
 
-          <div className="mt-12">
+          <div className="mt-8 md:mt-12">
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Both tools work together seamlessly - your resume data automatically syncs to your cover letters.
             </p>
