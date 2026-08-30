@@ -135,8 +135,8 @@ const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBu
     } else {
       // Create new skills section
       newResumeData.skills = [{
+        id: `skill-${Date.now()}`,
         name: "Key Skills",
-        level: "",
         keywords: [skill]
       }];
     }

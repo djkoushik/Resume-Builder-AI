@@ -462,17 +462,23 @@ Recorded, **not to be refactored on sight**. Fix only when a feature genuinely r
    `__tests__/services/atsService.test.ts` (the first tests for this file);
    `jest.config.cjs` gained a `.js`-extension mapper and `esModuleInterop` so
    `atsService` and its `fuse.js` import resolve under ts-jest.
-6. **`Header.handleAddSkill` builds an invalid `Skill`** — `{ name, level, keywords }`
-   with no `id` and a `level` field that is not in the interface. Only hit when the resume
-   has zero skill categories.
+6. ~~**`Header.handleAddSkill` builds an invalid `Skill`.**~~ **Fixed** — the
+   zero-skill-categories fallback now emits `{ id: \`skill-${Date.now()}\`, name,
+   keywords }` (was `{ name, level: "", keywords }` — no `id`, bogus `level`). The
+   mobile path (`useAtsModal`) was already correct.
 7. **Testing setup is fragile.** `jest.config.cjs` uses `preset: 'ts-jest'`, but neither
    `ts-jest` nor `@types/jest` is in `devDependencies` — tests run only because `ts-jest`
    resolves transitively, and `tsc --noEmit` reports ~40 errors in test files for the
    missing types. Coverage is mostly cover-letter + the resume-import suites;
    `atsService` now has a small suite (word-boundary matching only). **Still no
    tests for the PDF export path or the resume templates.**
-8. **One failing test.** `__tests__/integration/CoverLetterWorkflow.test.tsx` fails on the
-   "Please enter a company name" toast assertion (52/53 pass). Pre-existing.
+8. **Full suite green.** `npm test` = 206/206. The long-standing
+   `CoverLetterWorkflow › form validation prevents invalid submissions` failure was a
+   test bug: the editor's accordions are single-open, so opening "Job Application
+   Details" unmounts the Enhance-with-AI button, and the test's `queryByText(/Enhance
+   with AI/i)` guard always matched the preview's placeholder copy instead of the
+   button, so it never re-opened "Letter Content". Fixed by querying the button via
+   `getByRole` and re-opening the accordion explicitly.
 9. **Two error-reporting idioms.** `alert()` in the resume editor and `Header`;
    `Toast` in the cover-letter editor. Standardise on `Toast`.
 10. ~~**Cover-letter customisation is local state.**~~ **Fixed** — lifted to

@@ -221,81 +221,41 @@ describe('Cover Letter Workflow Integration', () => {
   });
 
   test('form validation prevents invalid submissions', async () => {
-    console.log('Test started');
     render(<App />);
-    console.log('App rendered');
 
     // Navigate to cover letter builder
-    console.log('Waiting for Start Building button');
-    const startBuildingBtn = await screen.findByText('Start Building');
-    console.log('Found Start Building button, clicking');
-    fireEvent.click(startBuildingBtn);
+    fireEvent.click(await screen.findByText('Start Building'));
+    fireEvent.click(await screen.findByText('Build Cover Letter'));
+    fireEvent.click(await screen.findByText('Start Writing Your Cover Letter'));
 
-    console.log('Waiting for Build Cover Letter button');
-    const buildCoverLetterBtn = await screen.findByText('Build Cover Letter');
-    console.log('Found Build Cover Letter button, clicking');
-    fireEvent.click(buildCoverLetterBtn);
+    // The editor's accordions are single-open. "Letter Content" (which holds the
+    // Enhance-with-AI button) is open by default. Query the button by role so we
+    // never accidentally match the preview's placeholder copy, which also
+    // contains the words "Enhance with AI".
+    const enhanceButton = () => screen.getByRole('button', { name: /Enhance with AI/i });
 
-    console.log('Waiting for Start Writing button');
-    const startWritingBtn = await screen.findByText('Start Writing Your Cover Letter');
-    console.log('Found Start Writing button, clicking');
-    fireEvent.click(startWritingBtn);
+    // 1. No job title yet -> job-title validation toast.
+    fireEvent.click(await screen.findByRole('button', { name: /Enhance with AI/i }));
+    expect(await screen.findByText(/Please enter a job title/i, {}, { timeout: 10000 })).toBeInTheDocument();
 
-    // Try to use AI enhancement without required fields
-    // Letter Content is open by default, so we can find the button
-    console.log('Waiting for Enhance with AI button');
-    const aiButton = await screen.findByText('Enhance with AI', {}, { timeout: 10000 });
-    console.log('Found Enhance with AI button, clicking');
-    fireEvent.click(aiButton);
+    // Dismiss the toast.
+    fireEvent.click(screen.getByRole('alert').querySelector('button')!);
+    await waitFor(() => {
+      expect(screen.queryByText(/Please enter a job title/i)).not.toBeInTheDocument();
+    }, { timeout: 5000 });
 
-    // Should show validation error
-    console.log('Waiting for job title validation toast');
-    let toast = await screen.findByText(/Please enter a job title/i, {}, { timeout: 10000 });
-    console.log('Found job title validation toast');
-    expect(toast).toBeInTheDocument();
-
-    // Close the toast if it exists
-    console.log('Closing first toast');
-    const closeButton = screen.queryByText('×');
-    if (closeButton) {
-      fireEvent.click(closeButton);
-      await waitFor(() => {
-        expect(screen.queryByText(/Please enter a job title/i)).not.toBeInTheDocument();
-      }, { timeout: 5000 });
-      console.log('First toast closed');
-    }
-
-    // Fill in job title but not company
-    console.log('Opening Job Application Details accordion');
+    // 2. Fill in the job title (this closes "Letter Content").
     fireEvent.click(screen.getByText('Job Application Details'));
-
-    console.log('Entering job title');
     const jobTitleInput = await screen.findByPlaceholderText('Software Developer');
     fireEvent.change(jobTitleInput, { target: { value: 'Developer' } });
 
-    // Open Letter Content ONLY if it's closed
-    console.log('Ensuring Letter Content accordion is open');
-    if (!screen.queryByText(/Enhance with AI/i)) {
-      fireEvent.click(screen.getByText('Letter Content'));
-    }
+    // Re-open "Letter Content" so the Enhance button is mounted again.
+    fireEvent.click(screen.getByText('Letter Content'));
+    await waitFor(() => expect(enhanceButton()).toBeInTheDocument());
 
-    // Explicitly wait for the button to appear and click it
-    console.log('Waiting for Enhance with AI button (second time)');
-    const aiButtonAgain = await screen.findByText(/Enhance with AI/i, {}, { timeout: 10000 });
-    console.log('Clicking Enhance with AI button (second time)');
-    fireEvent.click(aiButtonAgain);
-
-    // Should show company validation error
-    console.log('Waiting for company validation toast');
-    try {
-      toast = await screen.findByText(/Please enter a company name/i, {}, { timeout: 10000 });
-      console.log('Found company validation toast');
-    } catch (e) {
-      console.log('CRITICAL: Company validation toast NOT found. Current DOM snapshot:');
-      screen.debug(undefined, 20000);
-      throw e;
-    }
-    expect(toast).toBeInTheDocument();
+    // 3. Job title set, company still empty -> company validation toast.
+    fireEvent.click(enhanceButton());
+    expect(await screen.findByText(/Please enter a company name/i, {}, { timeout: 10000 })).toBeInTheDocument();
   }, 30000);
 
   test('renders the purpose-built mobile shell on a phone viewport', () => {
