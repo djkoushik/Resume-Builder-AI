@@ -19,7 +19,7 @@ const Input: React.FC<InputProps> = ({ label, id, highlight = false, className, 
       </label>
       <input
         id={id}
-        className={`w-full min-h-[44px] px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 sm:min-h-0 sm:text-sm ${tone}${className ? ` ${className}` : ''}`}
+        className={`w-full min-h-[44px] px-3 py-2 border rounded-md shadow-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-1 sm:min-h-0 sm:text-sm ${tone}${className ? ` ${className}` : ''}`}
         {...props}
       />
     </div>

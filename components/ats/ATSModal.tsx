@@ -24,7 +24,7 @@ const ATSModal: React.FC<ATSModalProps> = ({ isOpen, onClose, resumeData, onAddS
                 <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
                 <div
-                    className="inline-block align-bottom w-full bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
+                    className="inline-block align-bottom w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
                     onClick={e => e.stopPropagation()} // Prevent close on click inside
                 >
                     {/* Header */}
