@@ -97,9 +97,20 @@ const BuilderShell: React.FC<BuilderShellProps> = ({
         <MobileTopBar
           title={title}
           onBack={onBack}
-          menuActions={menuActions}
+          /* On tablet the secondary actions are visible buttons (below), not a menu. */
+          menuActions={[]}
           trailing={
             <div className="flex items-center gap-2">
+              {menuActions.map(action => (
+                <button
+                  key={action.label}
+                  type="button"
+                  onClick={action.onClick}
+                  className="hidden md:inline-flex items-center px-3 min-h-[40px] rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors whitespace-nowrap"
+                >
+                  {action.label}
+                </button>
+              ))}
               {design && (
                 <button
                   type="button"

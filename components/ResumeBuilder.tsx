@@ -87,7 +87,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
       title="Resume"
       accent="blue"
       onBack={onBack}
-      menuActions={[{ label: 'Build a cover letter', onClick: onBuildCoverLetter }]}
+      menuActions={[{ label: 'Build Cover Letter', onClick: onBuildCoverLetter }]}
       sheetWidth={customization.layout.pageFormat === 'Letter' ? 816 : 794}
       onDownloadPdf={downloadPdf}
       sections={getResumeSections(resumeData)}
