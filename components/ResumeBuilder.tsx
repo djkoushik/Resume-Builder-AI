@@ -9,6 +9,7 @@ import Footer from './layout/Footer';
 import { useViewport } from '../hooks/useViewport';
 import { usePdfExport } from '../hooks/usePdfExport';
 import { useResumeImport } from '../hooks/useResumeImport';
+import { useAtsModal } from '../hooks/useAtsModal';
 import { resumePdfOptions, resumePrintWidth } from '../utils/pdfOptions';
 
 interface ResumeBuilderProps {
@@ -39,6 +40,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
   });
 
   const { modal: importModal, openImport } = useResumeImport(resumeData, onResumeChange);
+  const { modal: atsModal, openAts } = useAtsModal(resumeData, onResumeChange);
 
   // ---- Desktop: the original three-panel layout, untouched ----
   const desktop = (
@@ -92,6 +94,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
       accent="blue"
       onBack={onBack}
       menuActions={[
+        { label: 'Resume Score', onClick: openAts },
         { label: 'Upload Resume', onClick: openImport },
         { label: 'Build Cover Letter', onClick: onBuildCoverLetter },
       ]}
@@ -123,6 +126,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
       }
     />
     {importModal}
+    {atsModal}
     </>
   );
 };

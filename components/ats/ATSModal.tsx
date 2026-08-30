@@ -16,7 +16,7 @@ const ATSModal: React.FC<ATSModalProps> = ({ isOpen, onClose, resumeData, onAddS
         <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             {/* Backdrop */}
             <div
-                className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+                className="flex items-end justify-center min-h-screen pt-4 px-4 pb-4 text-center sm:block sm:p-0"
                 onClick={onClose}
             >
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
@@ -24,7 +24,7 @@ const ATSModal: React.FC<ATSModalProps> = ({ isOpen, onClose, resumeData, onAddS
                 <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
                 <div
-                    className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
+                    className="inline-block align-bottom w-full bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
                     onClick={e => e.stopPropagation()} // Prevent close on click inside
                 >
                     {/* Header */}

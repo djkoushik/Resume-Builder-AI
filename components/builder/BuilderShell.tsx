@@ -106,7 +106,7 @@ const BuilderShell: React.FC<BuilderShellProps> = ({
                   key={action.label}
                   type="button"
                   onClick={action.onClick}
-                  className="hidden md:inline-flex items-center px-3 min-h-[40px] rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors whitespace-nowrap"
+                  className="flex-shrink-0 hidden md:inline-flex items-center px-2.5 min-h-[40px] rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors whitespace-nowrap"
                 >
                   {action.label}
                 </button>
@@ -115,7 +115,7 @@ const BuilderShell: React.FC<BuilderShellProps> = ({
                 <button
                   type="button"
                   onClick={() => setDesignOpen(true)}
-                  className="inline-flex items-center px-3 min-h-[40px] rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="flex-shrink-0 inline-flex items-center px-2.5 min-h-[40px] rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
                   Design
                 </button>

@@ -10,11 +10,10 @@ interface HeaderProps {
   onImport: (data: ResumeData) => void;
 }
 
-import ATSModal from './ats/ATSModal';
 import { useState } from 'react';
 
-// Same lazy chunk as the ResumeBuilderPage entry point — importing it here does
-// not pull the parser into the main bundle.
+// Lazy so the ATS dashboard + the import parser stay out of the main bundle.
+const ATSModal = lazy(() => import('./ats/ATSModal'));
 const ImportResumeModal = lazy(() => import('./import/ImportResumeModal'));
 const prefetchImportModal = () => { void import('./import/ImportResumeModal'); };
 
@@ -273,12 +272,16 @@ const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBu
         </div>
         </div>
       </header>
-      <ATSModal
-        isOpen={isATSOpen}
-        onClose={() => setIsATSOpen(false)}
-        resumeData={resumeData}
-        onAddSkill={handleAddSkill}
-      />
+      {isATSOpen && (
+        <Suspense fallback={null}>
+          <ATSModal
+            isOpen
+            onClose={() => setIsATSOpen(false)}
+            resumeData={resumeData}
+            onAddSkill={handleAddSkill}
+          />
+        </Suspense>
+      )}
       {isImportOpen && (
         <Suspense fallback={null}>
           <ImportResumeModal
