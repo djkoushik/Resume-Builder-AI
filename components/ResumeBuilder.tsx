@@ -11,7 +11,7 @@ import { useViewport } from '../hooks/useViewport';
 import { usePdfExport } from '../hooks/usePdfExport';
 import { useResumeImport } from '../hooks/useResumeImport';
 import { useAtsModal } from '../hooks/useAtsModal';
-import { resumePdfOptions, resumePrintWidth } from '../utils/pdfOptions';
+import { resumePrintConfig } from '../utils/printConfig';
 
 interface ResumeBuilderProps {
   resumeData: ResumeData;
@@ -35,9 +35,7 @@ const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
   const [activeSection, setActiveSection] = useState<string>('basics');
 
   const { downloadPdf } = usePdfExport({
-    elementId: 'resume-preview',
-    getOptions: () => resumePdfOptions(resumeData, customization),
-    printWidth: resumePrintWidth(customization),
+    getConfig: () => resumePrintConfig(resumeData, customization),
   });
 
   const { modal: importModal, openImport } = useResumeImport(resumeData, onResumeChange);

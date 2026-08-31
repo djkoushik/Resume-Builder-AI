@@ -83,7 +83,7 @@ Tests use mock data based on the initial data structures:
 
 ### External Dependencies
 - **Gemini AI Service**: Mocked to return predictable responses
-- **PDF Generation**: Mocked html2pdf library
+- **PDF Generation**: `window.print` mocked; export goes through `utils/printDocument`
 - **File Operations**: Mocked file input/output operations
 
 ### Browser APIs

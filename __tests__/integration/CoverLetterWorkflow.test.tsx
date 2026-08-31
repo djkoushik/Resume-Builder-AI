@@ -12,10 +12,7 @@ import * as geminiService from '../../services/geminiService';
 jest.mock('../../services/geminiService');
 const mockEnhanceCoverLetterWithAI = (geminiService.enhanceCoverLetterWithAI as any);
 
-// Mock PDF generation
-declare global {
-  var html2pdf: jest.Mock;
-}
+// PDF export now goes through the browser's print pipeline (utils/printDocument).
 
 beforeAll(() => {
   // Mock scroll methods which are not implemented in JSDOM
@@ -25,15 +22,8 @@ beforeAll(() => {
   window.alert = jest.fn();
   (window as any).checkUserLimit = jest.fn(() => true);
 
-  global.html2pdf = jest.fn(() => ({
-    from: jest.fn().mockReturnThis(),
-    set: jest.fn().mockReturnThis(),
-    save: jest.fn().mockResolvedValue(undefined),
-    toPdf: jest.fn().mockReturnThis(),
-    get: jest.fn().mockResolvedValue({
-      output: jest.fn().mockReturnValue('mock-blob-url')
-    })
-  }));
+  // jsdom has no print implementation.
+  window.print = jest.fn();
 });
 
 describe('Cover Letter Workflow Integration', () => {
@@ -214,8 +204,13 @@ describe('Cover Letter Workflow Integration', () => {
     fireEvent.click(downloadButton);
 
     await waitFor(() => {
-      expect(global.html2pdf).toHaveBeenCalled();
+      expect(window.print).toHaveBeenCalled();
     });
+
+    // Complete the print lifecycle so the cloned #print-root is torn down;
+    // jsdom never fires afterprint on its own.
+    fireEvent(window, new Event('afterprint'));
+    expect(document.getElementById('print-root')).toBeNull();
 
     document.body.removeChild(mockElement);
   });

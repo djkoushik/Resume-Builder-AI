@@ -10,12 +10,11 @@ import { UploadIcon, DocIcon } from '../builder/menuIcons';
 import Footer from '../layout/Footer';
 import { useViewport } from '../../hooks/useViewport';
 import { usePdfExport } from '../../hooks/usePdfExport';
+import { coverLetterPrintConfig } from '../../utils/printConfig';
 import { useResumeImport } from '../../hooks/useResumeImport';
 // import AuthButton from '../AuthButton';
-import { ChevronDown, Download, Eye } from 'lucide-react';
+import { ChevronDown, Download } from 'lucide-react';
 
-// Declare html2pdf for TypeScript since it's loaded from a script tag
-declare var html2pdf: any;
 
 interface CoverLetterBuilderProps {
   coverLetterData: CoverLetterData;
@@ -45,11 +44,8 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
   const viewport = useViewport();
   const { modal: importModal, openImport } = useResumeImport(resumeData, onResumeChange);
 
-  const { downloadPdf: shellDownloadPdf } = usePdfExport({
-    elementId: 'cover-letter-preview',
-    getOptions: () => getPdfOptions(),
-    printWidth: '8.5in',
-    printMinHeight: '11in',
+  const { downloadPdf } = usePdfExport({
+    getConfig: () => coverLetterPrintConfig(coverLetterData),
   });
 
   const handleTemplateSelect = (templateId: string) => {
@@ -63,81 +59,6 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
     onCustomizationChange(newSettings);
   };
 
-  const getPdfOptions = () => {
-    return {
-      margin: 0, // No margins to allow full-bleed backgrounds and prevent overflow
-      filename: `${coverLetterData.senderName || 'Cover_Letter'}_${coverLetterData.companyName || 'Application'}.pdf`.replace(/[^a-zA-Z0-9_-]/g, '_'),
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
-    };
-  };
-
-  const performPdfAction = (action: 'save' | 'preview') => {
-    const originalElement = document.getElementById('cover-letter-preview');
-    if (!originalElement) {
-      console.error("Cover letter preview element not found.");
-      alert("Could not find the cover letter preview to download.");
-      return;
-    }
-
-    // Create a clone to render for PDF generation
-    const elementToPrint = originalElement.cloneNode(true) as HTMLElement;
-
-    // A container for the clone, positioned off-screen
-    const printContainer = document.createElement('div');
-    printContainer.style.position = 'absolute';
-    printContainer.style.left = '-9999px';
-    printContainer.style.top = '0';
-
-    // Set clone's dimensions to match paper size for 1:1 scaling
-    elementToPrint.style.width = '8.5in';
-    elementToPrint.style.minHeight = '11in';
-    elementToPrint.style.height = 'auto';
-    elementToPrint.style.maxHeight = 'none';
-    elementToPrint.style.overflow = 'visible';
-    elementToPrint.classList.remove('overflow-auto'); // Remove tailwind overflow class if present
-
-    printContainer.appendChild(elementToPrint);
-    document.body.appendChild(printContainer);
-
-    const opt = getPdfOptions();
-    // Increase scale for better quality
-    opt.html2canvas.scale = 3;
-
-    const worker = html2pdf().from(elementToPrint).set(opt);
-
-    let promise;
-    if (action === 'save') {
-      promise = worker.save();
-    } else {
-      promise = worker.toPdf().get('pdf').then((pdf: any) => {
-        window.open(pdf.output('bloburl'), '_blank');
-      });
-    }
-
-    // Ensure the off-screen element is removed after the PDF operation is complete
-    promise.catch((err: any) => {
-      console.error("PDF generation failed:", err);
-      alert("Failed to generate PDF. Please try again.");
-    }).finally(() => {
-      document.body.removeChild(printContainer);
-    });
-  };
-
-  const handlePrintPdf = () => {
-    if (typeof (window as any).checkUserLimit === 'function' && !(window as any).checkUserLimit()) {
-      return;
-    }
-    performPdfAction('save');
-  };
-
-  const handlePreviewPdf = () => {
-    if (typeof (window as any).checkUserLimit === 'function' && !(window as any).checkUserLimit()) {
-      return;
-    }
-    performPdfAction('preview');
-  };
 
   const mobileDesign = (
     <div className="p-4 space-y-8">
@@ -214,29 +135,11 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
                     <div className="p-1" role="none">
                       <button
                         onClick={() => {
-                          handlePreviewPdf();
-                          setIsDropdownOpen(false);
-                        }}
-                        aria-label="Preview cover letter as PDF"
-                        className="group flex w-full items-center p-2 sm:p-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-700/50 rounded-lg transition-colors duration-150"
-                        role="menuitem"
-                      >
-                        <div className="flex-shrink-0 flex items-center justify-center h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-gray-50 dark:bg-gray-700/30 text-gray-600 dark:text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-gray-700/50 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-                          <Eye className="h-4 w-4 sm:h-5 w-5" />
-                        </div>
-                        <div className="ml-2 sm:ml-3 text-left">
-                          <p className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm group-hover:text-gray-900 dark:group-hover:text-white">Preview</p>
-                          <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300">View how your cover letter looks</p>
-                        </div>
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          handlePrintPdf();
+                          downloadPdf();
                           setIsDropdownOpen(false);
                         }}
                         aria-label="Download cover letter as PDF"
-                        className="group flex w-full items-center p-2 sm:p-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-700/50 rounded-lg transition-colors duration-150 mt-1"
+                        className="group flex w-full items-center p-2 sm:p-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-700/50 rounded-lg transition-colors duration-150"
                         role="menuitem"
                       >
                         <div className="flex-shrink-0 flex items-center justify-center h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 group-hover:bg-green-100 dark:group-hover:bg-green-900/50 group-hover:text-green-700 dark:group-hover:text-green-300 transition-colors">
@@ -244,7 +147,7 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
                         </div>
                         <div className="ml-2 sm:ml-3 text-left">
                           <p className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm group-hover:text-gray-900 dark:group-hover:text-white">Download PDF</p>
-                          <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300">Save your cover letter as a PDF file</p>
+                          <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300">Opens your browser's print dialog — choose "Save as PDF"</p>
                         </div>
                       </button>
                     </div>
@@ -356,7 +259,7 @@ const CoverLetterBuilder: React.FC<CoverLetterBuilderProps> = ({
         { label: 'Build Resume', onClick: onGoToResume, icon: DocIcon },
       ]}
       sheetWidth={816}
-      onDownloadPdf={shellDownloadPdf}
+      onDownloadPdf={downloadPdf}
       editor={
         <div className="p-4">
           <div role="form" aria-label="Cover letter details">
