@@ -102,6 +102,9 @@ index.css                   Tailwind entry + custom animations.
 
 api/
   index.ts                  ★ The real production API (Express app, all routes).
+  aiPresets.ts              ★ Server-owned prompts + model params for /api/ai. The client
+                            names an operation; everything else is decided here.
+  parseResumeSupport.ts     Request guards, rate limiter and prompt for /api/parse-resume.
   ai.ts, ats-score.ts,      Dead in production — shadowed by the vercel.json rewrite.
   health.ts
 local-server.ts             Boots api/index.ts on :3001 for `npm run dev`.
@@ -112,10 +115,10 @@ services/
 utils/
   printDocument.ts          ★ PDF export — clones the preview into #print-root and prints.
   printConfig.ts            Per-document print config (page size, margins, filename).
-  aiClient.ts               ★ Client's only AI entry point — fetches /api/ai.
+  aiClient.ts               ★ Client's only AI entry point — posts { operation, prompt }
+                            to /api/ai. Also trims oversized cover-letter context.
   seoUtils.ts               updateMetaTags() + per-page SEO_CONFIGS.
   ats/canonicalMap.ts       Skill dictionary: standardSkills, canonicalMap aliases, stopWords.
-  testAI.ts                 Dev-only console helper; never imported.
 
 components/
   Header.tsx                Resume-tool header: PDF options dropdown + ATS modal trigger.
@@ -188,13 +191,21 @@ Four fields are kept in sync **bidirectionally** through `App.tsx`:
 
 ```
 Textarea "Enhance with AI"
-  → section handler → services/geminiService (re-export) → utils/aiClient.generateText
-  → POST /api/ai { prompt, systemMessage, temperature, maxTokens, type }
-  → api/index.ts: OpenRouter "nex-agi/deepseek-v3.1-nex-n1:free"
-                  on ANY throw → Gemini "gemini-2.5-flash-lite"
+  → section handler → services/geminiService (re-export)
+  → utils/aiClient.enhanceSummary | enhanceExperience | enhanceCoverLetterWithAI
+  → POST /api/ai { operation, prompt }        ← the ENTIRE body; nothing else is read
+  → api/index.ts: checkAiRateLimit(ip) → validateAiRequest(body)
+  → api/aiPresets.ts supplies systemMessage / temperature / maxTokens per operation
+  → OpenRouter "nex-agi/deepseek-v3.1-nex-n1:free"
+      on ANY throw → Gemini "gemini-2.5-flash-lite"
   → { success, content, provider }
   → onUpdate(enhancedText)   ← overwrites the user's text with no undo and no diff view
 ```
+
+**The system prompts live only in `api/aiPresets.ts`.** They used to be authored in the
+React components and posted on every request, which is what let `/api/ai` be driven as a
+general-purpose LLM. Adding an operation means adding it there *and* to `AiOperation` in
+`utils/aiClient.ts`. Never accept a prompt template from the client.
 
 ### 5.4 ATS flow
 
@@ -416,24 +427,41 @@ Key facts:
 - All template links use `target="_blank" rel="noopener noreferrer"`.
 - No `dangerouslySetInnerHTML` anywhere; React escapes all user text.
 - No third-party script is needed for PDF export any more; the html2pdf CDN tag is gone.
+- **`/api/ai` reads only `operation` and `prompt`.** The system prompt, temperature and
+  token ceiling come from `AI_PRESETS` (`api/aiPresets.ts`), a frozen server-side registry.
+  A caller-supplied `systemMessage` is not filtered — it is never read. Regression test:
+  `__tests__/api/aiPresets.test.ts`, "ignores caller-supplied systemMessage…".
+- **`/api/ai` is rate limited**, 15 per 10 min and 60 per day per IP, with `Retry-After` on
+  refusal. It uses its own bucket (`checkAiRateLimit`, key `ai:<ip>`) so AI calls and resume
+  imports cannot spend each other's budget.
+- **CORS is an allowlist** (`buildresumenow.in`, `www.`, `localhost:3000`). Browser-enforced
+  only — it stops another site embedding the endpoint, not a script.
+- **`express.json({ limit: '256kb' })`** is set explicitly. Errors before a route runs are
+  answered in JSON by the handler at the end of `api/index.ts`, not by Express's default
+  HTML page with a stack trace.
+- **`/api/ai` error responses are generic.** Provider names, model IDs and quota states are
+  logged server-side and never returned.
 
 **Needs attention:**
-1. **`/api/ai` is unauthenticated, unmetered and un-rate-limited**, and it accepts a
-   caller-supplied `systemMessage`, `temperature` and `maxTokens`. Anyone can use it as a
-   free LLM proxy on your keys. This is the top security/cost item.
-2. **`cors()` with no options** on the Express app allows every origin; the standalone
-   handlers hardcode `Access-Control-Allow-Origin: *` *and* `Allow-Credentials: true`.
-3. **`/api/ats-score` accepts an arbitrary `candidate` object** and `JSON.stringify`s the
+1. **The rate limiter is per-instance.** `api/parseResumeSupport.ts` keeps buckets in an
+   in-memory `Map`, and on Vercel each warm serverless instance has its own, so the real
+   ceiling is (instances × limit). It raises the cost of abuse without capping it. The whole
+   mechanism sits behind `checkRateLimit`/`checkAiRateLimit`, so a shared KV store (Upstash
+   Redis) can replace it without either route changing. Also note IP is the only handle the
+   app has — there is no sign-in — so a shared office or campus NAT hits the cap together.
+2. **`/api/ats-score` accepts an arbitrary `candidate` object** and `JSON.stringify`s the
    whole thing for semantic matching — an unbounded payload is an easy CPU/memory DoS.
-   There is no size limit on `express.json()`.
-4. **JSON import is not validated.** `CustomizationPanel.handleFileChange` merges parsed
+   The 256 KB body limit bounds a single request but not the number of them; the route has
+   no rate limit of its own.
+3. **JSON import is not validated.** `CustomizationPanel.handleFileChange` merges parsed
    JSON over `initialResumeData` with only shallow guards; a malformed file can put
    non-string values into fields that templates render.
-5. **`src/config/privateConfig.ts` is committed and bundled.** Its header comment claims it
+4. **`src/config/privateConfig.ts` is committed and bundled.** Its header comment claims it
    is "not exposed to client bundle" — that is false: `Footer.tsx` imports it, so every
    value in it ships to the browser. Today it holds only a public support address, which is
    fine; **never put an actual secret in that file.**
-6. Server logs echo prompt lengths and full error stacks to Vercel logs.
+5. `/api/ats-score` and `/api/parse-resume` still log more than `/api/ai` does. `/api/ai`
+   logs only `{ operation, promptLength }` — never prompt content, which is user PII.
 
 ---
 
@@ -451,7 +479,6 @@ Recorded, **not to be refactored on sight**. Fix only when a feature genuinely r
    - `App.tsx` still defines `handleStartBuilding`, `handleSelectResume`,
      `handleSelectCoverLetter`, `handleGoToResume`, which set view names
      (`'selector'`, `'resume'`, `'coverLetter'`) that are **not in the `AppView` union**.
-   - `utils/testAI.ts` is never imported.
    - `services/atsService.ts` computes `jdExperienceKeywords` and never uses it.
    - `react-helmet-async` is a dependency with zero imports.
    - `hooks/usePageSEO.ts` and `utils/seoUtils.updateMetaTags` are two parallel SEO
