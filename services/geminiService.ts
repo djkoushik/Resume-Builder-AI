@@ -1,6 +1,7 @@
 
 // Re-export functions from the new unified AI client for backward compatibility
-export { 
-  enhanceTextWithAI as enhanceTextWithGemini,
-  enhanceCoverLetterWithAI 
+export {
+  enhanceSummary,
+  enhanceExperience,
+  enhanceCoverLetterWithAI
 } from "../utils/aiClient";
