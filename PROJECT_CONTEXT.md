@@ -29,7 +29,7 @@ AI-assisted text enhancement and an ATS (Applicant Tracking System) scoring engi
 | AI "Enhance with AI" on Summary + each Experience entry | `components/editor/*` |
 | AI cover-letter body drafting from resume data | `components/coverLetter/CoverLetterEditor.tsx` |
 | ATS score against a pasted job description | Header → Download PDF ▾ → Resume Score |
-| PDF preview / download (client-side, html2pdf) | Header dropdown |
+| PDF download (browser print dialog → "Save as PDF") | Header dropdown |
 | JSON import / export of resume data | Custom mode → Layout tab |
 | Legal + contact pages | `/privacy-policy`, `/terms-and-conditions`, `/contact` |
 
@@ -41,7 +41,7 @@ AI-assisted text enhancement and an ATS (Applicant Tracking System) scoring engi
 Browser (React 19 SPA, Vite bundle)
   │
   ├─ All resume/cover-letter state in App.tsx useState (no store, no persistence)
-  ├─ PDF generation: 100% client-side via html2pdf.js (CDN <script>)
+  ├─ PDF generation: browser print pipeline (utils/printDocument.ts) — real text layer
   │
   └─ fetch() ──► Vercel /api/*  (vercel.json rewrites ALL /api/* → /api/index.js)
                    │
@@ -81,7 +81,7 @@ Key architectural facts:
 | API runtime | Express 5 on `@vercel/node` | `local-server.ts` runs the same app on :3001 |
 | AI | `@openrouter/sdk` (primary) → `@google/genai` (fallback) | server-side only |
 | ATS | `fuse.js` fuzzy matching + a hand-built skill dictionary | server-side only |
-| PDF | `html2pdf.js` 0.10.1 from cdnjs (`<script defer>`) | **not** an npm dependency |
+| PDF | The browser's own print pipeline (`window.print()` + `@media print`) | No library. Output carries a real text layer. |
 | Analytics | Google Analytics 4 (`G-X2S7ZJMFS6`) in `index.html` | no custom events |
 | Tests | Jest 30 + jsdom + Testing Library | `__tests__/`, cover-letter focused |
 
@@ -97,7 +97,7 @@ App.tsx                     Root: state, routing, view switch. The single most i
 index.tsx                   Mount point; wraps <App/> in <AuthProvider>.
 types.ts                    ALL data models + initial/seed data + cover-letter template registry.
 constants.ts                Fonts, page formats, template list, colour palettes.
-index.html                  SEO meta, JSON-LD, GA4, Google Fonts, html2pdf CDN, GSI script.
+index.html                  SEO meta, JSON-LD, GA4, Google Fonts, GSI script.
 index.css                   Tailwind entry + custom animations.
 
 api/
@@ -110,6 +110,8 @@ services/
   atsService.ts             ATS scoring engine (server-side, pure function).
   geminiService.ts          5-line back-compat re-export of utils/aiClient.
 utils/
+  printDocument.ts          ★ PDF export — clones the preview into #print-root and prints.
+  printConfig.ts            Per-document print config (page size, margins, filename).
   aiClient.ts               ★ Client's only AI entry point — fetches /api/ai.
   seoUtils.ts               updateMetaTags() + per-page SEO_CONFIGS.
   ats/canonicalMap.ts       Skill dictionary: standardSkills, canonicalMap aliases, stopWords.
@@ -163,11 +165,12 @@ User types in components/editor/<Section>.tsx
   → re-render of the WHOLE tree
   → PreviewPanel → ResumeTemplate (switch on customization.template)
                  → <XTemplate data settings/>  renders into #resume-preview
-  → Header "Download PDF"
+  → Header "Download PDF"  →  hooks/usePdfExport → utils/printDocument
        ├─ window.checkUserLimit() gate (currently always true)
-       ├─ clones #resume-preview off-screen at exact paper width (210mm / 8.5in)
-       ├─ html2pdf(...).set({ margins from customization.layout, scale: 3 })
-       └─ .save()  or  .toPdf() → window.open(blob)
+       ├─ clones #resume-preview into a body-level #print-root (aria-hidden, inert)
+       ├─ injects @page { size / margin } from customization.layout
+       ├─ swaps document.title so the dialog's default filename is right
+       └─ window.print()  →  cleanup on afterprint / print media change
 ```
 
 There is **no validation layer on the resume side** — every field is a free-text input and
@@ -342,9 +345,9 @@ Key facts:
   width (794 / 816px) and is shrunk to fit — matching the exported PDF exactly. The PDF
   clone still grabs the untouched node by id. `PreviewPanel` / `CoverLetterPreview` gained
   a `variant="bare"` for this (drops the desktop padding / scroll box).
-- **PDF export is `hooks/usePdfExport.ts` + `utils/pdfOptions.ts`** — the mobile Download
-  button and (for the cover letter) the desktop dropdown share it. `Header.tsx` still has
-  its own copy for the résumé desktop dropdown (untouched).
+- **PDF export is `hooks/usePdfExport.ts` + `utils/printDocument.ts` + `utils/printConfig.ts`** — the mobile Download
+  button and both desktop dropdowns now share it. The duplicated html2pdf copies that
+  lived in `Header.tsx` and `CoverLetterBuilder.tsx` are gone — there is one export path.
 - `EditorPanel` takes a controlled `activeSection` + `display="single"`; drag-reorder is
   desktop-only, mobile uses up/down buttons (same `sectionOrder` / `layout` mutation).
 - Touch targets: `ui/Input` `min-h-[44px]` below `sm`, `ui/RemoveButton` (40px, replaces
@@ -358,7 +361,7 @@ Key facts:
 
 | Dependency | Why it is critical |
 | --- | --- |
-| `html2pdf.js` (CDN, `defer`) | The entire export feature. Not in `package.json`, typed as `declare var html2pdf: any`. If cdnjs is blocked or the SRI hash changes, **all downloads break**. It rasterises via html2canvas — the PDF contains an image, so text is not selectable and not machine-readable by real ATS software. |
+| *(none — export is native)* | PDF export is `window.print()` against a print stylesheet. No CDN, no library, nothing to break. The output is a real text-layer PDF that ATS software can parse. |
 | `@openrouter/sdk` + `@google/genai` | Both AI paths. The free OpenRouter model is rate-limited; the Gemini fallback fires on *any* OpenRouter throw. |
 | `fuse.js` | ATS fuzzy skill matching. Server-side only — it is not in the client bundle. |
 | `lucide-react` | Icons in 7 components. Tree-shaken, but mixing it with inline SVG is inconsistent. |
@@ -412,7 +415,7 @@ Key facts:
 - No database and no stored PII — resume data exists only in the tab's memory.
 - All template links use `target="_blank" rel="noopener noreferrer"`.
 - No `dangerouslySetInnerHTML` anywhere; React escapes all user text.
-- `html2pdf` CDN script carries an SRI `integrity` hash.
+- No third-party script is needed for PDF export any more; the html2pdf CDN tag is gone.
 
 **Needs attention:**
 1. **`/api/ai` is unauthenticated, unmetered and un-rate-limited**, and it accepts a
@@ -478,8 +481,8 @@ Recorded, **not to be refactored on sight**. Fix only when a feature genuinely r
    `ts-jest` nor `@types/jest` is in `devDependencies` — tests run only because `ts-jest`
    resolves transitively, and `tsc --noEmit` reports ~40 errors in test files for the
    missing types. Coverage is mostly cover-letter + the resume-import suites;
-   `atsService` now has a small suite (word-boundary matching only). **Still no
-   tests for the PDF export path or the resume templates.**
+   `atsService` now has a small suite (word-boundary matching only), and
+   `utils/printDocument` has a full one. **Still no tests for the resume templates.**
 8. **Full suite green.** `npm test` = 206/206. The long-standing
    `CoverLetterWorkflow › form validation prevents invalid submissions` failure was a
    test bug: the editor's accordions are single-open, so opening "Job Application
@@ -511,7 +514,8 @@ Read this section before touching anything below.
 | **`ResumeData` shape** | Consumed by 6 resume templates, `EditorPanel`, `atsService`, the JSON import/export round-trip, and the cover-letter sync. Adding an optional field with a default is safe; renaming or removing one breaks every template *and* every previously exported `resume.json` a user still has. There is no migration path and no schema version. **Add a `version` field before the first breaking change.** |
 | **`resumeData.layout`** | Keyed by template name. A new multi-column template needs an entry in `initialResumeData.layout`, or `EditorPanel` falls back to the flat `sectionOrder` list and drag-and-drop across columns silently stops working. Imported JSON from before a new template will lack the key — the shallow merge in `handleFileChange` covers this only because it spreads `initialResumeData.layout` first. |
 | **`#resume-preview` / `#cover-letter-preview` DOM ids** | PDF export finds the element by `getElementById` and clones it. Renaming the id breaks downloads with only a `console.error`. The mobile `PreviewViewport` deliberately scales a **wrapper** around this node, not the node — keep it that way; a `transform` / `zoom` on the node itself corrupts the export. Verify a real download at mobile, tablet and desktop after any preview change. |
-| **PDF fidelity** | `html2pdf` rasterises. Anything that renders differently at a fixed 210mm/8.5in width than on screen — `md:`/`lg:` responsive classes inside a template, `position: sticky`, CSS the cloned node inherits from an ancestor — shows up only in the exported PDF. **Always verify a real download, not just the preview.** |
+| **PDF fidelity** | Export prints the cloned DOM, so anything that renders differently under `@media print` than on screen shows up only in the PDF. The print block in `index.css` neutralises the templates' `min-height: 297mm/11in` (it would otherwise add a blank trailing page) and forces `print-color-adjust: exact` so sidebar fills survive. **Always verify a real download, not just the preview** — `scripts/` has no harness, but headless Chrome + `Page.printToPDF` reproduces it exactly. |
+| **Multi-page sidebar templates** | A coloured sidebar is a flex column; CSS print does not repeat a flex child's background onto the next page the way the old rasteriser sliced the image. One-page résumés are unaffected. Verify Elegant/Corporate/Modern/Creative if content grows past a page. |
 | **Routing** | Paths are string-matched in *two* places in `App.tsx` (the `popstate` handler and the global click handler) and again in `public/sitemap.xml`. A new route needs all three, plus an `AppView` union member. The global click interceptor swallows every same-origin `<a>` — an anchor that should do something else needs `e.stopPropagation()` or a non-anchor element. |
 | **Simple vs Custom mode** | `resumeData.resumeMode` drives both the grid spans and whether `CustomizationPanel` renders at all. Simple mode force-sets `template: 'Professional'` on entry; a feature that lives in the right panel is invisible in Simple mode. |
 | **Resume ⇄ cover-letter sync** | The two `useCallback`s in `App.tsx` write into each other. Adding a synced field means editing both `syncResumeToLetter` and the inverse mapping, or edits silently get reverted on the next keystroke. |
@@ -527,7 +531,7 @@ Read this section before touching anything below.
 1. **`api/index.ts` is the live API.** Do not add routes to `api/ai.ts` / `api/ats-score.ts`.
 2. **Never change `ResumeData` in a breaking way.** New fields are optional and defaulted in
    `initialResumeData`, and must survive the JSON import merge.
-3. **Verify PDF output, not just the preview**, for any change to a template or preview container.
+3. **Verify PDF output, not just the preview**, for any change to a template, preview container, or the print block in `index.css`.
 4. **Reuse `ui/Input`, `ui/Textarea`, `ui/Accordion`, `ui/Toast`** and the button/panel/modal
    classes in §7 rather than inventing new styling.
 5. **Prefer `Toast` over `alert()`** in new code; leave existing `alert()`s alone unless the

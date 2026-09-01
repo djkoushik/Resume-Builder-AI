@@ -17,10 +17,10 @@ const ATSModal = lazy(() => import('./ats/ATSModal'));
 const ImportResumeModal = lazy(() => import('./import/ImportResumeModal'));
 const prefetchImportModal = () => { void import('./import/ImportResumeModal'); };
 
-// Declare html2pdf for TypeScript since it's loaded from a script tag
-declare var html2pdf: any;
+import { usePdfExport } from '../hooks/usePdfExport';
+import { resumePrintConfig } from '../utils/printConfig';
 
-import { ChevronDown, Download, Eye, FileText, CheckCircle } from 'lucide-react';
+import { ChevronDown, Download, FileText, CheckCircle } from 'lucide-react';
 
 const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBuildCoverLetter, onImport }) => {
   const [isATSOpen, setIsATSOpen] = useState(false);
@@ -28,89 +28,12 @@ const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBu
   const [isImportOpen, setIsImportOpen] = useState(false);
 
 
-  const getPdfOptions = () => {
-    const isLetter = customization.layout.pageFormat === 'Letter';
-    const paperSize = isLetter ? 'letter' : 'a4';
-
-    const margins = customization.layout.margins;
-    // Convert margins from cm to mm for jsPDF
-    const margin_mm = [margins.top * 10, margins.left * 10, margins.bottom * 10, margins.right * 10];
-
-    return {
-      margin: margin_mm,
-      filename: `${resumeData.basics.name}_Resume.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: paperSize, orientation: 'portrait' }
-    };
-  };
-
-  const performPdfAction = (action: 'save' | 'preview') => {
-    const originalElement = document.getElementById('resume-preview');
-    if (!originalElement) {
-      console.error("Resume preview element not found.");
-      alert("Could not find the resume preview to download.");
-      return;
-    }
-
-    // Create a clone to render for PDF generation. This ensures the PDF is
-    // generated from an element with dimensions matching the paper size,
-    // providing a true WYSIWYG result regardless of screen size.
-    const elementToPrint = originalElement.cloneNode(true) as HTMLElement;
-
-    // A container for the clone, positioned off-screen.
-    const printContainer = document.createElement('div');
-    printContainer.style.position = 'absolute';
-    printContainer.style.left = '-9999px';
-    printContainer.style.top = '0';
-
-    // Set clone's dimensions to match paper size for 1:1 scaling.
-    const isLetter = customization.layout.pageFormat === 'Letter';
-    const paperWidth = isLetter ? '8.5in' : '210mm';
-    elementToPrint.style.width = paperWidth;
-    elementToPrint.style.height = 'auto';
-
-    printContainer.appendChild(elementToPrint);
-    document.body.appendChild(printContainer);
-
-    const opt = getPdfOptions();
-    // With a fixed-width source element, the 'scale' option now primarily
-    // affects the resolution (quality) of the PDF. Increasing it results
-    // in sharper text and images.
-    opt.html2canvas.scale = 3;
-
-    const worker = html2pdf().from(elementToPrint).set(opt);
-
-    let promise;
-    if (action === 'save') {
-      promise = worker.save();
-    } else {
-      promise = worker.toPdf().get('pdf').then((pdf: any) => {
-        window.open(pdf.output('bloburl'), '_blank');
-      });
-    }
-
-    // Ensure the off-screen element is removed after the PDF operation is complete.
-    promise.catch((err: any) => {
-      console.error("PDF generation failed:", err);
-    }).finally(() => {
-      document.body.removeChild(printContainer);
-    });
-  };
-
-  const handlePrintPdf = () => {
-    if (typeof (window as any).checkUserLimit === 'function' && !(window as any).checkUserLimit()) {
-      return;
-    }
-    performPdfAction('save');
-  };
-
-  const handlePreviewPdf = () => {
-    if (typeof (window as any).checkUserLimit === 'function' && !(window as any).checkUserLimit()) {
-      return;
-    }
-    performPdfAction('preview');
-  };
+  // Export goes through the shared hook: it clones the preview into a
+  // body-level #print-root and opens the browser's print dialog, so the PDF
+  // carries a real text layer instead of a rasterised image.
+  const { downloadPdf } = usePdfExport({
+    getConfig: () => resumePrintConfig(resumeData, customization),
+  });
 
   const handleAddSkill = (skill: string) => {
     // Basic logic: Find the first section named "Skills" or similar, add the keyword.
@@ -232,24 +155,7 @@ const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBu
 
                   <button
                     onClick={() => {
-                      handlePreviewPdf();
-                      setIsDropdownOpen(false);
-                    }}
-                    className="group flex w-full items-center p-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-700/50 rounded-lg transition-colors duration-150 mt-1"
-                    role="menuitem"
-                  >
-                    <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-lg bg-gray-50 dark:bg-gray-700/30 text-gray-600 dark:text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-gray-700/50 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-                      <Eye className="h-5 w-5" />
-                    </div>
-                    <div className="ml-3 text-left">
-                      <p className="font-medium text-gray-900 dark:text-white group-hover:text-gray-900 dark:group-hover:text-white">Preview</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300">View how your resume looks</p>
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      handlePrintPdf();
+                      downloadPdf();
                       setIsDropdownOpen(false);
                     }}
                     className="group flex w-full items-center p-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-700/50 rounded-lg transition-colors duration-150 mt-1"
@@ -260,7 +166,7 @@ const Header: React.FC<HeaderProps> = ({ resumeData, customization, onBack, onBu
                     </div>
                     <div className="ml-3 text-left">
                       <p className="font-medium text-gray-900 dark:text-white group-hover:text-gray-900 dark:group-hover:text-white">Download PDF</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300">Save your resume as a PDF file</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300">Opens your browser's print dialog — choose "Save as PDF"</p>
                     </div>
                   </button>
                 </div>

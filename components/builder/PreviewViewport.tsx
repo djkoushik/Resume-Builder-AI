@@ -20,7 +20,7 @@ const H_PADDING = 24; // px of breathing room on each side, matches the containe
  * — the opposite of letting a fluid container squeeze the layout.
  *
  * The scale is a CSS `transform` on a wrapper *around* the preview node, never
- * on the node itself: `html2pdf` clones that node by id, and a transform on it
+ * on the node itself: the PDF export clones that node by id, and a transform on it
  * would corrupt the export.
  */
 const PreviewViewport: React.FC<PreviewViewportProps> = ({ children, sheetWidth = 794, accent }) => {

@@ -8,21 +8,11 @@ import '@testing-library/jest-dom';
 import CoverLetterBuilder from '../../components/coverLetter/CoverLetterBuilder';
 import { initialCoverLetterData, initialResumeData } from '../../types';
 
-// Mock the PDF generation library
-declare global {
-  var html2pdf: jest.Mock;
-}
+// PDF export now goes through the browser's print pipeline (utils/printDocument).
 
 beforeAll(() => {
-  global.html2pdf = jest.fn(() => ({
-    from: jest.fn().mockReturnThis(),
-    set: jest.fn().mockReturnThis(),
-    save: jest.fn().mockResolvedValue(undefined),
-    toPdf: jest.fn().mockReturnThis(),
-    get: jest.fn().mockResolvedValue({
-      output: jest.fn().mockReturnValue('mock-blob-url')
-    })
-  }));
+  // jsdom has no print implementation.
+  window.print = jest.fn();
 });
 
 const mockProps = {
@@ -75,8 +65,13 @@ describe('CoverLetterBuilder', () => {
     fireEvent.click(downloadButton);
 
     await waitFor(() => {
-      expect(global.html2pdf).toHaveBeenCalled();
+      expect(window.print).toHaveBeenCalled();
     });
+
+    // Complete the print lifecycle so the cloned #print-root is torn down;
+    // jsdom never fires afterprint on its own.
+    fireEvent(window, new Event('afterprint'));
+    expect(document.getElementById('print-root')).toBeNull();
 
     document.body.removeChild(mockElement);
   });

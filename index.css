@@ -117,3 +117,97 @@
     filter: hue-rotate(360deg);
   }
 }
+/* ---------------------------------------------------------------------------
+   Print export
+   ---------------------------------------------------------------------------
+   `utils/printDocument.ts` clones the preview node into a body-level
+   `#print-root` and puts `.printing` on <html> for the duration of the print.
+   These rules hide the app around it and undo the screen-only affordances the
+   preview carries (shadow, rounding, the fixed page min-height, the mobile
+   scale wrapper), so the sheet flows into the browser's page box.
+
+   The `@page` rule itself is injected per export — page size and margins come
+   from the user's layout settings and `@page` can't read CSS variables.
+--------------------------------------------------------------------------- */
+
+#print-root {
+  display: none;
+}
+
+@media print {
+  html.printing,
+  html.printing body {
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Everything except the cloned sheet. */
+  html.printing body > *:not(#print-root) {
+    display: none !important;
+  }
+
+  html.printing #print-root {
+    display: block !important;
+  }
+
+  /* The sheet fills the page box. `min-height` is the important one: every
+     template pins its root to 297mm/11in for the on-screen paper look, which
+     inside a margined page box overflows into a blank trailing page. */
+  html.printing #print-root,
+  html.printing #print-root > * {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    height: auto !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    transform: none !important;
+  }
+
+  /* Templates set the page min-height on their own root, one level deeper. */
+  html.printing #print-root * {
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Sidebar fills, coloured rules and heading colours are the design, not
+     decoration — print them rather than letting the browser drop backgrounds. */
+  html.printing #print-root,
+  html.printing #print-root * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Links stay real links in the PDF, but must not grow a printed href. */
+  html.printing #print-root a,
+  html.printing #print-root a:visited {
+    text-decoration: none !important;
+    color: inherit !important;
+  }
+  html.printing #print-root a[href]::after {
+    content: none !important;
+  }
+
+  /* Keep entries whole across page breaks; never strand a heading. */
+  html.printing #print-root h1,
+  html.printing #print-root h2,
+  html.printing #print-root h3,
+  html.printing #print-root h4 {
+    break-after: avoid-page;
+    break-inside: avoid;
+  }
+  html.printing #print-root li,
+  html.printing #print-root img {
+    break-inside: avoid;
+  }
+  html.printing #print-root p {
+    orphans: 2;
+    widows: 2;
+  }
+}
