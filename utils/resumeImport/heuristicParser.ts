@@ -9,8 +9,10 @@ import type {
 } from '../../types';
 import { splitDatedEntries, splitEntries, splitSections, type SectionKey } from './sectionSplitter';
 import {
-  cap, CAPS, CURRENT_PATTERN, DATE_RANGE_PATTERN, DATE_TOKEN_PATTERN, finalizeContent,
-  isBulletLine, makeId, parseDateRange, toBulletFormat,
+  cap, CAPS, continuesPreviousLine, CURRENT_PATTERN, DATE_RANGE_PATTERN, DATE_TOKEN_PATTERN,
+  finalizeContent,
+  type BodyLine, INLINE_SEPARATOR, isBulletLine, makeId, parseDateRange, renderEntryBody,
+  stripBulletMarker,
 } from './normalize';
 import type { ImportedContent, ParsedResume } from './types';
 
@@ -48,7 +50,7 @@ const looksLikeName = (line: string): boolean => {
   const trimmed = line.trim();
   if (trimmed.length === 0 || trimmed.length > 60) return false;
   if (/[@\d]/.test(trimmed)) return false;
-  if (trimmed.includes('|') || trimmed.includes('•')) return false;
+  if (INLINE_SEPARATOR.test(trimmed)) return false;
 
   const words = trimmed.split(/\s+/);
   return words.length >= 2 && words.length <= 5;
@@ -135,9 +137,22 @@ const parseContact = (lines: string[]): ContactResult => {
   }
 
   // Location: a line with a comma, no digits-heavy content, no contact markers.
+  //
+  // Split on every inline separator, not just "|": a contact line is as often
+  // bullet-separated ("Bangalore, India • +91 ... • name@example.com"), and
+  // matched whole it is too long and too email-ish to ever yield a location.
+  //
+  // The headline is skipped as a LINE rather than as a segment. It is usually
+  // separator-joined itself — "Data Scientist | Machine Learning, RAG & LLM
+  // Applications" — so its trailing half is a comma-bearing segment of exactly
+  // the shape this loop is looking for, and it would win before the real
+  // location line was ever reached.
   let location = '';
   for (const line of nonEmpty) {
-    const segments = line.split('|').map(part => part.trim());
+    const trimmed = line.trim();
+    if (trimmed === name || trimmed === headline) continue;
+
+    const segments = trimmed.split(INLINE_SEPARATOR).map(part => part.trim());
     for (const segment of segments) {
       if (segment === name || segment === headline) continue;
       if (EMAIL.test(segment) || /\d{4}/.test(segment)) continue;
@@ -159,24 +174,55 @@ const parseContact = (lines: string[]): ContactResult => {
 
 // --- Skills ----------------------------------------------------------------
 
-const SPLIT_SKILLS = /[,;|•·]|\s{3,}/;
+const SPLIT_SKILLS = /[,;|\u2022\u00b7]|\s{3,}/;
+
+/** The single-character half of SPLIT_SKILLS, for the bracket-aware scanner. */
+const SKILL_SEPARATOR = /[,;|\u2022\u00b7]/;
+
+/**
+ * Split a skill list on its separators, but not inside brackets.
+ *
+ * "Python (NumPy, Pandas), SQL" is three skills to a comma-splitter and two to
+ * a reader. The bracketed part qualifies the skill it follows, so a separator
+ * inside it is not a separator at all.
+ */
+const splitSkillList = (value: string): string[] => {
+  const parts: string[] = [];
+  let current = '';
+  let depth = 0;
+
+  // Column padding separates skills too. Collapsing it to a comma up front
+  // leaves the scanner below with only single characters to consider.
+  for (const char of value.replace(/\s{3,}/g, ',')) {
+    if (char === '(' || char === '[') depth++;
+    else if (char === ')' || char === ']') depth = Math.max(0, depth - 1);
+
+    if (depth === 0 && SKILL_SEPARATOR.test(char)) {
+      parts.push(current);
+      current = '';
+      continue;
+    }
+
+    current += char;
+  }
+  parts.push(current);
+
+  return parts.map(tidySegment).filter(part => part.length > 0 && part.length <= 40);
+};
 
 const parseSkills = (lines: string[]): Skill[] => {
   const skills: Skill[] = [];
   const uncategorised: string[] = [];
 
   for (const raw of lines) {
-    const line = raw.replace(/^\s*[•▪‣◦·*\-–—]\s+/, '').trim();
+    const line = stripBulletMarker(raw);
     if (line === '') continue;
 
     // "Languages: Go, Python, Java" — the shape that maps directly onto
     // ResumeData's {name, keywords[]} skill categories.
     const labelled = line.match(/^([A-Za-z][A-Za-z\s/&+#.-]{1,40}):\s*(.+)$/);
     if (labelled) {
-      const keywords = labelled[2]
-        .split(SPLIT_SKILLS)
-        .map(word => word.trim())
-        .filter(word => word.length > 0 && word.length <= 40);
+      const keywords = splitSkillList(labelled[2]);
 
       if (keywords.length > 0) {
         skills.push({
@@ -188,9 +234,16 @@ const parseSkills = (lines: string[]): Skill[] => {
       }
     }
 
-    uncategorised.push(
-      ...line.split(SPLIT_SKILLS).map(word => word.trim()).filter(word => word.length > 0 && word.length <= 40)
-    );
+    // An unlabelled line under a labelled one is that category's list running
+    // onto a second row, not a new nameless category. Collecting it separately
+    // produced a trailing "Skills" bucket holding the tail of every category.
+    const open = skills[skills.length - 1];
+    if (open !== undefined) {
+      open.keywords.push(...splitSkillList(line));
+      continue;
+    }
+
+    uncategorised.push(...splitSkillList(line));
   }
 
   if (uncategorised.length > 0) {
@@ -379,20 +432,22 @@ interface ParsedEntry<T> {
 }
 
 const parseExperienceEntry = (lines: string[], index: number): ParsedEntry<WorkExperience> => {
-  const bullets: string[] = [];
   const headingLines: string[] = [];
-  const prose: string[] = [];
+  // Bullets and prose share one list so a role that opens with a sentence and
+  // then itemises keeps both, in source order. See renderEntryBody.
+  const body: BodyLine[] = [];
 
   for (const line of lines) {
     if (isBulletLine(line)) {
-      bullets.push(line);
+      body.push({ kind: 'bullet', text: line });
       continue;
     }
 
-    // A bullet wrapped onto a second line belongs to that bullet. Wrapped text
-    // carries on mid-sentence, so a lowercase opening is the reliable tell.
-    if (bullets.length > 0 && /^[a-z]/.test(line.trim())) {
-      bullets[bullets.length - 1] = `${bullets[bullets.length - 1].trimEnd()} ${line.trim()}`;
+    // A body line wrapped onto a second row belongs to the line above it.
+    // See continuesPreviousLine for how a wrap is recognised.
+    const previous = body[body.length - 1];
+    if (previous !== undefined && continuesPreviousLine(previous.text, line)) {
+      previous.text = `${previous.text.trimEnd()} ${line.trim()}`;
       continue;
     }
 
@@ -408,7 +463,7 @@ const parseExperienceEntry = (lines: string[], index: number): ParsedEntry<WorkE
       (/[.!?]$/.test(trimmed) || trimmed.length > 60) &&
       !DATE_LINE.test(trimmed);
 
-    if (isProse) prose.push(trimmed);
+    if (isProse) body.push({ kind: 'prose', text: trimmed });
     else headingLines.push(line);
   }
 
@@ -439,7 +494,7 @@ const parseExperienceEntry = (lines: string[], index: number): ParsedEntry<WorkE
       startDate,
       endDate,
       isCurrent,
-      summary: bullets.length > 0 ? toBulletFormat(bullets) : prose.join(' '),
+      summary: renderEntryBody(body),
     },
   };
 };
@@ -448,6 +503,9 @@ const parseExperienceEntry = (lines: string[], index: number): ParsedEntry<WorkE
 
 const INSTITUTION_MARKERS = /\b(university|college|institute|school|academy|polytechnic|iit|nit|iiit)\b/i;
 const DEGREE_MARKERS = /\b(bachelor|master|b\.?tech|m\.?tech|b\.?sc|m\.?sc|b\.?e|m\.?e|b\.?a|m\.?a|mba|phd|diploma|associate|bs|ms)\b/i;
+
+/** Longer than this, a segment is a sentence about the degree, not its subject. */
+const MAX_AREA_OF_STUDY = 60;
 
 const parseEducationEntry = (lines: string[], index: number): ParsedEntry<Education> => {
   let range = '';
@@ -467,7 +525,15 @@ const parseEducationEntry = (lines: string[], index: number): ParsedEntry<Educat
 
   const institution = cleaned.find(part => INSTITUTION_MARKERS.test(part)) ?? '';
   const degree = cleaned.find(part => DEGREE_MARKERS.test(part)) ?? '';
-  const areaOfStudy = cleaned.find(part => part !== institution && part !== degree) ?? '';
+
+  // "Relevant coursework: ..." and friends are a note about the degree, not the
+  // subject of it. An area of study is a short noun phrase, so anything long or
+  // self-labelling belongs in the summary instead — where it survives rather
+  // than being truncated into the field's 100-character cap.
+  const isNote = (part: string): boolean => part.length > MAX_AREA_OF_STUDY || /:/.test(part);
+  const rest = cleaned.filter(part => part !== institution && part !== degree);
+  const areaOfStudy = rest.find(part => !isNote(part)) ?? '';
+  const notes = rest.filter(part => part !== areaOfStudy && isNote(part));
 
   const { startDate, endDate } = parseDateRange(range);
 
@@ -481,7 +547,7 @@ const parseEducationEntry = (lines: string[], index: number): ParsedEntry<Educat
       areaOfStudy,
       startDate,
       endDate,
-      summary: '',
+      summary: notes.join(' '),
     },
   };
 };
@@ -490,7 +556,7 @@ const parseEducationEntry = (lines: string[], index: number): ParsedEntry<Educat
 
 const parseCertifications = (entries: string[][]): Certification[] =>
   entries.map((lines, index) => {
-    const flat = lines.join(' ').replace(/^\s*[•▪‣◦·*\-–—]\s+/, '').trim();
+    const flat = stripBulletMarker(lines.join(' '));
     const dates = extractDates(flat);
     const withoutDate = dates ? tidySegment(dates.rest) : flat;
     const parts = withoutDate.split(SEGMENT_SPLIT).map(tidySegment).filter(Boolean);
@@ -506,7 +572,7 @@ const parseCertifications = (entries: string[][]): Certification[] =>
 const parseProjects = (entries: string[][]): Project[] =>
   entries.map((lines, index) => {
     const [first, ...rest] = lines;
-    const headline = (first ?? '').replace(/^\s*[•▪‣◦·*\-–—]\s+/, '').trim();
+    const headline = stripBulletMarker(first ?? '');
     const parts = headline.split(SEGMENT_SPLIT).map(tidySegment).filter(Boolean);
     const url = headline.match(URL)?.[0] ?? '';
 
@@ -514,14 +580,14 @@ const parseProjects = (entries: string[][]): Project[] =>
       id: makeId(index),
       name: cap(parts[0] ?? headline, CAPS.short),
       role: cap(parts[1] ?? '', CAPS.short),
-      description: rest.map(line => line.replace(/^\s*[•▪‣◦·*\-–—]\s+/, '').trim()).join(' ').trim(),
+      description: rest.map(stripBulletMarker).join(' ').trim(),
       url: url && !url.includes('@') ? url : '',
     };
   });
 
 const parseInterests = (lines: string[]): Interest[] =>
   lines
-    .flatMap(line => line.replace(/^\s*[•▪‣◦·*\-–—]\s+/, '').split(SPLIT_SKILLS))
+    .flatMap(line => stripBulletMarker(line).split(SPLIT_SKILLS))
     .map(part => part.trim())
     .filter(part => part.length > 0 && part.length <= 60)
     .map((name, index) => ({ id: makeId(index), name }));
