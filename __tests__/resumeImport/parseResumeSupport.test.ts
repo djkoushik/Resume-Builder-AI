@@ -1,5 +1,8 @@
 import {
+  AI_RATE_LIMIT_BURST,
+  AI_RATE_LIMIT_DAILY,
   buildParsePrompt,
+  checkAiRateLimit,
   checkRateLimit,
   MAX_BLOCKS,
   MAX_BLOCK_CHARS,
@@ -180,6 +183,60 @@ describe('checkRateLimit', () => {
     }
     expect(checkRateLimit('1.2.3.4', now + RATE_LIMIT_DAY_MS - 1).allowed).toBe(false);
     expect(checkRateLimit('1.2.3.4', now + RATE_LIMIT_DAY_MS + 1).allowed).toBe(true);
+  });
+});
+
+describe('checkAiRateLimit', () => {
+  beforeEach(resetRateLimits);
+
+  it('allows a full editing session before refusing', () => {
+    const now = Date.now();
+    // A user polishing a summary, several experience entries and a cover letter.
+    for (let i = 0; i < AI_RATE_LIMIT_BURST; i += 1) {
+      expect(checkAiRateLimit('1.2.3.4', now + i).allowed).toBe(true);
+    }
+    const refused = checkAiRateLimit('1.2.3.4', now + AI_RATE_LIMIT_BURST);
+    expect(refused.allowed).toBe(false);
+    expect(refused.reason).toBe('burst');
+    expect(refused.retryAfterSeconds).toBeGreaterThan(0);
+  });
+
+  it('is more generous than the resume-import budget', () => {
+    expect(AI_RATE_LIMIT_BURST).toBeGreaterThan(RATE_LIMIT_BURST);
+    expect(AI_RATE_LIMIT_DAILY).toBeGreaterThan(RATE_LIMIT_DAILY);
+  });
+
+  // The two routes must not spend each other's allowance: importing a resume
+  // should never be what stops "Enhance with AI" from working.
+  it('keeps a separate budget from resume imports for the same address', () => {
+    const now = Date.now();
+    for (let i = 0; i < RATE_LIMIT_BURST; i += 1) checkRateLimit('1.2.3.4', now + i);
+    expect(checkRateLimit('1.2.3.4', now + RATE_LIMIT_BURST).allowed).toBe(false);
+    expect(checkAiRateLimit('1.2.3.4', now + RATE_LIMIT_BURST).allowed).toBe(true);
+  });
+
+  it('does not let AI calls exhaust the import budget either', () => {
+    const now = Date.now();
+    for (let i = 0; i < AI_RATE_LIMIT_BURST; i += 1) checkAiRateLimit('1.2.3.4', now + i);
+    expect(checkAiRateLimit('1.2.3.4', now + AI_RATE_LIMIT_BURST).allowed).toBe(false);
+    expect(checkRateLimit('1.2.3.4', now + AI_RATE_LIMIT_BURST).allowed).toBe(true);
+  });
+
+  it('keeps separate budgets per address', () => {
+    const now = Date.now();
+    for (let i = 0; i < AI_RATE_LIMIT_BURST; i += 1) checkAiRateLimit('1.2.3.4', now + i);
+    expect(checkAiRateLimit('5.6.7.8', now).allowed).toBe(true);
+  });
+
+  it('caps the day at AI_RATE_LIMIT_DAILY across windows', () => {
+    const now = Date.now();
+    let allowed = 0;
+    for (let i = 0; i < AI_RATE_LIMIT_DAILY + 10; i += 1) {
+      // Step past the burst window each time so only the daily cap can bite.
+      if (checkAiRateLimit('1.2.3.4', now + i * (RATE_LIMIT_WINDOW_MS + 1)).allowed) allowed += 1;
+    }
+    expect(allowed).toBe(AI_RATE_LIMIT_DAILY);
+    expect(checkAiRateLimit('1.2.3.4', now).reason).toBe('daily');
   });
 });
 

@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import Textarea from '../ui/Textarea';
-import { enhanceTextWithGemini } from '../../services/geminiService';
+import { enhanceSummary } from '../../services/geminiService';
 
 interface SummarySectionProps {
   summary: string;
@@ -18,12 +18,13 @@ const SummarySection: React.FC<SummarySectionProps> = ({ summary, onUpdate }) =>
     // FIX: Removed API key check. The service now handles the key from the environment.
     setIsEnhancing(true);
     try {
-      const instruction = "You are a professional resume writer. Improve the following summary to be more impactful and concise for a job application. Return only the improved text.";
-      const enhancedSummary = await enhanceTextWithGemini(summary, instruction);
+      // The instruction lives on the server, in api/aiPresets.ts.
+      const enhancedSummary = await enhanceSummary(summary);
       onUpdate(enhancedSummary);
     } catch (error) {
       console.error(error);
-      alert("Failed to enhance summary. Check the console for details.");
+      // Surfaced verbatim so the rate-limit message reaches the user.
+      alert(error instanceof Error ? error.message : "Failed to enhance summary. Check the console for details.");
     } finally {
       setIsEnhancing(false);
     }

@@ -3,7 +3,7 @@ import { WorkExperience } from '../../types';
 import Input from '../ui/Input';
 import RemoveButton from '../ui/RemoveButton';
 import Textarea from '../ui/Textarea';
-import { enhanceTextWithGemini } from '../../services/geminiService';
+import { enhanceExperience } from '../../services/geminiService';
 
 interface ExperienceSectionProps {
   experience: WorkExperience[];
@@ -32,12 +32,13 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ experience, onUpd
     // FIX: Removed API key check. The service now handles the key from the environment.
     setEnhancingId(id);
     try {
-      const instruction = "You are a professional resume writer. Rewrite the following work experience summary using action verbs and focusing on achievements. Return only the improved text, formatted with markdown for bullet points (e.g., * Point 1).";
-      const enhancedSummary = await enhanceTextWithGemini(text, instruction);
+      // The instruction lives on the server, in api/aiPresets.ts.
+      const enhancedSummary = await enhanceExperience(text);
       handleChange(id, 'summary', enhancedSummary);
     } catch (error) {
       console.error(error);
-      alert("Failed to enhance summary. Check the console for details.");
+      // Surfaced verbatim so the rate-limit message reaches the user.
+      alert(error instanceof Error ? error.message : "Failed to enhance summary. Check the console for details.");
     } finally {
       setEnhancingId(null);
     }

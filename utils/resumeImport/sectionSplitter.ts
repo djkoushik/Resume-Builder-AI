@@ -4,6 +4,8 @@
 // shape: a contact block at the top, then headed sections. Detecting those
 // headers reliably is what makes the rest of the parsing tractable.
 
+import { DATE_RANGE_PATTERN } from './normalize';
+
 export type SectionKey =
   | 'summary'
   | 'experience'
@@ -221,8 +223,10 @@ export const splitSections = (text: string): SplitResult => {
 
 const BULLET_LINE = /^\s*[\u2022\u25aa\u2023\u25e6\u00b7*\-\u2013\u2014]\s+/;
 
-const DATE_RANGE_LINE =
-  /(?:[A-Za-z]{3,9}\.?\s*'?\d{2,4}|\d{1,2}[/\-.]\d{4}|\b\d{4}\b)\s*(?:\u2013|\u2014|-|to|until|through)\s*(?:present|current|now|ongoing|[A-Za-z]{3,9}\.?\s*'?\d{2,4}|\d{1,2}[/\-.]\d{4}|\b\d{4}\b)/i;
+// Month names are spelled out rather than matched as a loose alphabetic run:
+// "Meta          2021 - Present" would otherwise read as a month-year range, and
+// the entry boundary would land in the wrong place. See MONTH_PATTERN.
+const DATE_RANGE_LINE = new RegExp(DATE_RANGE_PATTERN, 'i');
 
 /**
  * Break a dated section (experience, education) into entries.

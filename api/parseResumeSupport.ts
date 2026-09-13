@@ -170,6 +170,36 @@ export const RATE_LIMIT_DAY_MS = 24 * 60 * 60 * 1000;
 /** Bounds the worst-case daily bill from any single address. */
 export const RATE_LIMIT_DAILY = 40;
 
+/**
+ * AI enhancement is per-field, so one sitting is legitimately many calls: a
+ * summary, a handful of experience entries and a cover letter. The import
+ * numbers above are tuned for whole-file uploads and would cut that user off,
+ * so /api/ai gets its own budget under its own key prefix.
+ */
+export const AI_RATE_LIMIT_BURST = 15;
+export const AI_RATE_LIMIT_DAILY = 60;
+
+export interface RateLimitPolicy {
+  windowMs: number;
+  burst: number;
+  dayMs: number;
+  daily: number;
+}
+
+export const PARSE_RATE_LIMIT: RateLimitPolicy = {
+  windowMs: RATE_LIMIT_WINDOW_MS,
+  burst: RATE_LIMIT_BURST,
+  dayMs: RATE_LIMIT_DAY_MS,
+  daily: RATE_LIMIT_DAILY,
+};
+
+export const AI_RATE_LIMIT: RateLimitPolicy = {
+  windowMs: RATE_LIMIT_WINDOW_MS,
+  burst: AI_RATE_LIMIT_BURST,
+  dayMs: RATE_LIMIT_DAY_MS,
+  daily: AI_RATE_LIMIT_DAILY,
+};
+
 /** Beyond this many tracked addresses, stale entries are swept. */
 const MAX_TRACKED_IPS = 10_000;
 
@@ -195,35 +225,43 @@ const sweep = (now: number) => {
   }
 };
 
-export const checkRateLimit = (ip: string, now: number = Date.now()): RateLimitResult => {
+/**
+ * `key` is the bucket identity, not necessarily a bare IP: routes with their own
+ * budget prefix it (see `checkAiRateLimit`) so their counts stay separate.
+ */
+export const checkRateLimit = (
+  key: string,
+  now: number = Date.now(),
+  policy: RateLimitPolicy = PARSE_RATE_LIMIT,
+): RateLimitResult => {
   if (buckets.size > MAX_TRACKED_IPS) sweep(now);
 
-  let bucket = buckets.get(ip);
+  let bucket = buckets.get(key);
   if (!bucket) {
     bucket = { hits: [], dayStart: now, dayCount: 0 };
-    buckets.set(ip, bucket);
+    buckets.set(key, bucket);
   }
 
-  if (now - bucket.dayStart >= RATE_LIMIT_DAY_MS) {
+  if (now - bucket.dayStart >= policy.dayMs) {
     bucket.dayStart = now;
     bucket.dayCount = 0;
   }
 
-  bucket.hits = bucket.hits.filter(at => now - at < RATE_LIMIT_WINDOW_MS);
+  bucket.hits = bucket.hits.filter(at => now - at < policy.windowMs);
 
-  if (bucket.dayCount >= RATE_LIMIT_DAILY) {
+  if (bucket.dayCount >= policy.daily) {
     return {
       allowed: false,
       reason: 'daily',
-      retryAfterSeconds: Math.ceil((bucket.dayStart + RATE_LIMIT_DAY_MS - now) / 1000),
+      retryAfterSeconds: Math.ceil((bucket.dayStart + policy.dayMs - now) / 1000),
     };
   }
 
-  if (bucket.hits.length >= RATE_LIMIT_BURST) {
+  if (bucket.hits.length >= policy.burst) {
     return {
       allowed: false,
       reason: 'burst',
-      retryAfterSeconds: Math.ceil((bucket.hits[0] + RATE_LIMIT_WINDOW_MS - now) / 1000),
+      retryAfterSeconds: Math.ceil((bucket.hits[0] + policy.windowMs - now) / 1000),
     };
   }
 
@@ -232,6 +270,14 @@ export const checkRateLimit = (ip: string, now: number = Date.now()): RateLimitR
 
   return { allowed: true };
 };
+
+/**
+ * The /api/ai budget. Prefixing the key keeps AI calls and resume imports from
+ * spending each other's allowance; pairing it with AI_RATE_LIMIT here means a
+ * caller cannot accidentally combine one route's key with another's limits.
+ */
+export const checkAiRateLimit = (ip: string, now: number = Date.now()): RateLimitResult =>
+  checkRateLimit(`ai:${ip}`, now, AI_RATE_LIMIT);
 
 /** Test seam. Never called in production. */
 export const resetRateLimits = () => buckets.clear();
