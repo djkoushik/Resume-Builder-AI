@@ -13,6 +13,7 @@ import {
   MIN_MEANINGFUL_CHARS,
   PositionedText,
 } from './types';
+import { isBulletLine } from './normalize';
 
 type FileKind = 'pdf' | 'docx';
 
@@ -56,6 +57,28 @@ const MIN_COLUMN_SHARE = 0.15;
 
 /** A gutter narrower than this share of the text width is ordinary word spacing. */
 const MIN_GUTTER_RATIO = 0.12;
+
+/** Each side of a real gutter owns at least this share of the page's LINES. */
+const MIN_COLUMN_LINE_SHARE = 0.1;
+
+/**
+ * Of the lines holding content on one side, this share must hold it on that
+ * side ALONE. It is what makes a column a column rather than a second field.
+ *
+ * `MAX_STRADDLING_LINE_RATIO` asks the same question of the page as a whole,
+ * and a page can pass it while one side fails badly: body text supplies enough
+ * left-only lines to drown out a right side that almost never appears without
+ * the left. That is the shape of a single-column resume with an indented second
+ * value — "Data Engineering:   PostgreSQL, Kafka" — whose values form a loose x
+ * cluster with a wide gap to their left. Measured per side, that cluster scores
+ * 0.14 where a real sidebar scores 1.0.
+ *
+ * Getting this wrong is expensive: a phantom gutter does not merely mislabel a
+ * field, it emits the whole "right column" after the body, so the name, the
+ * headline and every right-aligned date land at the end of the document and
+ * every entry loses its dates.
+ */
+const MIN_COLUMN_INDEPENDENCE = 0.5;
 
 /**
  * At most this share of text lines may straddle the gutter. Section headers
@@ -190,10 +213,17 @@ const detectColumnSplit = (runs: PositionedText[]): number | null => {
     const split = (xs[i] + xs[i + 1]) / 2;
     const { leftOnly, rightOnly, shared } = classifyLines(runs, split);
 
-    // Both sides must own lines outright, and few lines may straddle — that is
-    // what separates real columns from right-aligned text and stray indents.
-    if (leftOnly === 0 || rightOnly === 0) continue;
-    if (shared / (leftOnly + rightOnly + shared) > MAX_STRADDLING_LINE_RATIO) continue;
+    // Both sides must own a real share of the lines, and few lines may
+    // straddle — that is what separates real columns from right-aligned text,
+    // indented values and stray clusters.
+    const total = leftOnly + rightOnly + shared;
+    const minLinesPerSide = total * MIN_COLUMN_LINE_SHARE;
+    if (leftOnly < minLinesPerSide || rightOnly < minLinesPerSide) continue;
+    if (shared / total > MAX_STRADDLING_LINE_RATIO) continue;
+
+    // Each side has to stand on its own, not merely appear.
+    if (leftOnly / (leftOnly + shared) < MIN_COLUMN_INDEPENDENCE) continue;
+    if (rightOnly / (rightOnly + shared) < MIN_COLUMN_INDEPENDENCE) continue;
 
     const separated = leftOnly + rightOnly;
     if (separated > bestSeparated) {
@@ -255,8 +285,6 @@ const PAGE_EDGE_LINES = 2;
 const normalizeForRepetition = (line: string): string =>
   line.toLowerCase().replace(/\d+/g, '#').replace(/\s+/g, ' ').trim();
 
-const BULLET_START = /^\s*[\u2022\u25aa\u2023\u25e6\u00b7*\-\u2013\u2014]\s+/;
-
 /**
  * Remove running headers and footers from a multi-page document.
  *
@@ -317,7 +345,7 @@ const joinPages = (pages: string[][]): string => {
     const first = lines.find(line => line.trim() !== '');
 
     if (index > 0 && first !== undefined) {
-      const continuesPreviousPage = BULLET_START.test(first) || /^[a-z]/.test(first);
+      const continuesPreviousPage = isBulletLine(first) || /^[a-z]/.test(first);
       if (!continuesPreviousPage) out.push('');
     }
 

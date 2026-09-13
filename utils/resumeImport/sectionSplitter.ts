@@ -4,7 +4,7 @@
 // shape: a contact block at the top, then headed sections. Detecting those
 // headers reliably is what makes the rest of the parsing tractable.
 
-import { DATE_RANGE_PATTERN } from './normalize';
+import { continuesPreviousLine, DATE_RANGE_PATTERN, isBulletLine } from './normalize';
 
 export type SectionKey =
   | 'summary'
@@ -45,7 +45,8 @@ const HEADINGS: Array<[SectionKey, string[]]> = [
   ]],
   ['skills', [
     'technical skills', 'core competencies', 'areas of expertise', 'key skills',
-    'skills and abilities', 'technologies', 'competencies', 'tech stack',
+    'skills and abilities', 'technical expertise', 'skills and tools',
+    'technologies', 'competencies', 'core skills', 'tech stack',
     'expertise', 'skills',
   ]],
   ['projects', [
@@ -221,8 +222,6 @@ export const splitSections = (text: string): SplitResult => {
   return { contact: trim(contact), sections, unknownHeadings };
 };
 
-const BULLET_LINE = /^\s*[\u2022\u25aa\u2023\u25e6\u00b7*\-\u2013\u2014]\s+/;
-
 // Month names are spelled out rather than matched as a loose alphabetic run:
 // "Meta          2021 - Present" would otherwise read as a month-year range, and
 // the entry boundary would land in the wrong place. See MONTH_PATTERN.
@@ -263,14 +262,14 @@ export const splitDatedEntries = (lines: string[]): string[][] => {
       continue;
     }
 
-    const isBullet = BULLET_LINE.test(line);
+    const isBullet = isBulletLine(line);
     const hasDateRange = DATE_RANGE_LINE.test(line);
 
     if (entry.length > 0) {
       // A bullet that wraps onto a second line is a continuation, not a new
-      // entry. Wrapped text carries on mid-sentence, so a lowercase opening is
-      // the reliable tell.
-      const continuesBullet = sawBullet && /^[a-z]/.test(line.trim());
+      // entry. See continuesPreviousLine for how a wrap is recognised.
+      const continuesBullet =
+        sawBullet && continuesPreviousLine(entry[entry.length - 1] ?? '', line);
 
       if (!isBullet && sawBullet && !continuesBullet) {
         commit(entry);
@@ -312,18 +311,39 @@ export const splitDatedEntries = (lines: string[]): string[][] => {
 export const splitEntries = (lines: string[]): string[][] => {
   const entries: string[][] = [];
   let currentEntry: string[] = [];
+  let sawBullet = false;
+
+  const commit = () => {
+    if (currentEntry.length > 0) entries.push(currentEntry);
+    currentEntry = [];
+    sawBullet = false;
+  };
 
   for (const line of lines) {
     if (line.trim() === '') {
-      if (currentEntry.length > 0) {
-        entries.push(currentEntry);
-        currentEntry = [];
-      }
-    } else {
-      currentEntry.push(line);
+      commit();
+      continue;
     }
+
+    const isBullet = isBulletLine(line);
+
+    // Same boundary as splitDatedEntries: bullets belong to the entry above
+    // them, so the next ordinary line opens a new one. Without this, a projects
+    // list written without blank lines between entries collapses into one
+    // project whose description is every other project.
+    if (
+      !isBullet &&
+      sawBullet &&
+      !continuesPreviousLine(currentEntry[currentEntry.length - 1] ?? '', line)
+    ) {
+      commit();
+    }
+
+    currentEntry.push(line);
+    if (isBullet) sawBullet = true;
   }
-  if (currentEntry.length > 0) entries.push(currentEntry);
+
+  commit();
 
   return entries;
 };

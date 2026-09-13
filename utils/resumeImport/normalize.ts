@@ -144,23 +144,128 @@ export const parseDateRange = (raw: string): DateRange => {
   return { startDate: single, endDate: '', isCurrent: false };
 };
 
-const BULLET_PREFIX = /^\s*[•▪‣◦·*\-–—]\s+/;
+/**
+ * Characters a resume uses to open a bullet.
+ *
+ * The long tail matters far more than it looks. Word writes its default bullet
+ * in the Symbol font and its list styles in Wingdings, and neither carries a
+ * Unicode mapping — pdf.js surfaces them as Private Use Area codepoints
+ * (U+F0B7, U+F0A7, U+F0D8, U+F0FC...) rather than as U+2022. Exporters that do
+ * map the glyph often pick U+25CF over U+2022. A class covering only U+2022 and
+ * the dashes therefore misses most Word-exported PDFs, which are the single
+ * most common thing a user uploads.
+ *
+ * Missing a marker is not a cosmetic loss: `parseExperienceEntry` routes
+ * unrecognised bullets into prose, which joins the whole role into one
+ * paragraph, and `splitDatedEntries` loses the boundary between two jobs.
+ */
+const BULLET_GLYPHS =
+  // Unicode bullets and geometric markers.
+  '\\u2022\\u2023\\u2043\\u2219\\u00b7\\u25aa\\u25ab\\u25e6\\u25cf\\u25cb\\u25a0\\u25a1' +
+  '\\u25b8\\u25b9\\u25ba\\u2756\\u276f\\u279c\\u27a1\\u27a2\\u27a4\\u00bb\\u2713\\u2714' +
+  // Word's Symbol/Wingdings bullets, as pdf.js reports them.
+  '\\uf020\\uf076\\uf0a7\\uf0a8\\uf0b7\\uf0d8\\uf0e0\\uf0fc';
+
+/** The glyphs above plus the ASCII markers, which only count at line start. */
+const BULLET_CHARS = `${BULLET_GLYPHS}*\\-\\u2010\\u2011\\u2012\\u2013\\u2014\\u2212`;
+
+/**
+ * A character used to separate fields *within* a line — "Berlin • +49 30 1234".
+ *
+ * Only the glyph markers, never the ASCII ones: a hyphen is ordinary inside a
+ * name ("Anne-Marie") or a city ("Wilkes-Barre"), and an asterisk is a footnote.
+ */
+export const INLINE_SEPARATOR = new RegExp(`[|${BULLET_GLYPHS}]`);
+
+/**
+ * A bullet marker at the start of a line, with its trailing space.
+ *
+ * Repeated markers ("•-", "--") are taken as one prefix. The separating space
+ * is usually there but not always, so a marker followed directly by a word also
+ * counts — restricted to a letter or an opening bracket so that "- 2021" and
+ * "–Present", which are date fragments rather than bullets, do not match.
+ */
+export const BULLET_PREFIX = new RegExp(
+  `^\\s*[${BULLET_CHARS}]+(?:\\s+|(?=[A-Za-z(\\[]))`
+);
 
 /** Is this line already a bullet in the source document? */
 export const isBulletLine = (line: string): boolean => BULLET_PREFIX.test(line);
 
+/** Drop a leading bullet marker, if there is one. */
+export const stripBulletMarker = (line: string): string =>
+  line.replace(BULLET_PREFIX, '').trim();
+
 /**
- * Convert achievement lines to the `"* point"` form.
- *
- * `renderSummaryList` in every resume template splits on `\n` and tests
- * `startsWith('*')`. Any other marker renders as a flat paragraph.
+ * Tokens a line cannot end on unless it wrapped: a dangling function word, or
+ * punctuation that opens rather than closes.
  */
-export const toBulletFormat = (lines: string[]): string =>
-  lines
-    .map(line => line.trim())
-    .filter(line => line.length > 0)
-    .map(line => (isBulletLine(line) ? `* ${line.replace(BULLET_PREFIX, '').trim()}` : line))
-    .join('\n');
+const UNFINISHED_TAIL = new RegExp(
+  '(?:\\b(?:a|an|the|and|or|but|with|via|to|of|in|on|at|by|for|from|into|onto|' +
+    'across|over|under|through|within|between|using|including|that|which|while|' +
+    'when|where|as|per)\\b|[,;:(\\u2013\\u2014-])\\s*$',
+  'i'
+);
+
+/**
+ * Does `line` continue `previous`, rather than start something new?
+ *
+ * A lowercase opening is the classic tell, and on its own it is wrong often
+ * enough to matter: technical resumes wrap onto proper nouns constantly —
+ * "...telemetry via Kafka and" / "RabbitMQ into PostgreSQL", "...services in" /
+ * "Python with PostgreSQL". Reading those as new content costs more than a
+ * stray line, because both callers treat a non-continuation after a bullet as
+ * the start of a new job: one wrapped bullet silently becomes an extra role
+ * whose company name is the second half of a sentence.
+ *
+ * So the previous line gets a vote too. A line ending on "and", "in" or "the"
+ * has wrapped whatever the next line starts with, while a heading or a finished
+ * bullet ends on a word or a full stop.
+ */
+export const continuesPreviousLine = (previous: string, line: string): boolean => {
+  const trimmed = line.trim();
+  if (trimmed === '') return false;
+
+  return /^[a-z]/.test(trimmed) || UNFINISHED_TAIL.test(previous.trimEnd());
+};
+
+/** One line of an entry's body, tagged so bullets and prose keep their order. */
+export interface BodyLine {
+  kind: 'bullet' | 'prose';
+  text: string;
+}
+
+/**
+ * Render an entry's body in the form every resume template expects.
+ *
+ * `renderSummaryList` splits on `\n` and tests `startsWith('*')`, so a bullet
+ * has to arrive as `"* point"` — any other marker renders as a flat paragraph.
+ * Prose stays a bare line, which is what makes a mixed entry possible: a role
+ * described in a sentence *and then* itemised keeps both halves, in the order
+ * they appeared, instead of the sentence being dropped.
+ *
+ * Adjacent prose lines are merged, since they are almost always one paragraph
+ * that wrapped rather than two separate thoughts.
+ */
+export const renderEntryBody = (body: BodyLine[]): string => {
+  const out: string[] = [];
+
+  for (const line of body) {
+    const text = line.text.trim();
+    if (text === '') continue;
+
+    const previous = out[out.length - 1];
+
+    if (line.kind === 'prose' && previous !== undefined && !previous.startsWith('*')) {
+      out[out.length - 1] = `${previous} ${text}`;
+      continue;
+    }
+
+    out.push(line.kind === 'bullet' ? `* ${stripBulletMarker(text)}` : text);
+  }
+
+  return out.join('\n');
+};
 
 /** Field length ceilings, mirroring CoverLetterEditor.validateField. */
 export const CAPS = { short: 100, long: 5000 } as const;
