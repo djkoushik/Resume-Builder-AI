@@ -222,6 +222,36 @@ export const splitSections = (text: string): SplitResult => {
   return { contact: trim(contact), sections, unknownHeadings };
 };
 
+/**
+ * Longer than this, a line is prose. Entry headings carry a company, a title,
+ * a location and a date range, which is roomy but nothing like a sentence.
+ */
+const MAX_ENTRY_HEADING_CHARS = 80;
+
+/** A sentence has to be at least this long before its full stop means anything. */
+const MIN_SENTENCE_CHARS = 40;
+
+/**
+ * Is this line prose continuing the entry above, rather than a new heading?
+ *
+ * The bullet boundary — a plain line after a bullet opens a new entry — assumes
+ * a bullet that has ended stays ended. A long bullet wrapped by the PDF breaks
+ * that assumption: its second sentence arrives with no marker, a capital
+ * opening and a previous line closed by a full stop, so neither wrap test in
+ * `continuesPreviousLine` fires and a sentence becomes a job. Length settles
+ * it, because the two cannot be confused on length: "EverestIMS Technologies
+ * Pvt Ltd — Bangalore, India" is 50 characters and a bullet rarely fits in 80.
+ *
+ * The full stop needs the length bound with it — "Acme Inc." ends in one and is
+ * still a company.
+ */
+const readsAsProse = (line: string): boolean => {
+  const trimmed = line.trim();
+
+  if (trimmed.length > MAX_ENTRY_HEADING_CHARS) return true;
+  return /[.!?]$/.test(trimmed) && trimmed.length > MIN_SENTENCE_CHARS;
+};
+
 // Month names are spelled out rather than matched as a loose alphabetic run:
 // "Meta          2021 - Present" would otherwise read as a month-year range, and
 // the entry boundary would land in the wrong place. See MONTH_PATTERN.
@@ -271,7 +301,7 @@ export const splitDatedEntries = (lines: string[]): string[][] => {
       const continuesBullet =
         sawBullet && continuesPreviousLine(entry[entry.length - 1] ?? '', line);
 
-      if (!isBullet && sawBullet && !continuesBullet) {
+      if (!isBullet && sawBullet && !continuesBullet && !readsAsProse(line)) {
         commit(entry);
         restart();
       } else if (hasDateRange && lastDateIndex >= 0) {
@@ -334,7 +364,8 @@ export const splitEntries = (lines: string[]): string[][] => {
     if (
       !isBullet &&
       sawBullet &&
-      !continuesPreviousLine(currentEntry[currentEntry.length - 1] ?? '', line)
+      !continuesPreviousLine(currentEntry[currentEntry.length - 1] ?? '', line) &&
+      !readsAsProse(line)
     ) {
       commit();
     }
