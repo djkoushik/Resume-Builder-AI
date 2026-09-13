@@ -85,6 +85,36 @@ export const normalizeDate = (raw: string): string => {
   return value;
 };
 
+/**
+ * A month name, spelled out or abbreviated.
+ *
+ * Deliberately an explicit list rather than `[A-Za-z]{3,9}`. A loose alphabetic
+ * run followed by a year matches any word sitting to the left of a date, and
+ * right-aligned dates — "Meta          2021 - Present" — put a company name
+ * exactly there. The employer then disappears into the date range.
+ */
+export const MONTH_PATTERN =
+  "(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t|tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\\b\\.?";
+
+/**
+ * One end of a date range: "March 2021", "Mar '21", "03/2021" or a bare year.
+ *
+ * The gap between month and year is bounded at two spaces for the same reason
+ * the month list is explicit: column padding is three spaces or more, so a
+ * wider gap means the two halves were never one date.
+ */
+export const DATE_TOKEN_PATTERN = `(?:${MONTH_PATTERN}\\s{0,2}'?\\d{2,4}|\\b\\d{1,2}[/\\-.]\\d{4}\\b|\\b\\d{4}\\b)`;
+
+/** Words standing in for an open-ended end date. */
+export const CURRENT_PATTERN = "(?:present|current|now|ongoing|till date|to date)";
+
+/** The separator between the two ends of a range. */
+export const RANGE_SEPARATOR_PATTERN = "(?:\\u2013|\\u2014|-|to|until|through)";
+
+/** A full range, e.g. "Jun 2019 - Present". Group 1 is the whole range. */
+export const DATE_RANGE_PATTERN =
+  `(${DATE_TOKEN_PATTERN}\\s*${RANGE_SEPARATOR_PATTERN}\\s*(?:${CURRENT_PATTERN}|${DATE_TOKEN_PATTERN}))`;
+
 const RANGE_SEPARATOR = /\s*(?:–|—|-|\bto\b|\buntil\b|\bthrough\b)\s*/i;
 
 export interface DateRange {

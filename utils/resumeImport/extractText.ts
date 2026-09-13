@@ -72,22 +72,85 @@ interface LineSplit {
   shared: number;
 }
 
-const classifyLines = (runs: PositionedText[], split: number): LineSplit => {
-  const lines = new Map<number, { left: boolean; right: boolean }>();
-  for (const run of runs) {
-    const key = Math.round(run.y);
-    const entry = lines.get(key) ?? { left: false, right: false };
-    if (run.x < split) entry.left = true;
-    else entry.right = true;
-    lines.set(key, entry);
+/**
+ * Cluster runs into visual lines by baseline.
+ *
+ * Rounding y to the nearest unit looked equivalent and is not: runs on one
+ * visual line rarely share an exact baseline — a bold company name, a smaller
+ * date and body text are typically a fraction of a point apart — so two runs at
+ * 700.4 and 700.6 round to different keys and the line splits in two, while the
+ * same pair at 668.4 and 668.6 survives. Which resumes parsed cleanly then came
+ * down to where the baselines happened to fall against .5.
+ *
+ * So runs are grouped by proximity instead. The tolerance is derived from the
+ * page's own line spacing rather than fixed, because a PDF may be written at
+ * any scale; it is clamped so that a page of pure jitter cannot widen it enough
+ * to merge two real lines.
+ */
+// Kept deliberately tight. Baseline drift within one visual line is a fraction
+// of a point; a sidebar's lines, meanwhile, can sit only two points off the
+// body's. Anything wider than this starts welding the two columns together.
+const MIN_LINE_TOLERANCE = 0.75;
+const MAX_LINE_TOLERANCE = 1.5;
+/** A share of line spacing small enough that two real lines never merge. */
+const LINE_TOLERANCE_RATIO = 0.1;
+
+const lineTolerance = (ys: number[]): number => {
+  if (ys.length < 2) return MIN_LINE_TOLERANCE;
+
+  const gaps: number[] = [];
+  for (let i = 1; i < ys.length; i++) gaps.push(ys[i - 1] - ys[i]);
+  gaps.sort((a, b) => a - b);
+
+  const median = gaps[Math.floor(gaps.length / 2)];
+  return Math.min(MAX_LINE_TOLERANCE, Math.max(MIN_LINE_TOLERANCE, median * LINE_TOLERANCE_RATIO));
+};
+
+/**
+ * Group runs into visual lines, ordered top to bottom (PDF y grows upwards).
+ *
+ * Each entry carries the line's baseline — the topmost y in the cluster — so
+ * callers can measure the gaps between lines.
+ */
+const groupIntoLines = (runs: PositionedText[]): Array<{ y: number; runs: PositionedText[] }> => {
+  if (runs.length === 0) return [];
+
+  const distinct = [...new Set(runs.map(run => run.y))].sort((a, b) => b - a);
+  const tolerance = lineTolerance(distinct);
+
+  // Map every distinct y onto the baseline of the cluster it belongs to.
+  const baselineOf = new Map<number, number>();
+  let baseline = distinct[0];
+  for (const y of distinct) {
+    if (baseline - y > tolerance) baseline = y;
+    baselineOf.set(y, baseline);
   }
 
+  const lines = new Map<number, PositionedText[]>();
+  for (const run of runs) {
+    const key = baselineOf.get(run.y)!;
+    const bucket = lines.get(key);
+    if (bucket) bucket.push(run);
+    else lines.set(key, [run]);
+  }
+
+  return [...lines.keys()]
+    .sort((a, b) => b - a)
+    .map(y => ({ y, runs: lines.get(y)! }));
+};
+
+const classifyLines = (runs: PositionedText[], split: number): LineSplit => {
   const result: LineSplit = { leftOnly: 0, rightOnly: 0, shared: 0 };
-  for (const entry of lines.values()) {
-    if (entry.left && entry.right) result.shared++;
-    else if (entry.right) result.rightOnly++;
+
+  for (const line of groupIntoLines(runs)) {
+    const left = line.runs.some(run => run.x < split);
+    const right = line.runs.some(run => run.x >= split);
+
+    if (left && right) result.shared++;
+    else if (right) result.rightOnly++;
     else result.leftOnly++;
   }
+
   return result;
 };
 
@@ -105,7 +168,7 @@ const classifyLines = (runs: PositionedText[], split: number): LineSplit => {
  * produces that clean division.
  */
 const detectColumnSplit = (runs: PositionedText[]): number | null => {
-  const distinctLines = new Set(runs.map(run => Math.round(run.y))).size;
+  const distinctLines = groupIntoLines(runs).length;
   if (distinctLines < MIN_LINES_FOR_COLUMN_DETECTION) return null;
 
   const xs = runs.map(run => run.x).sort((a, b) => a - b);
@@ -149,21 +212,11 @@ const detectColumnSplit = (runs: PositionedText[]): number | null => {
  * paragraphs wherever the vertical gap exceeds the usual line spacing.
  */
 const renderRuns = (runs: PositionedText[]): string[] => {
-  const lines = new Map<number, PositionedText[]>();
-  for (const run of runs) {
-    // Round to absorb sub-pixel drift within a single visual line.
-    const key = Math.round(run.y);
-    const bucket = lines.get(key);
-    if (bucket) bucket.push(run);
-    else lines.set(key, [run]);
-  }
+  const grouped = groupIntoLines(runs);
+  const keys = grouped.map(line => line.y);
 
-  // Top to bottom (PDF y grows upwards).
-  const keys = [...lines.keys()].sort((a, b) => b - a);
-
-  const rendered = keys.map(key =>
-    lines
-      .get(key)!
+  const rendered = grouped.map(line =>
+    line.runs
       .sort((a, b) => a.x - b.x)
       .map(run => run.str)
       .join(' ')

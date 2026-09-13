@@ -9,7 +9,8 @@ import type {
 } from '../../types';
 import { splitDatedEntries, splitEntries, splitSections, type SectionKey } from './sectionSplitter';
 import {
-  cap, CAPS, finalizeContent, isBulletLine, makeId, parseDateRange, toBulletFormat,
+  cap, CAPS, CURRENT_PATTERN, DATE_RANGE_PATTERN, DATE_TOKEN_PATTERN, finalizeContent,
+  isBulletLine, makeId, parseDateRange, toBulletFormat,
 } from './normalize';
 import type { ImportedContent, ParsedResume } from './types';
 
@@ -205,9 +206,12 @@ const COMPANY_MARKERS = /\b(inc|llc|ltd|limited|corp|corporation|gmbh|plc|pvt|te
 
 const TITLE_WORDS = /\b(engineer|developer|manager|director|analyst|designer|architect|consultant|scientist|specialist|lead|head|officer|president|intern|associate|administrator|coordinator|executive|founder|principal|staff|programmer|researcher|strategist|writer|editor)\b/i;
 
-const DATE_LINE = /(?:\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s*'?\d{2,4}|\b\d{1,2}[/\-.]\d{4}\b|\b\d{4}\b)/i;
+const DATE_LINE = new RegExp(DATE_TOKEN_PATTERN, 'i');
 
-const CURRENT_MARKER = /\b(present|current|now|ongoing|till date|to date)\b/i;
+const CURRENT_MARKER = new RegExp(`\\b${CURRENT_PATTERN}\\b`, 'i');
+
+const RANGE_IN_LINE = new RegExp(DATE_RANGE_PATTERN, 'i');
+const SINGLE_DATE_IN_LINE = new RegExp(`(${DATE_TOKEN_PATTERN})`, 'i');
 
 /** Pull the date range out of a line and return it with the remaining text. */
 const extractDates = (line: string): { range: string; rest: string } | null => {
@@ -217,16 +221,13 @@ const extractDates = (line: string): { range: string; rest: string } | null => {
 
   // Match a range: something date-ish, a separator, then something date-ish
   // or a "present" word.
-  const rangePattern =
-    /((?:[A-Za-z]{3,9}\.?\s*'?\d{2,4}|\d{1,2}[/\-.]\d{4}|\d{4})\s*(?:–|—|-|to|until|through)\s*(?:present|current|now|ongoing|till date|to date|[A-Za-z]{3,9}\.?\s*'?\d{2,4}|\d{1,2}[/\-.]\d{4}|\d{4}))/i;
-
-  const match = line.match(rangePattern);
+  const match = line.match(RANGE_IN_LINE);
   if (match) {
     return { range: match[1], rest: line.replace(match[1], '').trim() };
   }
 
   // A lone year or month-year still tells us something.
-  const single = line.match(/([A-Za-z]{3,9}\.?\s*'?\d{2,4}|\d{1,2}[/\-.]\d{4}|\d{4})/);
+  const single = line.match(SINGLE_DATE_IN_LINE);
   if (single) {
     return { range: single[1], rest: line.replace(single[1], '').trim() };
   }
