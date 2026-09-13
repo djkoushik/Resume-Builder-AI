@@ -463,8 +463,16 @@ const parseExperienceEntry = (lines: string[], index: number): ParsedEntry<WorkE
       (/[.!?]$/.test(trimmed) || trimmed.length > 60) &&
       !DATE_LINE.test(trimmed);
 
-    if (isProse) body.push({ kind: 'prose', text: trimmed });
-    else headingLines.push(line);
+    if (isProse) {
+      // Once bullets have started, prose is the last one running on — a long
+      // bullet wrapped by the PDF, whose second sentence lost its marker.
+      // Standing it alone would render a stray paragraph between two bullets.
+      if (previous !== undefined && previous.kind === 'bullet') {
+        previous.text = `${previous.text.trimEnd()} ${trimmed}`;
+      } else {
+        body.push({ kind: 'prose', text: trimmed });
+      }
+    } else headingLines.push(line);
   }
 
   let range = '';

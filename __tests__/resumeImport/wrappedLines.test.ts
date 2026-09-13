@@ -92,3 +92,53 @@ describe('entries separated only by their bullets', () => {
     ]);
   });
 });
+
+describe('a long bullet wrapped onto a new sentence', () => {
+  // The hard case: the continuation has no marker, opens on a capital, and the
+  // line above it closed with a full stop — so neither wrap test in
+  // continuesPreviousLine fires. Only its length says it is not a heading.
+  const experience = [
+    'Northwind Analytics Ltd — Lisbon, Portugal',
+    'Data Scientist / Team Lead | 2024 to Present',
+    '• Architected a hybrid retrieval pipeline serving 150K+ daily queries with 98.2% uptime.',
+    'Achieved a 42% improvement in relevance and a 35% reduction in analysis time for 25+ enterprise',
+    'customers.',
+    '• Built a multi-agent orchestration system with four specialised agents for troubleshooting.',
+    'Delivered 2.8x faster resolution, a 67% auto-remediation rate, and 44% fewer manual escalations.',
+  ];
+
+  it('does not turn a wrapped sentence into another job', () => {
+    expect(splitDatedEntries(experience)).toHaveLength(1);
+  });
+
+  it('reattaches the sentence to the bullet it belongs to', () => {
+    const { content } = parseResumeText(['EXPERIENCE', '', ...experience].join('\n'));
+
+    expect(content.experience).toHaveLength(1);
+    expect(content.experience[0]).toMatchObject({
+      company: 'Northwind Analytics Ltd',
+      position: 'Data Scientist / Team Lead',
+    });
+
+    expect(content.experience[0].summary.split('\n')).toEqual([
+      '* Architected a hybrid retrieval pipeline serving 150K+ daily queries with 98.2% uptime. ' +
+        'Achieved a 42% improvement in relevance and a 35% reduction in analysis time for 25+ ' +
+        'enterprise customers.',
+      '* Built a multi-agent orchestration system with four specialised agents for troubleshooting. ' +
+        'Delivered 2.8x faster resolution, a 67% auto-remediation rate, and 44% fewer manual escalations.',
+    ]);
+  });
+
+  it('still opens a new entry on a short company line ending in a full stop', () => {
+    expect(
+      splitDatedEntries([
+        'Acme Inc.',
+        'Engineer | 2020 - 2022',
+        '• Shipped the billing service.',
+        'Globex Ltd.',
+        'Engineer | 2018 - 2020',
+        '• Shipped the ledger service.',
+      ])
+    ).toHaveLength(2);
+  });
+});
